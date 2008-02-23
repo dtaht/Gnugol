@@ -1,0 +1,6 @@
+#!/bin/sh
+
+#wget -E -H -k -K -p 
+batch <<AAA
+cd ~/public_html/results; goog -u $* | wget -w 0 --quiet --user-agent="Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.12) Gecko/20080207 Ubuntu/7.10 (gutsy) Firefox/2.0.0.12" --ignore-tags=img,object -E -H -k -K -p --convert-links -i - 
+AAA
