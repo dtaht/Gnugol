@@ -1,0 +1,44 @@
+In the race to add feature after feature after freature, google has
+lost sight of the original appeal of the service. A typical google
+page is now over 25K long, not counting the image, contains dozens of
+extra links, and takes 5-10 seconds to download and render
+over slow, international links. 
+
+I've always admired the DNS system, and felt that now that "search" is
+almost a commodity, that it would be possible to define a binary udp
+based protocol for search. There are plenty of unused, useless services
+in /etc/services - having a special port number for search makes sense.
+
+Problem with that was that most query-response
+protocols don't work well through a firewall. 
+
+Enter IPv6. Without NAT, you have end to end networking. 
+Response problem solved. Billing problem solved, too.
+
+The most basic version of this system uses 2!! packets to get a query
+out and a response. If you are going through a 6in4 tunnel, it's 4 packets.
+(2 very short ones, however)
+
+This means that by the time you complete a tcp handshake vs the normal
+google, you've already got a response from this, on a long latency link. 
+
+The earliest prototype of this system came in at *half* the time to 
+transmit a query from australia and get the response that google.com.au 
+did, best case. Due to the unreliable network I was on, it was actually
+often 5-10 times faster. I began to believe I was onto something.
+
+38 packets vs 4. Not bad. Some additional tweaking was in order.
+
+The second nice thing about end to end networking is that it makes it 
+possible -assuming a static ip address - to have for-pay search. I'd gladly
+pay a few bucks a month for faster - and ad-free searching!
+
+This system currently relies on google SOAP, and as such can't be used
+commercially. If google were to adopt something like this in their lab(s), 
+I daresay they could cut the cost of search down below 300ms.
+
+Benefits - vastly reduced data traffic. Control of the formatting can be
+controlled on the phone or remote servers. 
+
+The proof is in the pudding. Install this. Try it out. Let me know how it
+works.
