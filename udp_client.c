@@ -2,22 +2,28 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <memory.h>
 #include <errno.h>
 #include <unistd.h>
 
+#define DEBUG 1
+
 #include "connect_client.h"
 #include "port.h"
+#include "query.h"
 
-char links[10][1024];
-char snippets[10][1024];
+/* FIXME - figuring out calling malloc and free here is a bad thing 
+   pass the buffer? */
 
-char answer[1280];
 char *
-query_main(int argc, char *query,char *host)
+query_main(int argc,char *query,char *host)
 {
-    int connfd, n, m;
+    int connfd, n, m, i;
     char *myhost;
+    char *answer = (char *) malloc(1280);
+    int cnt;
+    struct query_args answers;
 
     myhost = "localhost";
     if (argc == 2) 
@@ -33,74 +39,24 @@ query_main(int argc, char *query,char *host)
     }
 
     m= write(connfd, query, strlen(query));
-
     memset(answer, 0, sizeof(answer));
-
     n = read(connfd,
              answer,
-             sizeof(answer));
-
+             sizeof(answer)); // FIXME, leave running and timeout
     close(connfd);
-    char *s = answer;
-    char buf[1024];
-    int i = 0;
-    int z = 0;
-    int done = 0;
-    memset(buf,0,sizeof(buf));
-    // The less said about sscanf the better
-    // FIXME - GOTOREGEX.
-    if(strncmp("LNK",s,3)==0) {
-      s = &s[4];
-      while ((sscanf(s,"%s[^\n]",&buf)> 0) && !done) {
-	if (strncmp("htt",buf,3)==0 || strncmp("ftp",buf,3)==0 || strncmp("gnugol",buf,6)==0) {
-	  strcpy(links[i++],buf);
-	  s = s + strlen(buf)+1;
-	  memset(buf,0,sizeof(buf));
-	} else { 
-	  done = 1; 
-	}
-      }
+#if defined(DEBUG)
+    printf(answer);
+#endif
+    cnt = answer_parse(answer, &answers.links, &answers.snippets); // Bless you David Rowe!
+#if defined(DEBUG)
+    printf(answer);
+    printf(" cnt = %d\n",cnt);
+#endif
+    for (i = 0; i <= cnt; i++) {
+      printf("<a href=%s>%s</a><br>", &answers.links[i], &answers.snippets[i]); 
     }
-    done = 0; i=0; int t= 0;
-    s = &s[4]; // END;
-    printf("SNIPPED PROCESSING %s<br>",s);
-    if(strncmp("SNP",s,3)==0) {
-      s = &s[4];
-      int done = 0;
-      strcpy(snippets[0],"");
-      // DAMN IT IT'S ALL WHITESPACE
-      while ((t=sscanf(s,"%s[^\n]",&buf)> 0) && !done) {
-	if (strncmp("END",buf,3)!=0) {
-	  if(strcmp("\n",buf)==0) { 
-	      i++;
-	      s = s+1;
-	      strcpy(snippets[i],"");
-	    } else {
-	      strcat(snippets[i],buf);
-	      strcat(snippets[i]," ");
-	      s = s + strlen(buf) +t;
-	    }
-	  printf("s is now: %s<br>",snippets[i]);
-	  if(strncmp("\n",s,1) == 0) {
-	    i++;
-	    s = s+1;
-	    strcpy(snippets[i],"");
-	  }
-	  
-	} else { 
-	  done = 1; 
-	}
-	memset(buf,0,sizeof(buf));
-      }
-    } else { 
-      printf("terror: %s\n",s); 
-    }
-
-    for (z = 0; z <= i; z++) {
-      //      printf("<a href=%s>%s</a><br>", links[z],snippets[z]); // snippet[z]
-      printf("<a href=%s>%s</a><br>", links[z],snippets[z]); // snippet[z]
-    }
-    //    printf("link3: %s", links[2]);
-    printf("Answer: %s", answer);
+#if defined(DEBUG)
+	printf("Answer: %s", answer);
+#endif
     return (char *) answer;
 }

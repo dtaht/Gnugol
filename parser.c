@@ -1,26 +1,32 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "query.h"
+#define DEBUG 1
+#if defined (DEBUG)
+#define log(a,b) printf(a,b);
+#endif
 
-#define MAX_STR 1024
-#define MAX_LINKS 10
-
-char parse(char *s, char *links[], char *snippets[]) {
+int answer_parse(char *s, QueryData *q) {
     char *pstart;
     char *pend;
     char *pprev;
     char *p;
     int   n1,n2;
+    char **links = q->links;
+    char **snippets = q->snippets;
 
     /* Parse LNK...END section -----------------------------------*/
 
     pstart = strstr(s, "LNK\n");
     if (pstart == NULL) {
+	log("blew up looking for LNK\n","");
 	return -1;
     }
     pend = strstr(s, "END\n");
     if (pend == NULL) {
-	return -1;
+	log("blew up looking for END\n","");
+	return -2;
     }
 
     p = pstart;
@@ -32,19 +38,22 @@ char parse(char *s, char *links[], char *snippets[]) {
 	    links[n1] = pprev;
 	    n1++;
 	}
-    } while((pprev < pend) && (n1 < MAX_LINKS));
+    } while((pprev < pend) && (n1 < MAX_ENTRIES));
 
-    if (n1 >= MAX_LINKS)
-	return -1;
-
+    if (n1 >= MAX_ENTRIES) {
+	log("Overrand entries table \n","");
+	// return -3;
+     }
     /* Parse SNP...END section -----------------------------------*/
 
     pstart = strstr(p, "SNP\n");
     if (pstart == NULL) {
+	log("No Snippet\n","");
 	return -1;
     }
     pend = strstr(p, "END\n");
     if (pend == NULL) {
+	log("No End\n","");
 	return -1;
     }
 
@@ -57,26 +66,31 @@ char parse(char *s, char *links[], char *snippets[]) {
 	    snippets[n2] = pprev;
 	    n2++;
 	}
-    } while((pprev < pend) && (n2 < MAX_LINKS));
+    } while((pprev < pend) && (n2 < MAX_ENTRIES));
 
-    if (n2 >= MAX_LINKS)
-	return -1;
+//    if (n2 >= MAX_ENTRIES)
+//	return -1;
 
-    if (n1 != n2)
-	return -1;
+    if (n1 != n2) {
+	log("More snippets than links","");
+	return -5;
+    }
 
     return n1;
 }
 
+#ifdef TEST_PARSER
+
 int main() {
-    char answer[MAX_STR];
-    char *links[MAX_LINKS];
-    char *snippets[MAX_LINKS];
+    char answer[MAX_MTU];
+    char *links[MAX_ENTRIES];
+    char *snippets[MAX_ENTRIES];
     int  nlinks, i;
+    QueryData q;
 
-    strcpy(answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nExtra snippet\nEND\n");
+    strcpy(answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLwn Rocks\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
 
-    nlinks = parse(answer, links, snippets);
+    nlinks = answer_parse(answer, &q);
     if (nlinks == -1) {
 	printf("Error!\n");
 	exit(1);
@@ -87,3 +101,5 @@ int main() {
 
     return 0;
 }
+
+#endif

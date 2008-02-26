@@ -4,15 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-
-#define MAX_MTU 1280
-#define MAX_ENTRIES 11
-
-struct query_args {
-	char urls[MAX_ENTRIES][MAX_MTU];
-	char snip[MAX_ENTRIES][MAX_MTU];
-	char title[MAX_ENTRIES][MAX_MTU];
-};
+#include "query.h"
 
 int
 main(int argc, char *argv[])

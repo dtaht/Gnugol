@@ -40,7 +40,9 @@ void LoadEnvironment();
 void SaveEnvironment();
 extern char *query_main(int argc, char *q, char *host);
 //void Query(char *query) { query_main(2,query,"toutatis.taht.net"); }
-void Query(char *query) { query_main(2,query,"2001:4f8:3:36:2e0:81ff:fe23:90d3"); }
+void Query(char *query) { query_main(2,query,"localhost"); }
+//void Query(char *query) { query_main(2,query,"2001:4f8:3:36:2e0:81ff:fe23:90d3"); }
+
 
 int cgiMain() {
 #ifdef DEBUG
@@ -59,7 +61,7 @@ int cgiMain() {
 	/* Top of the page */
 	fprintf(cgiOut, "<html><head>\n");
 	fprintf(cgiOut, "<title>GnuGol</title></head>\n");
-	fprintf(cgiOut, "<body><span style=\"font-size:1em; text-align:top\"><img src=/images/gnugol.png><a href=gnugol://gnugol>Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
+	fprintf(cgiOut, "<body><span style=\"font-size:1em; text-align:top\"><img src=/gnugol/images/gnugol.png><a href=gnugol://gnugol>Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
 	/* If a submit button has already been clicked, act on the 
 		submission of the form. */
 	if ((cgiFormSubmitClicked("btnG") == cgiFormSuccess) ||

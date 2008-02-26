@@ -1,0 +1,16 @@
+Because the clients and servers are evolving rapidly, 
+I'd like to expire them and require that people
+get new ones every two weeks (for now) rather than 
+expend lots of effort to remain backwards compatible.
+
+Look into public key infrastructure and openID
+
+Path MTU
+
+IPv4 UDP
+
+gnugol over other transports (irc bots, email)
+
+DNS lookaside cache
+
+DB lookaside cache
