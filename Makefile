@@ -15,6 +15,8 @@ gnugold: gnugold.o
 
 install: gnugol.cgi
 	cp gnugol.cgi /usr/lib/cgi-bin
+	mkdir -p /var/www/images; cp images/gnugol.png /var/www/images
+	mkdir -p $(HOME)/bin; cp goog gnugol $(HOME)/bin
 
 clean:
 	rm -f $(OBJECTS)
