@@ -59,7 +59,7 @@ int cgiMain() {
 	/* Top of the page */
 	fprintf(cgiOut, "<html><head>\n");
 	fprintf(cgiOut, "<title>GnuGol</title></head>\n");
-	fprintf(cgiOut, "<body><h1>GnuGol</h1>\n");
+	fprintf(cgiOut, "<body><span style=\"font-size:1em; text-align:top\"><img src=/images/gnugol.png><a href=gnugol://gnugol>Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
 	/* If a submit button has already been clicked, act on the 
 		submission of the form. */
 	if ((cgiFormSubmitClicked("btnG") == cgiFormSuccess) ||
@@ -157,7 +157,7 @@ void ShowForm()
 	fprintf(cgiOut, "\"><p>");
 	fprintf(cgiOut, "Prefetch");
 	fprintf(cgiOut, "<input type=\"checkbox\" name=\"prefetch\" checked>");
-	fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\">Query\n");
+	fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\">\n");
 	fprintf(cgiOut, "<input type=submit name=\"btnG\" value=\"Search\">");
 	fprintf(cgiOut, "</form>\n");
 }
