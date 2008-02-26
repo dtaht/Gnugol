@@ -25,7 +25,7 @@ parser.o: parser.c
 
 install: gnugol.cgi
 	cp gnugol.cgi /usr/lib/cgi-bin
-	mkdir -p /var/www/gnugol/images; cp images/gnugol.png /var/www/gnugol/images
+	mkdir -p /var/www/gnugol/images; cp doc/images/gnugol.png /var/www/gnugol/images
 	mkdir -p $(HOME)/bin; cp goog gnugol $(HOME)/bin
 
 clean:

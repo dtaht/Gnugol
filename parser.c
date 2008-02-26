@@ -13,8 +13,6 @@ int answer_parse(char *s, QueryData *q) {
     char *pprev;
     char *p;
     int   n1,n2;
-    char **links = q->links;
-    char **snippets = q->snippets;
 
     /* Parse LNK...END section -----------------------------------*/
 
@@ -35,7 +33,7 @@ int answer_parse(char *s, QueryData *q) {
     do {
 	pprev = strsep(&p, "\n");
 	if (pprev != pend) {
-	    links[n1] = pprev;
+	    q->links[n1] = pprev;
 	    n1++;
 	}
     } while((pprev < pend) && (n1 < MAX_ENTRIES));
@@ -63,7 +61,7 @@ int answer_parse(char *s, QueryData *q) {
     do {
 	pprev = strsep(&p, "\n");
 	if (pprev != pend) {
-	    snippets[n2] = pprev;
+	    q->snippets[n2] = pprev;
 	    n2++;
 	}
     } while((pprev < pend) && (n2 < MAX_ENTRIES));
@@ -72,7 +70,7 @@ int answer_parse(char *s, QueryData *q) {
 //	return -1;
 
     if (n1 != n2) {
-	log("More snippets than links","");
+	log("More q->snippets than q->links","");
 	return -5;
     }
 
@@ -83,8 +81,6 @@ int answer_parse(char *s, QueryData *q) {
 
 int main() {
     char answer[MAX_MTU];
-    char *links[MAX_ENTRIES];
-    char *snippets[MAX_ENTRIES];
     int  nlinks, i;
     QueryData q;
 
@@ -97,7 +93,7 @@ int main() {
     }
 	  
     for(i=0; i<nlinks; i++) 
-	printf("[%d] [%s] [%s]\n", i, links[i], snippets[i]);
+	printf("[%d] [%s] [%s]\n", i, q->links[i], q->snippets[i]);
 
     return 0;
 }
