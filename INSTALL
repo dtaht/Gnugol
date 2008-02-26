@@ -1,0 +1,8 @@
+At present you need to install pygoogle. This requires a license key. For now, you can use mine.
+
+You also need the boutell c cgilib library.
+
+do a make
+then a sudo make install
+
+
