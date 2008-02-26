@@ -17,5 +17,9 @@ while argk < argc:
     argk = argk+1
 data = google.doGoogleSearch(query)
 
+# In the case of the command line, usually we want to see the last results
+# first as the others scroll off the screen
+
+data.results.reverse()
 for result in data.results:
     print result.URL 

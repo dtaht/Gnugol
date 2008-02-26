@@ -12,10 +12,11 @@ sys.stdout = codecs.lookup('utf-8')[-1](sys.stdout)
 argk = 1
 argc = len(sys.argv)
 query = sys.stdin.readline()
-while query :
-	print query
+
+while query:
+#	print query
 	data = google.doGoogleSearch(query)
-	print "BEGIN"
+	print "LNK"
 	for result in data.results:
 		print result.URL 
 	print "END"
