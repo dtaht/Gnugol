@@ -35,15 +35,14 @@ main(int argc, char *argv[])
           	dup2(pfd[0],0);   /* make 0 same as read-from end of pipe  */
           	// close(pfd[1]);    /* close excess fildes                  */
           	// close(pfd[0]);    /* close excess fildes                  */
-		// execl("/home/d/src/git/gnugol.git/gnugold","gnugold","this","is","a","test",NULL);
-		execl("./gnugold","gnugold",NULL);
+		execl("/home/d/bin/gnugol2","gnugol2","this","is","a","test",NULL);
+		// execl("gnugold","gnugold",NULL);
                _exit(EXIT_SUCCESS); // not reached
            } else {            /* Parent writes argv[1] to pipe */
 		fdr = fdopen(pfd[0],"r");
-//		fdw = fdopen(pfd[1],"w");
+		fdw = fdopen(pfd[1],"w");
 		char *p = "this is a test\n";
-		write(pfd[1],p,strlen(p));
-		//write(pfd[1],p,strlen(p));
+		fwrite(p,strlen(p),1,fdw);
 		int n;
 		while (( blen[i]=fgets(&buf[i],MAX_MTU,fdr) > 0) && i < MAX_ENTRIES) {
 			printf("LINE: %s", buf[i]);

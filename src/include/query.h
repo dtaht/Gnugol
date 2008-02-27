@@ -37,6 +37,7 @@ struct query_options {
   int position;
   char *engine_name;
   char *outputfile;
+  char *language;
 };
 
 typedef struct query_args QueryData;

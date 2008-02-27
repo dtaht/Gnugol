@@ -28,12 +28,14 @@ udp_client.o: udp_client.c $(HEADERS)
 #gnugold: gnugold.o 
 #	$(CC) gnugold.o -o gnugold ${LIBS}
 
-install:
-	cp $(PROGS) $(DESTDIR)$(BINDIR)
+install: $(PROGS)
+	cp gnugol $(DESTDIR)$(BINDIR)
+	cp gnugol.cgi $(DESTDIR)$(CGIDIR)
 
-install-strip:
+install-stripped: $(PROGS)
 	$(STRIP) $(PROGS)
-	cp $(PROGS) $(DESTDIR)$(BINDIR)
+	cp gnugol $(DESTDIR)$(BINDIR)
+	cp gnugol.cgi $(DESTDIR)$(CGIDIR)
 	
 clean:
 	rm -f $(OBJECTS) $(PROGS) *~

@@ -5,9 +5,14 @@ expend lots of effort to remain backwards compatible.
 
 Look into public key infrastructure and openID
 
-Do a command line client
+Implement a 2 second timeout, retry the query 3 times.
+Do a dns lookup on the 2nd query.
+Better: See how long the last query to this server took, 
+double it, or do a rolling average or something like cubic.
 
-Path MTU
+Do a command line client - started
+
+Path MTU discovery?
 
 IPv4 UDP
 
@@ -15,4 +20,15 @@ gnugol over other transports (irc bots, email)
 
 DNS lookaside cache
 
+Implement sha1 hashing. The hash will get used by the 
+lookaside cache.
+
 DB lookaside cache
+
+Finalize Query protocol standard - things like languages,
+number of results, etc. right now it's just keywords.
+
+Implement compression. Most likely it won't help on queries.
+definately helps on results.
+
+

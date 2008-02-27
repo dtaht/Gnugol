@@ -31,6 +31,9 @@ http://www.google.com.au/search?q=gnogal+test&ie=utf-8&oe=utf-8&aq=t&rls=com.ubu
 #include <string.h>
 #include <stdlib.h>
 
+#include "query.h"
+extern int query_main(char *query, QueryData *answers, char *host);
+
 void HandleSubmit();
 void ShowForm();
 void CookieSet();
@@ -38,15 +41,20 @@ void Entries();
 void Cookies();
 void LoadEnvironment();
 void SaveEnvironment();
-extern char *query_main(int argc, char *q, char *host);
-//void Query(char *query) { query_main(2,query,"toutatis.taht.net"); }
-void Query(char *query) { query_main(2,query,NULL); }
-//void Query(char *query) { query_main(2,query,"2001:4f8:3:36:2e0:81ff:fe23:90d3"); }
 
+int Query(char *query) { 
+	QueryData q;
+	int i;
+	int n = query_main(query,&q,NULL); 
+	for (i = 0; i < n; i++) {
+		fprintf(cgiOut,"<a href=\"%s\">%s</a><br>",q.links[i],q.snippets[i]);
+	}
+	return (n);
+}
 
 int cgiMain() {
 #ifdef DEBUG
-	LoadEnvironment();
+	// LoadEnvironment();
 #endif /* DEBUG */
 	/* Load a previously saved CGI scenario if that button
 		has been pressed. */

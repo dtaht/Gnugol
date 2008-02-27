@@ -1,14 +1,16 @@
 DIRS:=common lib clients server plugins prototypes scripts  
 
 all: 
-	foreach $(DIRS) make -C $(_)
+	make -C common all
+	make -C clients all
 
-install:
-	cp gnugol.cgi $(CGIDIR)
-	mkdir -p $(HTMLDIR)/images; cp doc/images/gnugol.png $(HTMLDIR)/images
-	cp doc/*.html $(HTMLDIR)
-	mkdir -p $(HOME)/bin; cp goog gnugol $(HOME)/bin
+install: 
+	make -C clients install
+
+install-stripped: 
+	make -C clients install-stripped
 
 clean:
-	foreach $(DIRS) make -C $(_) clean
+	make -C common clean
+	make -C clients clean
 
