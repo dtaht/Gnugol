@@ -1,0 +1,52 @@
+#!/usr/bin/python
+
+import sys
+import string
+import codecs
+import os
+import google
+
+sys.stdout = codecs.lookup('utf-8')[-1](sys.stdout)
+
+def wrap(text, width):
+    """
+    A word-wrap function that preserves existing line breaks
+    and most spaces in the text. Expects that existing line
+    breaks are posix newlines (\n).
+    """
+    return reduce(lambda line, word, width=width: '%s%s%s' %
+                  (line,
+                   ' \n'[(len(line)-line.rfind('\n')-1
+                         + len(word.split('\n',1)[0]
+                              ) >= width)],
+                   word),
+                  text.split(' ')
+                 )
+
+cols = os.getenv('COLS',default=80)
+
+argk = 1
+argc = len(sys.argv)
+query = ' '
+while argk < argc:
+    query = query + sys.argv[argk] + ' '
+    argk = argk+1
+data = google.doGoogleSearch(query)
+
+for result in data.results:
+    title = result.title
+    title = title.replace('<b>', '')
+    title = title.replace('</b>', '')
+
+    snippet = result.snippet
+    snippet = snippet.replace('<b>','')
+    snippet = snippet.replace('</b>','')
+    snippet = snippet.replace('<br>','')
+    snippet = snippet.replace('</br>','')
+    snippet = snippet.replace('&quot;','\"')
+    snippet = snippet.replace('&gt;','>')
+    snippet = snippet.replace('&lt;','>')
+
+    print(wrap(title + ' ' + snippet,cols))
+    print result.URL 
+    print
