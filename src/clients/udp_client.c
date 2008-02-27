@@ -16,18 +16,17 @@
 /* FIXME - figuring out calling malloc and free here is a bad thing 
    pass the buffer? */
 
-char *
-query_main(int argc,char *query, char *host)
+int
+query_main(char *query, QueryData *answers, char *host)
 {
     int connfd, n, m, i;
     char *myhost;
     char *answer = (char *) malloc(1280);
     int cnt;
-    QueryData answers;
 
-    myhost = "localhost";
-    if (argc == 2) 
-        myhost=host;
+    if(host == NULL) {
+      myhost = "localhost";
+    }
 
     connfd = connect_client(myhost, QUERY_PORT, AF_UNSPEC, SOCK_DGRAM);
 
@@ -39,24 +38,10 @@ query_main(int argc,char *query, char *host)
     }
 
     m= write(connfd, query, strlen(query));
-    memset(answer, 0, sizeof(answer));
+    memset(answer, 0, MAX_MTU);
     n = read(connfd,
              answer,
-             sizeof(answer)); // FIXME, leave running and timeout
+             MAX_MTU); // FIXME, leave running and timeout
     close(connfd);
-#if defined(DEBUG)
-    printf(answer);
-#endif
-    cnt = answer_parse(answer, &answer); // Bless you David Rowe!
-#if defined(DEBUG)
-    printf(answer);
-    printf(" cnt = %d\n",cnt);
-#endif
-    for (i = 0; i <= cnt; i++) {
-      printf("<a href=%s>%s</a><br>", &answers.links[i], &answers.snippets[i]); 
-    }
-#if defined(DEBUG)
-	printf("Answer: %s", answer);
-#endif
-    return (char *) answer;
+    return(answer_parse(answer,answers));
 }

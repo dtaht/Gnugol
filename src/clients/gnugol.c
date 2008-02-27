@@ -47,14 +47,21 @@ int usage () {
 main(int argc, char **argv) {
 	char myquery[MAX_MTU];
 	QueryData q;
-
+	int i;
 	if(argc == 2) {
-		strncpy(myquery,argv[1],strlen(argv[1])); // FIXME, check length
+	  if(strlen(argv[1]) < MAX_MTU-1) {
+		strcpy(myquery,argv[1]); // FIXME, check length
+	  } else {
+	    printf("query too big\n");
+	  }
 	} else {
 	  usage();
 	  exit(-1);
 	}
-
-	query_main(myquery,&q,NULL);
-}
+	int cnt = query_main(myquery,&q,NULL);
+	for (i = 0; i <= cnt-1; i++) {
+	  printf("<a href=%s>%s</a><br>", q.links[i], q.snippets[i]); 
+	}
+	printf("\n");
+ }
 

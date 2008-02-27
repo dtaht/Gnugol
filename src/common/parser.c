@@ -93,7 +93,7 @@ int main() {
     }
 	  
     for(i=0; i<nlinks; i++) 
-	; // printf("[%d] [%s] [%s]\n", i, &q->links[i], &q->snippets[i]); SYNTAX HELL
+      printf("[%d] [%s] [%s]\n", i, q.links[i], q.snippets[i]); // SYNTAX HELL
 
     return 0;
 }
