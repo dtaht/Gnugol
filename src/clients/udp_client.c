@@ -25,7 +25,9 @@ query_main(char *query, QueryData *answers, char *host)
     int cnt;
 
     if(host == NULL) {
-      myhost = "localhost";
+      myhost = "2001:4f8:3:36:2e0:81ff:fe23:90d3"; // toutatis.taht.net
+    } else {
+      myhost = host;
     }
 
     connfd = connect_client(myhost, QUERY_PORT, AF_UNSPEC, SOCK_DGRAM);

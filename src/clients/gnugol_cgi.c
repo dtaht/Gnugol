@@ -40,7 +40,7 @@ void LoadEnvironment();
 void SaveEnvironment();
 extern char *query_main(int argc, char *q, char *host);
 //void Query(char *query) { query_main(2,query,"toutatis.taht.net"); }
-void Query(char *query) { query_main(2,query,"localhost"); }
+void Query(char *query) { query_main(2,query,NULL); }
 //void Query(char *query) { query_main(2,query,"2001:4f8:3:36:2e0:81ff:fe23:90d3"); }
 
 
