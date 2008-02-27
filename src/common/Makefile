@@ -30,6 +30,6 @@ clean:
 connect_client.o: connect_client.c $(INC)/connect_client.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c connect_client.c
 
-listen_server.o: listen_server.cpp $(INC)/listen_server.h
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c listen_server.cpp
+listen_server.o: listen_server.c $(INC)/listen_server.h
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c listen_server.c
 

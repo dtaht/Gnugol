@@ -17,13 +17,13 @@
    pass the buffer? */
 
 char *
-query_main(int argc,char *query,char *host)
+query_main(int argc,char *query, char *host)
 {
     int connfd, n, m, i;
     char *myhost;
     char *answer = (char *) malloc(1280);
     int cnt;
-    struct query_args answers;
+    QueryData answers;
 
     myhost = "localhost";
     if (argc == 2) 
@@ -47,7 +47,7 @@ query_main(int argc,char *query,char *host)
 #if defined(DEBUG)
     printf(answer);
 #endif
-    cnt = answer_parse(answer, &answers.links, &answers.snippets); // Bless you David Rowe!
+    cnt = answer_parse(answer, &answer); // Bless you David Rowe!
 #if defined(DEBUG)
     printf(answer);
     printf(" cnt = %d\n",cnt);

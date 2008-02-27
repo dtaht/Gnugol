@@ -13,39 +13,48 @@
 
 /* FIXME - look over wget options for useful stuff
 
-   -r --reverse unreverse the list. The default IS reversed already
-   -u --urls
-   -s --snippets
-   -a --ads
-   -t --titles
-   -e --engine use an alternate engine
-   -R --register 
-   -i --input input from a file
-   -P --PRIME prime the caches, routes, etc
-   -p --plugin use an alternate plugin
-   -l --lucky - autofetch the first result
-   -m --multicast ask for results from local network
-   -b --broadcast broadcast results to local network
-   -c --cache only serve results from cache(s)
-   -o --output output to a file
-   -O --Offline store up query for later
-   -f --force force a new query, even if cached
-   -n --nresults number of results to fetch
-   -p --position start of results to fetch
-   -S --Secure use secure transport
-   -H --HTML output html
-   --config
-   --verbose
-   --copyright
-   --defaults show the defaults
-   --source fetch the source code this was compiled with
-   --license
-   --help this message
 */
 
 int usage () {
+ printf("-r --reverse   unreverse the list. The default IS reversed already\n");
+ printf("-u --urls\n");
+ printf("-s --snippets\n");
+ printf("-a --ads\n");
+ printf("-t --titles\n");
+ printf("-e --engine    use an alternate engine\n");
+ printf("-R --register\n");
+ printf("-i --input     input from a file\n");
+ printf("-P --prime     prime the caches, routes, etc\n");
+ printf("-p --plugin    use an alternate plugin\n");
+ printf("-l --lucky     autofetch the first result\n");
+ printf("-m --multicast ask for results from local network\n");
+ printf("-b --broadcast broadcast results to local network\n");
+ printf("-c --cache     serve only results from cache(s)\n");
+ printf("-o --output    output to a file\n");
+ printf("-O --Offline   store up query for later\n");
+ printf("-f --force     force a new query, even if cached\n");
+ printf("-n --nresults  number of results to fetch\n");
+ printf("-p --position  start of results to fetch\n");
+ printf("-S --Secure    use secure transport\n");
+ printf("-H --html      output html\n");
+ printf("-X --xml       output gnugol XML\n");
+ printf("--defaults     show the defaults\n");
+ printf("--source       fetch the source code this was compiled with\n");
+ printf("--help         this message\n");
+ printf("--config"); printf(" --verbose"); printf(" --copyright"); printf(" --license\n"); 
 }
 
 main(int argc, char **argv) {
+	char myquery[MAX_MTU];
+	QueryData q;
+
+	if(argc == 2) {
+		strncpy(myquery,argv[1],strlen(argv[1])); // FIXME, check length
+	} else {
+	  usage();
+	  exit(-1);
+	}
+
+	query_main(myquery,&q,NULL);
 }
 
