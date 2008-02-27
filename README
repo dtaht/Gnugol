@@ -35,7 +35,7 @@ pay a few bucks a month for faster - and ad-free searching!
 
 This system currently relies on google SOAP, and as such can't be used
 commercially. If google were to adopt something like this in their lab(s), 
-I daresay they could cut the cost of search down below 300ms.
+I daresay they could cut the global cost of search down below 300ms.
 
 Benefits - vastly reduced data traffic. Control of the formatting can be
 controlled on the phone or remote servers. 

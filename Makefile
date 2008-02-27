@@ -1,6 +1,10 @@
 LIBS=-I/usr/local/include -lcgic
 DEBUG=-DDEBUG
 PROGS=gnugol.cgi parser_test fpipe # gnugold
+HTMLDIR=/var/www/gnugol
+CGIDIR=/usr/lib/cgi-bin
+BINDIR=$(HOME)/bin
+
 # Basic test makefile
 OBJECTS := connect_client.o listen_server.o udp_server.o tcp_server.o udp_client.o tcp_client.o
 
@@ -24,12 +28,13 @@ parser.o: parser.c
 	gcc $(DEBUG) parser.c -c -o parser.o
 
 install: gnugol.cgi
-	cp gnugol.cgi /usr/lib/cgi-bin
-	mkdir -p /var/www/gnugol/images; cp doc/images/gnugol.png /var/www/gnugol/images
+	cp gnugol.cgi $(CGIDIR)
+	mkdir -p $(HTMLDIR)/images; cp doc/images/gnugol.png $(HTMLDIR)/images
+	cp doc/*.html $(HTMLDIR)
 	mkdir -p $(HOME)/bin; cp goog gnugol $(HOME)/bin
 
 clean:
-	rm -f $(OBJECTS) $(PROGS)
+	rm -f $(OBJECTS) $(PROGS) *~
 
 tcp_server: tcp_server.o listen_server.o
 	g++ tcp_server.o listen_server.o -o tcp_server
