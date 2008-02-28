@@ -17,11 +17,12 @@
    pass the buffer? */
 
 int
-query_main(char *query, QueryData *answers, char *host)
+query_main(QueryData *answers, char *host)
 {
     int connfd, n, m, i;
     char *myhost;
     char *answer = (char *) malloc(1280);
+    char *query = answers->query;
     int cnt;
 
     if(host == NULL) {
@@ -36,7 +37,7 @@ query_main(char *query, QueryData *answers, char *host)
          fprintf(stderr,
                  "client error:: could not create connected socket "
                  "socket\n");
-         return NULL;
+         return -1;
     }
 
     m= write(connfd, query, strlen(query));
@@ -45,5 +46,6 @@ query_main(char *query, QueryData *answers, char *host)
              answer,
              MAX_MTU); // FIXME, leave running and timeout
     close(connfd);
-    return(answer_parse(answer,answers));
+    answers->query = answer;
+    return(answer_parse(answers));
 }

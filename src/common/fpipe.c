@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/socket.h>
+#include <fcntl.h>
 #include "query.h"
 
 #define PARENT_RDR 0
@@ -14,7 +16,6 @@ int
 main(int argc, char *argv[])
        {
            int pfd[2];
-	   int cfd[2];
            pid_t cpid;
 	   int i = 0;
 	   FILE *fdr;
@@ -26,37 +27,33 @@ main(int argc, char *argv[])
 	   int blen[MAX_ENTRIES];
 	   int slen[MAX_ENTRIES];
 	   int tlen[MAX_ENTRIES];
-           if (pipe(pfd) == -1) {
-               perror("pipe");
-               exit(EXIT_FAILURE);
-           }
-           if (pipe(cfd) == -1) {
-               perror("pipe");
-               exit(EXIT_FAILURE);
-           }
+	   if(socketpair(AF_UNIX,SOCK_STREAM,0,pfd) != 0) {
+		printf("AGGGH:\n");
+		exit(-1);
+		}
            cpid = fork();
            if (cpid == -1) {
                perror("fork");
                exit(EXIT_FAILURE);
            }
            if (cpid == 0) {    /* Child reads from pipe */
-		close(pfd[PARENT_RDR]);
-		close(cfd[PARENT_WTR]);
           	dup2(pfd[CHILD_WTR],1);   /* make 1 same as write-to end of pipe  */
-          	dup2(cfd[CHILD_RDR],0);   /* make 0 same as read-from end of pipe  */
+          	dup2(pfd[CHILD_RDR],0);   /* make 0 same as read-from end of pipe  */
           	//close(pfd[1]);    /* close excess fildes                  */
           	//close(pfd[0]);    /* close excess fildes                  */
-		execl("/home/d/bin/gnugol2","gnugol2", NULL);
+		fcntl(1,F_SETFL,FNDELAY);
+		execl("/home/d/bin/inout","inout", NULL);
 		// execl("gnugold","gnugold",NULL);
                _exit(EXIT_SUCCESS); // not reached
            } else {            /* Parent writes argv[1] to pipe */
-		close(cfd[PARENT_RDR]);
-		close(pfd[PARENT_WTR]);
-          	dup2(cfd[CHILD_WTR],1);   /* make 1 same as write-to end of pipe  */
-          	dup2(pfd[CHILD_RDR],0);   /* make 0 same as read-from end of pipe  */
+          	dup2(pfd[CHILD_WTR],0);   /* make 1 same as write-to end of pipe  */
+          	dup2(pfd[CHILD_RDR],1);   /* make 0 same as read-from end of pipe  */
+		fcntl(1,F_SETFL,FNDELAY);
+		sleep(1);
 		fdr = stdin; // fdopen(pfd[1],"r");
 		fdw = stdout; // fdopen(pfd[0],"w");
 		char *p = "this is a test\nso is this\n";
+		printf("Got ere\n");
 		fwrite(p,strlen(p),1,fdw);
 		fflush(fdw);
 		int n;

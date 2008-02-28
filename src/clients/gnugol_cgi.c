@@ -32,7 +32,6 @@ http://www.google.com.au/search?q=gnogal+test&ie=utf-8&oe=utf-8&aq=t&rls=com.ubu
 #include <stdlib.h>
 
 #include "query.h"
-extern int query_main(char *query, QueryData *answers, char *host);
 
 void HandleSubmit();
 void ShowForm();
@@ -44,8 +43,13 @@ void SaveEnvironment();
 
 int Query(char *query) { 
 	QueryData q;
+	q.query = query;
 	int i;
-	int n = query_main(query,&q,NULL); 
+#ifdef DUMMY_CLIENT
+	int n = query_main(&q,"localhost"); 
+#else
+	int n = query_main(&q,NULL); 
+#endif
 	for (i = 0; i < n; i++) {
 		fprintf(cgiOut,"<a href=\"%s\">%s</a><br>",q.links[i],q.snippets[i]);
 	}
@@ -53,6 +57,8 @@ int Query(char *query) {
 }
 
 int cgiMain() {
+	char searchterm[1024];
+	searchterm[0]= '\0';
 #ifdef DEBUG
 	// LoadEnvironment();
 #endif /* DEBUG */
@@ -69,7 +75,7 @@ int cgiMain() {
 	/* Top of the page */
 	fprintf(cgiOut, "<html><head>\n");
 	fprintf(cgiOut, "<title>GnuGol</title></head>\n");
-	fprintf(cgiOut, "<body><span style=\"font-size:1em; text-align:top\"><img src=/gnugol/images/gnugol.png><a href=gnugol://gnugol>Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
+	fprintf(cgiOut, "<body><span style=\"font-size:1em; text-align:top\"><img src=/gnugol/images/gnugol.png><a href=gnugol://gnugol>Way Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
 	/* If a submit button has already been clicked, act on the 
 		submission of the form. */
 	if ((cgiFormSubmitClicked("btnG") == cgiFormSuccess) ||
@@ -89,15 +95,9 @@ void HandleSubmit()
 {
   char query[1024];
   cgiFormStringNoNewlines("q", query, 1024);
-  fprintf(cgiOut, "Name: ");
   cgiHtmlEscape(query);
   fprintf(cgiOut, "<BR>\n");
-  
   Query(query);
-  //Cookies();
-  /* The saveenvironment button, in addition to submitting the form,
-     also saves the resulting CGI scenario to disk for later
-     replay with the 'load saved environment' button. */
   if (cgiFormSubmitClicked("saveenvironment") == cgiFormSuccess) {
     SaveEnvironment();
   }
@@ -159,7 +159,7 @@ void Cookies()
 	cgiStringArrayFree(array);
 }
 	
-void ShowForm()
+void ShowForm(char *value)
 {
 	fprintf(cgiOut, "<form method=\"GET\"");
 	fprintf(cgiOut, "action=\"");
@@ -167,7 +167,12 @@ void ShowForm()
 	fprintf(cgiOut, "\"><p>");
 	fprintf(cgiOut, "Prefetch");
 	fprintf(cgiOut, "<input type=\"checkbox\" name=\"prefetch\" checked>");
-	fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\">\n");
+	if(value != NULL) {
+		cgiValueEscape(value);
+		fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\" value=%s >\n",value);
+	} else {
+		fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\">\n");
+	}
 	fprintf(cgiOut, "<input type=submit name=\"btnG\" value=\"Search\">");
 	fprintf(cgiOut, "</form>\n");
 }

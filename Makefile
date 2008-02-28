@@ -1,5 +1,3 @@
-
-
 LIBS=-I/usr/local/include -lcgic
 DEBUG=
 PROGS=gnugol.cgi parser_test fpipe # gnugold

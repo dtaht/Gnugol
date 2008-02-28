@@ -7,7 +7,8 @@
 #define log(a,b) printf(a,b);
 #endif
 
-int answer_parse(char *s, QueryData *q) {
+int answer_parse(QueryData *q) {
+  char *s = q->query;
     char *pstart;
     char *pend;
     char *pprev;
@@ -85,8 +86,8 @@ int main() {
     QueryData q;
 
     strcpy(answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLwn Rocks\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
-
-    nlinks = answer_parse(answer, &q);
+    q.query = answer;
+    nlinks = answer_parse(&q);
     if (nlinks == -1) {
 	printf("Error!\n");
 	exit(1);

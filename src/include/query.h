@@ -1,16 +1,7 @@
 #define MAX_MTU 1280
 #define MAX_ENTRIES 10
 
-struct query_args {
-  int sha1hash[4];
-  char *links[MAX_ENTRIES];
-  char *snippets[MAX_ENTRIES];
-  char *titles[MAX_ENTRIES];
-  char *ads[MAX_ENTRIES];
-  char *misc[MAX_ENTRIES];
-};
-
-/* bitfields are underused these days - use 'em */
+/* bitfields are underused these days - use 'em or nuke em */
 /* FIXME, make a union */
 
 struct query_options {
@@ -40,7 +31,22 @@ struct query_options {
   char *language;
 };
 
-typedef struct query_args QueryData;
 typedef struct query_options QueryOptions;
 
-extern int answer_parse(char *s, QueryData *q);
+struct query_args {
+  char *query;
+  QueryOptions opt;        // 
+  int entries;
+  unsigned char qsha1[20]; // Query's Sha1 - text? prefer binary... later
+  unsigned char asha1[20]; // Answer's Sha1
+  char *links[MAX_ENTRIES]; 
+  char *snippets[MAX_ENTRIES];
+  char *titles[MAX_ENTRIES];
+  char *ads[MAX_ENTRIES];
+  char *misc[MAX_ENTRIES];
+};
+
+typedef struct query_args QueryData;
+
+extern int query_main(QueryData *answers, char *host);
+extern int answer_parse(QueryData *q);

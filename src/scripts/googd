@@ -1,0 +1,59 @@
+#!/usr/bin/python
+
+import sys
+import string
+import codecs
+import os
+import google
+
+f = sys.stdin
+o = sys.stdout
+
+#parsing not quite regex compatible - maybe do ADV/VDA LNK/KNL etc
+#import re
+#x, y, z = map(string.find, ['ADV', 'LNK', 'TLE','MSC', 'END'])
+#re.search('this|that|the-other', files).start()
+
+google.LICENSE_KEY = 'gHbcd0RQFHKbR2PQ7o4q/LKfCMVB03Ru'
+sys.stdout = codecs.lookup('utf-8')[-1](sys.stdout)
+
+argk = 1
+argc = len(sys.argv)
+args = f.readline()
+query = f.readline()
+end = f.readline()
+while query :
+	print query
+        data = google.doGoogleSearch(query)
+        if string.find(args,"LNK") != -1 :
+		print "LNK"
+        	for result in data.results:
+                	print result.URL
+        	print "END"
+	if string.find(args,"SNP") != -1 :
+		print "SNP"
+        	for result in data.results:
+                	print result.snippet
+        	print "END"
+	if string.find(args,"TLE") != -1 :
+		print "TLE"
+        	for result in data.results:
+                	print result.title
+        	print "END"
+# Not supported by pygoogle
+	if string.find(args,"ADS") != -1 :
+		print "ADS"
+        	for result in data.results:
+                	print result.URL
+        	print "END"
+	if string.find(args,"MSC") != -1 :
+		print "MSC"
+        	for result in data.results:
+                	print result.URL
+        	print "END"
+		
+	sys.stdout.flush()
+	args = f.readline()
+	query = f.readline()
+	end = f.readline()
+

@@ -1,0 +1,4 @@
+There are three debugging options, make with DEBUG="stringofoptions"
+-DDEBUG=level   = debugging level X
+-DDUMMY_SERVER  = Build a fix responding server
+-DDUMMY_CLIENT  = Only talk to localhost 

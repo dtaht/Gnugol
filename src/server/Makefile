@@ -1,11 +1,11 @@
 LIBS=
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
-COMMON=../common/connect_client.o ../common/parser.o
+COMMON=../common/connect_client.o ../common/parser.o ../common/listen_server.o
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
-DEBUG:=-DDEBUG # -DDUMMY_SERVER
-PROGS=gnugol gnugol.cgi 
+DEBUG=-DDEBUG
+PROGS=gnugold
 HTMLDIR=/var/www/gnugol
 CGIDIR=/usr/lib/cgi-bin
 BINDIR=$(HOME)/bin
@@ -16,14 +16,11 @@ STRIP=strip
 
 all: $(PROGS) 
 
-gnugol.cgi: gnugol_cgi.c udp_client.o $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) gnugol_cgi.c udp_client.o $(COMMON) $(LIBS) $(CGILIB) -o gnugol.cgi
+gnugold: udp_server.o $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) udp_server.o $(COMMON) $(LIBS) $(CGILIB) -o gnugold
 
-gnugol: gnugol.c udp_client.o $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) gnugol.c udp_client.o $(COMMON) $(LIBS) -o gnugol
-
-udp_client.o: udp_client.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) udp_client.c $(LIBS) -c
+udp_server.o: udp_server.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) udp_server.c $(LIBS) -c
 	
 #gnugold: gnugold.o 
 #	$(CC) gnugold.o -o gnugold ${LIBS}

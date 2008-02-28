@@ -1,5 +1,4 @@
-/* Command line client for gnugol */
-
+/* Command line client for gnugol *
 /* This code is Copyright (C) 2008 by Michael David Taht 
    and released under the terms of the GNU AFFERO PUBLIC_LICENSE, version 3 
    for details of this license see the COPYRIGHT file */
@@ -47,6 +46,7 @@ int usage () {
 main(int argc, char **argv) {
 	char myquery[MAX_MTU];
 	QueryData q;
+	q.query = myquery;
 	int i;
 	if(argc == 2) {
 	  if(strlen(argv[1]) < MAX_MTU-1) {
@@ -58,7 +58,11 @@ main(int argc, char **argv) {
 	  usage();
 	  exit(-1);
 	}
-	int cnt = query_main(myquery,&q,NULL);
+#ifdef DUMMY_SERVER
+	int cnt = query_main(&q,"localhost");
+#else
+	int cnt = query_main(&q,NULL);
+#endif
 	for (i = 0; i <= cnt-1; i++) {
 	  printf("<a href=%s>%s</a><br>", q.links[i], q.snippets[i]); 
 	}
