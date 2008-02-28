@@ -1,0 +1,17 @@
+David Rowe suggested a local pastebin client. The problem with pastebins
+is you have to be on the internet to have one. Now, you could run a 
+pastebin server on your laptop, but with this sort of shared architecture
+you could (maybe) do it in the fly...
+
+git-diff | pastebin drowe # would create a pastebin called drowe
+
+vs posting it...
+
+gnugol pastebin: drowe or a search for drowe.pastebin would find it
+on the local network or the co-operating servers.
+
+you might be able to do something like git-diff | wget http//somepastebin?post but that means you get an url back that you just need to share somehow
+
+makes sense to have a "network clipboard" to share your work locally
+
+

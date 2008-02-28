@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# if you want to fetch someones pastebin, specify their email address
+# if you want to post to your pastebin your email address should be
+# in your environment
+# if you want to monitor someone's pastebin, dunno
+# Setting up your pastebin - your pastebin can be any publically
+# acessible protocol on your laptop.... rsync, http, tftp even...
+# default to http://localip/~username/pastebin/current.txt perhaps
+# example
+# git-diff | gpastebin -p # user 1
+# gpastebin -f $USERNAME # user 2 snags
+
+# start at it, just random thoughts
+
+# with -f fetch
+# with -p post
+if [ $# -gt 0 ]
+then
+
+if [ $1 = "-f"]
+then
+ if [ $# = "2" ]
+ then
+  URL=`gnugol -e pastebin $2` # fetches the most local url to that pastebin
+ else
+  URL=`gnugol -e pastebin $EMAIL`
+ fi
+elinks --dump $URL
+fi
+
+if [ $1 = "-p"]
+then
+ if [ $# = "2" ]
+ then
+  URL=`gnugol -e ppastebin $2` # fetches the most local url to post
+  # to that pastebin
+  # but this would need write access to their pastebin, darn it
+  # a little cgi script would do
+ else
+  URL=`gnugol -e ppastebin $EMAIL`
+ fi
+elinks --post $URL # curl?
+fi
+fi

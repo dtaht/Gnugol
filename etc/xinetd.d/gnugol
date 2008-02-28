@@ -1,12 +1,9 @@
 # default: off
-# description: An xinetd internal service which generate characters.  The
-# xinetd internal service which continuously generates characters until the
-# connection is dropped.  The characters look something like this:
-# !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefg
-# This is the tcp version.
+# description: An xinetd service that runs the gnugol protocol The
+# This is the tcp version which doesn't exist yet
 service gnugol
 {
-	disable		= no
+	disable		= yes
 	id		= gnugol
         server                  = /usr/sbin/gnugold
 	socket_type	= stream
@@ -16,9 +13,12 @@ service gnugol
         flags                   = IPv6
 }                                                                               
 
+# Once invoked we want this to stay around for a while
+# does mdns even work?
+
 service gnugol
 {
-	id = gnugol
+	id 			= gnugol
         socket_type             = dgram
         protocol                = udp
         wait                    = yes
