@@ -11,6 +11,11 @@
 # git-diff | gpastebin -p # user 1
 # gpastebin -f $USERNAME # user 2 snags
 
+# After thinking about it a while, this would rely on a "most local url"
+# concept, where your pastebin would be associated with a set of urls
+# arranged in most local order - ipv6, ipv6 tunnel, ipv4, remote server,
+# irc bot, stuff like that, and the client would figure out which
+# to fetch based on that
 # start at it, just random thoughts
 
 # with -f fetch
