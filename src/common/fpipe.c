@@ -6,10 +6,15 @@
 #include <string.h>
 #include "query.h"
 
+#define PARENT_RDR 0
+#define CHILD_RDR 0
+#define CHILD_WTR 1
+#define PARENT_WTR 1
 int
 main(int argc, char *argv[])
        {
            int pfd[2];
+	   int cfd[2];
            pid_t cpid;
 	   int i = 0;
 	   FILE *fdr;
@@ -25,24 +30,35 @@ main(int argc, char *argv[])
                perror("pipe");
                exit(EXIT_FAILURE);
            }
+           if (pipe(cfd) == -1) {
+               perror("pipe");
+               exit(EXIT_FAILURE);
+           }
            cpid = fork();
            if (cpid == -1) {
                perror("fork");
                exit(EXIT_FAILURE);
            }
            if (cpid == 0) {    /* Child reads from pipe */
-          	dup2(pfd[1],1);   /* make 1 same as write-to end of pipe  */
-          	dup2(pfd[0],0);   /* make 0 same as read-from end of pipe  */
-          	// close(pfd[1]);    /* close excess fildes                  */
-          	// close(pfd[0]);    /* close excess fildes                  */
-		execl("/home/d/bin/gnugol2","gnugol2","this","is","a","test",NULL);
+		close(pfd[PARENT_RDR]);
+		close(cfd[PARENT_WTR]);
+          	dup2(pfd[CHILD_WTR],1);   /* make 1 same as write-to end of pipe  */
+          	dup2(cfd[CHILD_RDR],0);   /* make 0 same as read-from end of pipe  */
+          	//close(pfd[1]);    /* close excess fildes                  */
+          	//close(pfd[0]);    /* close excess fildes                  */
+		execl("/home/d/bin/gnugol2","gnugol2", NULL);
 		// execl("gnugold","gnugold",NULL);
                _exit(EXIT_SUCCESS); // not reached
            } else {            /* Parent writes argv[1] to pipe */
-		fdr = fdopen(pfd[0],"r");
-		fdw = fdopen(pfd[1],"w");
-		char *p = "this is a test\n";
+		close(cfd[PARENT_RDR]);
+		close(pfd[PARENT_WTR]);
+          	dup2(cfd[CHILD_WTR],1);   /* make 1 same as write-to end of pipe  */
+          	dup2(pfd[CHILD_RDR],0);   /* make 0 same as read-from end of pipe  */
+		fdr = stdin; // fdopen(pfd[1],"r");
+		fdw = stdout; // fdopen(pfd[0],"w");
+		char *p = "this is a test\nso is this\n";
 		fwrite(p,strlen(p),1,fdw);
+		fflush(fdw);
 		int n;
 		while (( blen[i]=fgets(&buf[i],MAX_MTU,fdr) > 0) && i < MAX_ENTRIES) {
 			printf("LINE: %s", buf[i]);
