@@ -58,7 +58,7 @@ main(int argc, char **argv) {
 	  usage();
 	  exit(-1);
 	}
-#ifdef DUMMY_SERVER
+#ifdef DUMMY_CLIENT
 	int cnt = query_main(&q,"localhost");
 #else
 	int cnt = query_main(&q,NULL);
