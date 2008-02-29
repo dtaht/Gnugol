@@ -68,7 +68,7 @@ main(int argc, char *argv[])
 
 	// FIXME - COMPRESS THE OUTPUT, HASH THE DATA, ETC, ETC
 
-        n = sendto(listenfd, answer, sizeof(answer), 0,
+        n = sendto(listenfd, answer, strlen(answer)+1, 0,
                    (struct sockaddr *)&clientaddr,
                    addrlen);
 
