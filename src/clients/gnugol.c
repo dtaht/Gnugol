@@ -15,6 +15,7 @@
 */
 
 int usage () {
+ printf("gnugol [options] keywords - no options are available and only a keyword string is taken\n");
  printf("-r --reverse   unreverse the list. The default IS reversed already\n");
  printf("-u --urls\n");
  printf("-s --snippets\n");
