@@ -28,7 +28,7 @@ TAGS
 !.gitignore
 
 # 
-
+gscrape_test
 # stgit generated dirs
 patches-*
 

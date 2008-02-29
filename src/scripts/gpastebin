@@ -16,6 +16,10 @@
 # arranged in most local order - ipv6, ipv6 tunnel, ipv4, remote server,
 # irc bot, stuff like that, and the client would figure out which
 # to fetch based on that
+# eg: http://[2001:388:f000::9bb]/~d/pastebin/current.txt # my tunnel
+# http://192.168.0.14/~d/pastebin/current.txt
+
+
 # start at it, just random thoughts
 
 # with -f fetch
