@@ -8,7 +8,7 @@ CGIDIR=/usr/lib/cgi-bin
 BINDIR=$(HOME)/bin
 CC=gcc
 
-OBJECTS := connect_client.o listen_server.o parser.o 
+OBJECTS := connect_client.o listen_server.o parser.o fit_results.o
 
 all: $(PROGS) $(OBJECTS)
 
@@ -32,4 +32,7 @@ connect_client.o: connect_client.c $(INC)/connect_client.h
 
 listen_server.o: listen_server.c $(INC)/listen_server.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c listen_server.c
+
+fit_results.o: fit_results.c $(INC)/query.h
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c fit_results.c
 

@@ -24,8 +24,6 @@ struct query_options {
   int cache:1;
   int engine:1;
   int mirror:1;
-  int nresults;
-  int position;
   char *engine_name;
   char *outputfile;
   char *language;
@@ -35,10 +33,17 @@ typedef struct query_options QueryOptions;
 
 struct query_args {
   char *query;
-  QueryOptions opt;        // 
+  QueryOptions options;        // 
   int entries;
   unsigned char qsha1[20]; // Query's Sha1 - text? prefer binary... later
   unsigned char asha1[20]; // Answer's Sha1
+  int nresults;
+  int position;
+  int nurls;
+  int nsnippets;
+  int nads;
+  int ntitles;
+  int nmisc;
   char *links[MAX_ENTRIES]; 
   char *snippets[MAX_ENTRIES];
   char *titles[MAX_ENTRIES];
