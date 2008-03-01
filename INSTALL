@@ -1,3 +1,11 @@
+You will need working IPv6, or a working IPv6 tunnel. I note that I'm not
+particularly impressed by a default 6in4 route running on the gateway, it
+seems to be much faster in general to get a static tunnel from one of the
+many tunnel brokers out there and use that on the gateway or client machine.
+
+A whole lot of gateways don't pass protocol 41, either, though. That's
+part of the fun, I guess.
+
 At present you need to install pygoogle. This requires a license key. For now, you can use mine.
 
 You also need the boutell c cgilib library.
@@ -5,4 +13,9 @@ You also need the boutell c cgilib library.
 do a make
 then a sudo make install
 
+To install a version that talks to my server in california.
 
+To install one that talks to localhost, (useful for debugging or when you 
+have no outside ipv6 connectivity)
+
+make DEBUG="-DDUMMY_SERVER -DDUMMY_CLIENT"

@@ -14,4 +14,24 @@ you might be able to do something like git-diff | wget http//somepastebin?post b
 
 makes sense to have a "network clipboard" to share your work locally
 
+Fri Feb 29 03:50:20 CST 2008 UPDATE dt
+
+I implemented pastebin on my own machine and started looking over the posting methods for that command line
+thing. I still hate that the most recent post isn't the obvious one... I kind of want the post to show
+up in my emacs... or in ntalk/ytalk...
+
+--
+dt
+
+I keep wanting to get rss over udp. I don't think multicast is the right way, switched networks are better,
+but I couldn't help but notice that the blogs I read largely compress down to less than 1280 bytes. 
+
+the rss to Doc's latest post, for example, gzip -9 down to 1263 bytes including both description and 
+content, which in part, duplicates the description. Delete the description, and boom. 1 Packet for doc. 
+
+He blog pings. I get the ping on the server, scrunch down the article, then push it to me.
+
+Then I start wanting to have a tcp fallback method... all this is beginning to make me think of this
+as twitter for the 3rd world. 
+
 
