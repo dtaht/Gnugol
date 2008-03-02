@@ -26,13 +26,11 @@ udp_server.o: udp_server.c $(HEADERS)
 #	$(CC) gnugold.o -o gnugold ${LIBS}
 
 install: $(PROGS)
-	cp gnugol $(DESTDIR)$(BINDIR)
-	cp gnugol.cgi $(DESTDIR)$(CGIDIR)
+	cp gnugold $(DESTDIR)$(BINDIR)
 
 install-stripped: $(PROGS)
 	$(STRIP) $(PROGS)
-	cp gnugol $(DESTDIR)$(BINDIR)
-	cp gnugol.cgi $(DESTDIR)$(CGIDIR)
+	cp gnugold $(DESTDIR)$(BINDIR)
 	
 clean:
 	rm -f $(OBJECTS) $(PROGS) *~

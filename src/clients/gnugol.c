@@ -62,7 +62,15 @@ main(int argc, char **argv) {
 #ifdef DUMMY_CLIENT
 	int cnt = query_main(&q,"localhost");
 #else
-	int cnt = query_main(&q,NULL);
+	char host[1024];
+	int cnt;
+	char *h = getenv("GNUGOL_CLIENT");
+	if ( h != NULL) {
+	  strcpy(host,h);
+	} else {
+	  strcpy(host,"localhost");
+	}
+	cnt = query_main(&q,host);
 #endif
 	for (i = 0; i <= cnt-1; i++) {
 	  printf("<a href=%s>%s</a><br>", q.links[i], q.snippets[i]); 
