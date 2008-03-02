@@ -31,4 +31,6 @@ number of results, etc. right now it's just keywords.
 Implement compression. Most likely it won't help on queries.
 definately helps on results.
 
-
+GET THE DOMAIN NAME REGISTERED and pointed at toutatis.isc.org.
+  forward dns is ready to go, reverse is not. networksolutions
+  costs too much dough

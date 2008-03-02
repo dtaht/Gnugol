@@ -31,7 +31,12 @@ content, which in part, duplicates the description. Delete the description, and 
 
 He blog pings. I get the ping on the server, scrunch down the article, then push it to me.
 
-Then I start wanting to have a tcp fallback method... all this is beginning to make me think of this
-as twitter for the 3rd world. 
+Then I start wanting to have a tcp fallback method... all this is beginning to make me think of this as twitter for the 3rd world. 
 
+Sun Mar  2 23:26:05 CST 2008
+--
+
+One thought for a basic test of the speed of the backend would be to do
+a search engine of all the ipv6 enabled web sites, which is a small enough
+sample to get a clue from.
 
