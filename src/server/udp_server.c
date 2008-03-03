@@ -31,7 +31,7 @@ main(int argc, char *argv[])
    
 #ifdef DUMMY_SERVER
 #else
-    gnugol_plugin_google(pdes);
+    gnugol_plugin_google_init(pdes);
 #endif
 
     listenfd= listen_server(myhost, QUERY_PORT, AF_UNSPEC, SOCK_DGRAM);
@@ -63,7 +63,8 @@ main(int argc, char *argv[])
 #ifdef DUMMY_SERVER
 	strcpy(answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLWN ROCKS\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
 #else
-	gnugol_plugin_google(&query,&answer,&formatter);
+	// gnugol_plugin_google(&query,&answer,&formatter);
+	gnugol_plugin_gscrape(&query,pdes);
 #endif
 
 	// FIXME - COMPRESS THE OUTPUT, HASH THE DATA, ETC, ETC

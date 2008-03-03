@@ -27,9 +27,9 @@ listen_server(const char *hostname,
     if (h == NULL) {
 #ifdef DUMMY_SERVER
       strcpy(host,"localhost");
-      fprintf(stderr,"GNUGOL_SERVER should be set in your environment, using localhost");
+      fprintf(stderr,"GNUGOL_SERVER should be set in your environment, using localhost\n");
 #else
-      fprintf(stderr,"GNUGOL_SERVER must be set in your environment");
+      fprintf(stderr,"GNUGOL_SERVER must be set in your environment\n");
 #endif
     } else {
       strcpy(host,h);

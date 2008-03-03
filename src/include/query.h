@@ -27,12 +27,14 @@ struct query_options {
   char *engine_name;
   char *outputfile;
   char *language;
+  char *server;
+  char *client;
+  // sockaddr in here maybe
 };
 
 typedef struct query_options QueryOptions;
 
 struct query_args {
-  char *query;
   QueryOptions options;        // 
   int entries;
   unsigned char qsha1[20]; // Query's Sha1 - text? prefer binary... later
@@ -44,14 +46,25 @@ struct query_args {
   int nads;
   int ntitles;
   int nmisc;
+
+  short nlinkbytes[MAX_ENTRIES];
+  short nsnippetbytes[MAX_ENTRIES];
+  short ntitlebytes[MAX_ENTRIES];		      
+  short nadbytes[MAX_ENTRIES];
+  short nmiscbytes[MAX_ENTRIES];
+
   char *links[MAX_ENTRIES]; 
   char *snippets[MAX_ENTRIES];
   char *titles[MAX_ENTRIES];
   char *ads[MAX_ENTRIES];
   char *misc[MAX_ENTRIES];
+  char query[MAX_MTU];
+  char keywords[MAX_MTU];
+  char answer[MAX_MTU];	// gonnaleakmemory	      
 };
 
-typedef struct query_args QueryData;
-
-extern int query_main(QueryData *answers, char *host);
-extern int answer_parse(QueryData *q);
+  typedef struct query_args QueryData;
+  
+  extern int query_main(QueryData *answers, char *host);
+  extern int answer_parse(QueryData *q);
+  extern int build_query(QueryData *q);

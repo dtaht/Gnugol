@@ -12,7 +12,9 @@
 
 #define EXECV
 
-int gnugol_plugin_gscrape_init(int p2p[2]) // I'm confused, this is an array ref?
+static int p2p[2] = 0,0;
+
+int gnugol_plugin_gscrape_init() // I'm confused, this is an array ref?
 {
     int i, pid, p2c[2], c2p[2];
     char send[80], receive[80], *gets();
@@ -59,6 +61,17 @@ int gnugol_plugin_gscrape_init(int p2p[2]) // I'm confused, this is an array ref
     p2p[0] = c2p[0];
     return(pid);
 }
+
+int gnugol_plugin_gscrape(QueryData *q) {
+  // calculate the SHA1 hash
+  // do a lookup
+  // otherwise
+  // if(p2p[1] != 0) {
+  if(build_query(QueryData *q)) {
+    write(p2p[1],query);
+  }
+  //  fgets(pdes[0],"");
+};
 
 #ifdef TEST_PLUGIN
 int main(argc, argv)

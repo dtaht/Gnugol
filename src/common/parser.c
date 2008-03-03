@@ -81,12 +81,10 @@ int answer_parse(QueryData *q) {
 #ifdef TEST_PARSER
 
 int main() {
-    char answer[MAX_MTU];
     int  nlinks, i;
     QueryData q;
-
-    strcpy(answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLwn Rocks\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
-    q.query = answer;
+    
+    strcpy(q.answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLwn Rocks\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
     nlinks = answer_parse(&q);
     if (nlinks == -1) {
 	printf("Error!\n");

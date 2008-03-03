@@ -4,23 +4,41 @@
 #include <memory.h>
 #include "query.h"
 
+int build_query(QueryData *q) {
+  char *query = q->query;
+  strcpy(query,"GET ");
+  if(q->options.urls) strcat(query, "LNK ");
+  if(q->options.titles) strcat(query, "TLE ");
+  if(q->options.snippets) strcat(query, "SNP ");
+  if(q->options.ads) strcat(query, "ADS ");
+  if(q->options.misc) strcat(query, "MSC ");
+  strcat(query,"\n");
+  strcat(query,q->keywords);
+  strcat(query,"\nEND\n");
+  strcat(query,NULL);
+  return(0);
+}
+
 int
 compress_results(QueryData *q, char *packet, int size) { // size will usually equal 1240
 	int i;
-	int nsize = 0;
-	nsize += q->options.urls 	? 0 : q->nurls; // BAD!! FIXME, this is the number of urls, not the size
-	nsize += q->options.snippets 	? 0 : q->nsnippets;
-	nsize += q->options.titles 	? 0 : q->ntitles;
-	nsize += q->options.ads 	? 0 : q->nads;
-	nsize += q->options.misc 	? 0 : q->nmisc;
-
-	if(nsize > 4*size) { 
-		return(-1); // odds are really good that we can't compress that many results, don't try
+	int nbytes = 0;
+	// For now, don't compress
+	for(i = 0; i < q->nresults-1 && nbytes < MAX_MTU - 40; i++) { 
+	  nbytes += q->options.urls 	? 0 : q->nlinkbytes; 
+	  nbytes += q->options.snippets ? 0 : q->nsnippetbytes;
+	  nbytes += q->options.titles 	? 0 : q->ntitlebytes;
+	  nbytes += q->options.ads 	? 0 : q->nadbytes;
+	  nbytes += q->options.misc 	? 0 : q->nmiscbytes;
 	}
-	char *b = (char *) calloc (nsize + 40,1); // at most we have 10 4 character delimters
+	if(nbytes > 4*size) { 
+		// odds are really good that we can't compress that many results, don't try
+		return(-1); 
+	}
 
-	// yea, yea, strcat's inefficient
-	// FIXME - retain the protocol here
+	int resulttypes = q->options.urls + q->options.snippets + q->options.titles +
+	  q->options.ads + q->options.misc;
+	char *b = (char *) calloc (nbytes + 8*resulttypes,1);
 
 	if(q->options.urls) {
 		if(q->nurls > 0) {

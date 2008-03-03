@@ -22,3 +22,5 @@ install-stripped:
 clean:
 	make -C src clean
 
+etags:	
+	find src -type f | xargs etags 
