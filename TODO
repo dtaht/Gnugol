@@ -39,3 +39,6 @@ GET THE DOMAIN NAME REGISTERED and pointed at toutatis.isc.org.
   costs too much dough
 
 Emacs minor mode - gimmie X number of urls. Download Y files
+
+In order to be http://tools.ietf.org/html/rfc2460#page-24 compliant, we
+have to compute an IPv6 checksum.
