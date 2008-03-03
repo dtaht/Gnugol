@@ -17,12 +17,12 @@
    pass the buffer? */
 
 int
-query_main(QueryData *answers, char *host)
+query_main(QueryData *q, char *host)
 {
     int connfd, n, m, i;
     char *myhost;
     char *answer = (char *) calloc(1280,1);
-    char *query = answers->query;
+    char *query = q->query;
     int cnt;
 
     if(host == NULL) {
@@ -30,7 +30,8 @@ query_main(QueryData *answers, char *host)
     } else {
       myhost = host;
     }
-    if(answers->options.verbose) fprintf(stderr,"Connecting: %s\n",myhost);
+    build_query(q);
+    if(q->options.verbose) fprintf(stderr,"Connecting: %s\n",myhost);
     connfd = connect_client(myhost, QUERY_PORT, AF_UNSPEC, SOCK_DGRAM);
 
     if (connfd < 0) {
@@ -39,16 +40,17 @@ query_main(QueryData *answers, char *host)
                  "socket\n");
          return -1;
     }
-    char *asdf = "GET LNK\nmangled querys suck\nEND\n";
-    if(answers->options.verbose) fprintf(stderr,"Writing query: \"%s\" to socket of length %d\n", query, strlen(query));
-//    m= write(connfd, query, strlen(query));
-    m= write(connfd, asdf, strlen(asdf));
+    if(q->options.verbose) {
+      fprintf(stderr,"Writing query: \"%s\" to socket of length %d\n", 
+	      query, strlen(query));
+    }
+    m= write(connfd, query, strlen(query));
     memset(answer, 0, MAX_MTU);
     n = read(connfd,
              answer,
              MAX_MTU); // FIXME, leave running and timeout
-    if(answers->options.verbose) fprintf(stderr,"Got response: %s\n", answer);
+    if(q->options.verbose) fprintf(stderr,"Got response: %s\n", answer);
     close(connfd);
-    strcpy(answers->query,answer); // ycuk
-    return(answer_parse(answers));
+    strcpy(q->query,answer); // ycuk - figmeout
+    return(answer_parse(q));
 }

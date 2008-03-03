@@ -1,7 +1,7 @@
 LIBS=
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
-COMMON=../common/connect_client.o ../common/parser.o udp_client.o
+COMMON=../common/connect_client.o ../common/parser.o ../common/fit_results.o udp_client.o
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG:=-DDEBUG -DDUMMY_SERVER

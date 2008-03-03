@@ -5,8 +5,8 @@
 #include <memory.h>
 #include <limits.h>
 #include "query.h"
+#include "gnugol_protocol.h"
 
-#define PROTOCOL_VERSION ".01"
 #ifdef WINDOWS
 #define DIR_SEP "\""
 #else
@@ -17,8 +17,7 @@ static char *gnugol_cache_dir = "/var/cache/gnugol";
 
 int build_query(QueryData *q) {
   char *query = q->query;
-  //  strcpy(query,"GET GNGL/" PROTOCOL_VERSION " ");
-  strcpy(query,"GET GNGL/.01 ");
+  sprintf(query,"GET GNGL/%g ", GNUGOL_PROTOCOL_VERSION);
 
   if(q->options.urls) strcat(query, "LNK ");
   if(q->options.titles) strcat(query, "TLE ");
@@ -26,8 +25,8 @@ int build_query(QueryData *q) {
   if(q->options.ads) strcat(query, "ADS ");
   if(q->options.misc) strcat(query, "MSC ");
   if(q->options.prime) strcat(query, "PRM ");
-  if(q->options.position != 0) sprintf(query, "%sPOS:%d ", query,q->options.position);
-  //FIXME??  if(q->options.results != 10) sprintf(query, "%sRES:%d ", query,q->options.results);
+  if(q->options.position != 0) sprintf(query, "%sPOS:%d ", query, q->options.position);
+  if(q->options.nresults != 10) sprintf(query, "%sRES:%d ", query, q->options.nresults);
  
   strcat(query,"\n");
   if(q->keywords[0] == '\0') { 
@@ -35,7 +34,7 @@ int build_query(QueryData *q) {
       fprintf(stderr, "Null query data, just priming the connnection\n"); 
       strcat(query,"\n");
     } else {
-      fprintf(stderr, "Null query data, bailing!\n"); return(-1); 
+      fprintf(stderr, "Null query data, not sending!\n"); return(-1); 
     }
   } else {
     strcat(query,q->keywords);

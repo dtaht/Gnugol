@@ -42,6 +42,7 @@ void Cookies();
 void LoadEnvironment();
 void SaveEnvironment();
 
+
 int Query(char *query) { 
 	QueryData q;
 	strcpy(q.query,query);
@@ -79,19 +80,18 @@ int cgiMain() {
 	fprintf(cgiOut, "<body><span style=\"font-size:1em; text-align:top\"><img src=/gnugol/images/gnugol.png><a href=gnugol://gnugol>Way Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
 	/* If a submit button has already been clicked, act on the 
 		submission of the form. */
-	// Fixme, only allow trusted hosts to run the configuration
 
 	QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
 
+	if (cgiFormSubmitClicked("config") == cgiFormSuccess)
+	{
+	// Fixme, only allow trusted hosts to run the configuration
 	// loadConfig(whatever); FIXME FAKE IT FOR NOW
 	q->options.urls = 1;
 	q->options.titles= 1;
 	q->options.snippets= 1;
 	q->options.nresults=10;
 	q->options.position=0;
-
-	if (cgiFormSubmitClicked("config") == cgiFormSuccess)
-	{
 		fprintf(cgiOut,"<form action=/cgi-bin/gnugol.cgi method=post>");
 		HandleConfig(&q->options);
 		fprintf(cgiOut,"<input type=submit name=reconfig>");
@@ -104,6 +104,15 @@ int cgiMain() {
 	{
 		HandleSubmit();
 		fprintf(cgiOut, "<hr>\n");
+	} else {
+	// FIXME - check to see if we've primed the cache recently
+		q->options.prime=1;
+#ifdef DUMMY_CLIENT
+	int n = query_main(q,"::1"); 
+#else
+	int n = query_main(q,NULL); 
+#endif
+		
 	}
 	
 	/* Now show the form */

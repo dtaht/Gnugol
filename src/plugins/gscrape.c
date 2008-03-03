@@ -10,6 +10,7 @@
 
 #include "common.h"
 #include "query.h"
+#include "gnugol_protocol.h"
 
 #define EXECV
 
@@ -85,13 +86,13 @@ int main(argc, argv)
   int i, pid, p2p[2];
   char send[1280], receive[1280], *gets();
   if((pid = gnugol_plugin_gscrape_init()) > 0) { 
-    sprintf(send, "GET LNK SNP\nthis is a test\nEND\n");
+    sprintf(send, "GET GNGL/%g LNK SNP\nthis is a test\nEND\n",GNUGOL_PROTOCOL_VERSION);
     write(p2p[1],send,strlen(send));
     i = read(p2p[0],receive,1280);       /* get message from child */
     receive[i] = '\0';
     fprintf(stderr,"Parent received: %s",receive);
     
-    sprintf(send, "GET LNK SNP\nIPv6 address exaustion\nEND\n");
+    sprintf(send, "GET GNGL/%g LNK SNP\nIPv6 address exaustion\nEND\n", GNUGOL_PROTOCOL_VERSION);
     write(p2p[1],send,strlen(send));
     i = read(p2p[0],receive,1280);       /* get message from child */
     receive[i] = '\0';
