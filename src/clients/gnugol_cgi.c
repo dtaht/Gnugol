@@ -94,6 +94,7 @@ int cgiMain() {
 	{
 		fprintf(cgiOut,"<form action=/cgi-bin/gnugol.cgi method=post>");
 		HandleConfig(&q->options);
+		fprintf(cgiOut,"<input type=submit name=reconfig>");
 		fprintf(cgiOut,"</form>");
 		fprintf(cgiOut, "<hr>\n");
 	} else {
@@ -130,7 +131,7 @@ void HandleSubmit()
 void HandleConfig(QueryOptions *o)
 {
   //  QueryOptions *o = &q->options;
-  fprintf(cgiOut,"You are requesting %d results starting at position %d<br>",o->nresults,o->position);
+  fprintf(cgiOut,"You are requesting <input type=text name=results size=1 value=%d> results starting at position <input type=text name=pos size=3 value=%d><br>",o->nresults,o->position);
   penabled("urls",urls);
   penabled("titles",titles);
   penabled("snippets",snippets);
