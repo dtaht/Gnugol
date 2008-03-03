@@ -61,10 +61,10 @@ main(int argc, char *argv[])
 
         memset(clienthost, 0, sizeof(clienthost));
         memset(clientservice, 0, sizeof(clientservice));
-        memset(answer, 0, sizeof(answer));
+        memset(query->answer, 0,1280);
 
 #ifdef DUMMY_SERVER
-	strcpy(answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLWN ROCKS\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
+	strcpy(query->answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLWN ROCKS\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
 #else
 	// gnugol_plugin_google(&query,&answer,&formatter);
 	gnugol_plugin_gscrape(query);
@@ -72,7 +72,7 @@ main(int argc, char *argv[])
 
 	// FIXME - COMPRESS THE OUTPUT, HASH THE DATA, ETC, ETC
 
-        n = sendto(listenfd, answer, strlen(answer)+1, 0,
+        n = sendto(listenfd, query->answer, strlen(query->answer)+1, 0,
                    (struct sockaddr *)&clientaddr,
                    addrlen);
 
