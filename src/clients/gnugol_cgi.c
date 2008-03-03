@@ -34,6 +34,7 @@ http://www.google.com.au/search?q=gnogal+test&ie=utf-8&oe=utf-8&aq=t&rls=com.ubu
 #include "query.h"
 
 void HandleSubmit();
+void HandleConfig(QueryOptions *o);
 void ShowForm();
 void CookieSet();
 void Entries();
@@ -82,11 +83,18 @@ int cgiMain() {
 
 	QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
 
-	// loadConfig(whatever); FIXME
+	// loadConfig(whatever); FIXME FAKE IT FOR NOW
+	q->options.urls = 1;
+	q->options.titles= 1;
+	q->options.snippets= 1;
+	q->options.nresults=10;
+	q->options.position=0;
 
 	if (cgiFormSubmitClicked("config") == cgiFormSuccess)
 	{
-		HandleConfig(q->options);
+		fprintf(cgiOut,"<form action=/cgi-bin/gnugol.cgi method=post>");
+		HandleConfig(&q->options);
+		fprintf(cgiOut,"</form>");
 		fprintf(cgiOut, "<hr>\n");
 	} else {
 
@@ -117,11 +125,12 @@ void HandleSubmit()
   }
 }
 
-#define penabled(a,b)  fprintf(cgiOut,"<checkbox name=" a " value=%s></checkbox><br>", o->b ? "enabled" : "disabled");
+#define penabled(a,b)  fprintf(cgiOut,"<input type=checkbox name=\"" a "\" %s%s<br>", o->b ? "checked>" : ">",a);
 
 void HandleConfig(QueryOptions *o)
 {
   //  QueryOptions *o = &q->options;
+  fprintf(cgiOut,"You are requesting %d results starting at position %d<br>",o->nresults,o->position);
   penabled("urls",urls);
   penabled("titles",titles);
   penabled("snippets",snippets);
@@ -142,7 +151,6 @@ void HandleConfig(QueryOptions *o)
   penabled("mirroring",mirror);
   penabled("plugin",plugin);
 
-  printf("You are requesting %d results starting at position %d\n",o->nresults,o->position);
 
 }
 
