@@ -9,6 +9,7 @@ PROGS=gnugol gnugol.cgi
 HTMLDIR=/var/www/gnugol
 CGIDIR=/usr/lib/cgi-bin
 BINDIR=$(HOME)/bin
+OBJECTS=gnugol.o gnugol_cgi.o
 CC=gcc
 STRIP=strip
 

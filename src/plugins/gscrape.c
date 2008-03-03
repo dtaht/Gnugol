@@ -9,10 +9,11 @@
 #include <errno.h>
 
 #include "common.h"
+#include "query.h"
 
 #define EXECV
 
-static int p2p[2] = 0,0;
+static int p2p[2] = {0,0};
 
 int gnugol_plugin_gscrape_init() // I'm confused, this is an array ref?
 {
@@ -67,8 +68,8 @@ int gnugol_plugin_gscrape(QueryData *q) {
   // do a lookup
   // otherwise
   // if(p2p[1] != 0) {
-  if(build_query(QueryData *q)) {
-    write(p2p[1],query);
+  if(build_query(q)) {
+    write(p2p[1],q->query,strlen(q->query));
   }
   //  fgets(pdes[0],"");
 };
@@ -81,13 +82,13 @@ int main(argc, argv)
   int i, pid, p2p[2];
   char send[1280], receive[1280], *gets();
   if((pid = gnugol_plugin_gscrape_init(p2p)) > 0) { 
-    sprintf(send, "BEGIN LNK SNP\nthis is a test\nEND\n");
+    sprintf(send, "GET LNK SNP\nthis is a test\nEND\n");
     write(p2p[1],send,strlen(send));
     i = read(p2p[0],receive,1280);       /* get message from child */
     receive[i] = '\0';
     fprintf(stderr,"Parent received: %s",receive);
     
-    sprintf(send, "BEGIN LNK SNP\nIPv6 address exaustion\nEND\n");
+    sprintf(send, "GET LNK SNP\nIPv6 address exaustion\nEND\n");
     write(p2p[1],send,strlen(send));
     i = read(p2p[0],receive,1280);       /* get message from child */
     receive[i] = '\0';

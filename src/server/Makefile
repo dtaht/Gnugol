@@ -1,11 +1,12 @@
-LIBS=
+LIBS=../plugins/gscrape.o
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
-COMMON=../common/connect_client.o ../common/parser.o ../common/listen_server.o
+COMMON=../common/connect_client.o ../common/parser.o ../common/listen_server.o ../common/fit_results.o
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
 PROGS=gnugold
+OBJECTS=udp_server.o
 HTMLDIR=/var/www/gnugol
 CGIDIR=/usr/lib/cgi-bin
 BINDIR=$(HOME)/bin

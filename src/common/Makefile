@@ -2,11 +2,12 @@ LIBS=-I/usr/local/include -lcgic
 INC=../include
 INCLUDES=-I../include
 DEBUG=-DDEBUG
-PROGS=parser_test fpipe # gnugold
+PROGS=$(TESTDIR)parser_test fpipe # gnugold
 HTMLDIR=/var/www/gnugol
 CGIDIR=/usr/lib/cgi-bin
 BINDIR=$(HOME)/bin
 CC=gcc
+TESTDIR=../tests/
 
 OBJECTS := connect_client.o listen_server.o parser.o fit_results.o
 
@@ -18,8 +19,8 @@ fpipe: fpipe.c
 #gnugold: gnugold.o 
 #	$(CC) gnugold.o -o gnugold ${LIBS}
 
-parser_test: parser.c $(INC)/query.h
-	$(CC) $(CFLAGS) $(INCLUDES) -DDEBUG=1 -DTEST_PARSER parser.c -o parser_test
+$(TESTDIR)parser_test: parser.c $(INC)/query.h
+	$(CC) $(CFLAGS) $(INCLUDES) -DDEBUG=1 -DTEST_PARSER parser.c -o $(TESTDIR)parser_test
 
 parser.o: parser.c $(INC)/query.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) parser.c -c 

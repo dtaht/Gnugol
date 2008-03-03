@@ -192,7 +192,8 @@ main(int argc, char **argv) {
 #endif
 	
 #ifdef DUMMY_CLIENT
-	int cnt = query_main(&q,"localhost");
+	strcpy(q->keywords,"WHAT THE HECK?");
+	int cnt = query_main(q,"localhost");
 #else
 	char host[1024];
 	int cnt;

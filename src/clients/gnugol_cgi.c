@@ -64,9 +64,9 @@ int cgiMain() {
 #endif /* DEBUG */
 	/* Load a previously saved CGI scenario if that button
 		has been pressed. */
-	if (cgiFormSubmitClicked("loadenvironment") == cgiFormSuccess) {
-		LoadEnvironment();
-	}
+	//	if (cgiFormSubmitClicked("loadenvironment") == cgiFormSuccess) {
+	//	LoadEnvironment();
+	//}
 	/* Set any new cookie requested. Must be done *before*
 		outputting the content type. */
 	CookieSet();
@@ -78,14 +78,28 @@ int cgiMain() {
 	fprintf(cgiOut, "<body><span style=\"font-size:1em; text-align:top\"><img src=/gnugol/images/gnugol.png><a href=gnugol://gnugol>Way Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
 	/* If a submit button has already been clicked, act on the 
 		submission of the form. */
+	// Fixme, only allow trusted hosts to run the configuration
+
+	QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
+
+	// loadConfig(whatever); FIXME
+
+	if (cgiFormSubmitClicked("config") == cgiFormSuccess)
+	{
+		HandleConfig(q->options);
+		fprintf(cgiOut, "<hr>\n");
+	} else {
+
 	if ((cgiFormSubmitClicked("btnG") == cgiFormSuccess) ||
 		cgiFormSubmitClicked("saveenvironment") == cgiFormSuccess)
 	{
 		HandleSubmit();
 		fprintf(cgiOut, "<hr>\n");
 	}
+	
 	/* Now show the form */
 	ShowForm();
+	}
 	/* Finish up the page */
 	fprintf(cgiOut, "</body></html>\n");
 	return 0;
@@ -101,6 +115,35 @@ void HandleSubmit()
   if (cgiFormSubmitClicked("saveenvironment") == cgiFormSuccess) {
     SaveEnvironment();
   }
+}
+
+#define penabled(a,b)  fprintf(cgiOut,"<checkbox name=" a " value=%s></checkbox><br>", o->b ? "enabled" : "disabled");
+
+void HandleConfig(QueryOptions *o)
+{
+  //  QueryOptions *o = &q->options;
+  penabled("urls",urls);
+  penabled("titles",titles);
+  penabled("snippets",snippets);
+  penabled("ads",ads);
+  penabled("misc",misc);
+  penabled("reverse",reverse);
+  penabled("broadcast",broadcast);
+  penabled("multicast",multicast);
+  penabled("force",force);
+  penabled("cache",cache);
+  penabled("xml",xml);
+  penabled("html",html);
+  penabled("offline",offline);
+  penabled("lucky",lucky);
+  penabled("register",reg);
+  penabled("prime",prime);
+  penabled("engine",engine);
+  penabled("mirroring",mirror);
+  penabled("plugin",plugin);
+
+  printf("You are requesting %d results starting at position %d\n",o->nresults,o->position);
+
 }
 
 void Entries()
