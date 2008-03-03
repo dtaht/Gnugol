@@ -23,4 +23,4 @@ clean:
 	make -C src clean
 
 etags:	
-	find src -type f | xargs etags 
+	find src -type f \( -name \*.c -o -name \*.h \) | xargs etags 

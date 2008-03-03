@@ -68,10 +68,13 @@ int gnugol_plugin_gscrape(QueryData *q) {
   // do a lookup
   // otherwise
   // if(p2p[1] != 0) {
+    fprintf(stderr,"Writing to child\n");
   if(build_query(q)) {
-    write(p2p[1],q->query,strlen(q->query));
+    if(write(p2p[1],q->query,strlen(q->query))>-1) {
+    fprintf(stderr,"Writing to child failed\n");
+	}
   }
-  //  fgets(pdes[0],"");
+  //fgets(pdes[0],"");
 };
 
 #ifdef TEST_PLUGIN
@@ -81,7 +84,7 @@ int main(argc, argv)
 {
   int i, pid, p2p[2];
   char send[1280], receive[1280], *gets();
-  if((pid = gnugol_plugin_gscrape_init(p2p)) > 0) { 
+  if((pid = gnugol_plugin_gscrape_init()) > 0) { 
     sprintf(send, "GET LNK SNP\nthis is a test\nEND\n");
     write(p2p[1],send,strlen(send));
     i = read(p2p[0],receive,1280);       /* get message from child */

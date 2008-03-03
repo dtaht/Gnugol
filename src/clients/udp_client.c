@@ -30,7 +30,7 @@ query_main(QueryData *answers, char *host)
     } else {
       myhost = host;
     }
-
+    fprintf(stderr,"Connecting to %s\n",myhost);
     connfd = connect_client(myhost, QUERY_PORT, AF_UNSPEC, SOCK_DGRAM);
 
     if (connfd < 0) {
@@ -39,8 +39,10 @@ query_main(QueryData *answers, char *host)
                  "socket\n");
          return -1;
     }
-
-    m= write(connfd, query, strlen(query));
+    char *asdf = "GET LNK\nmangled querys suck\nEND\n";
+    fprintf(stderr,"writing query: %s\n to socket of length %d\n", query, strlen(query));
+//    m= write(connfd, query, strlen(query));
+    m= write(connfd, asdf, strlen(asdf));
     memset(answer, 0, MAX_MTU);
     n = read(connfd,
              answer,

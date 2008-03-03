@@ -34,7 +34,7 @@ main(int argc, char *argv[])
  
 #ifdef DUMMY_SERVER
 #else
-    gnugol_plugin_gscrape_init(pdes);
+    gnugol_plugin_gscrape_init();
 #endif
 
     listenfd= listen_server(myhost, QUERY_PORT, AF_UNSPEC, SOCK_DGRAM);
@@ -47,6 +47,7 @@ main(int argc, char *argv[])
     }
     memset(b, 0, sizeof(b));
     addrlen = sizeof(clientaddr);
+   fprintf(stderr,"Waiting for a gnugol packet\n");
 
     for ( ; ;) {
         n = recvfrom(listenfd,
@@ -62,12 +63,16 @@ main(int argc, char *argv[])
         memset(clienthost, 0, sizeof(clienthost));
         memset(clientservice, 0, sizeof(clientservice));
         memset(query->answer, 0,1280);
-
+	strcpy(query->query,query->answer);
+	fprintf(stderr,"Got a packet\n");
 #ifdef DUMMY_SERVER
 	strcpy(query->answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLWN ROCKS\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
 #else
 	// gnugol_plugin_google(&query,&answer,&formatter);
+        fprintf(stderr,"data packet to subprocess %s\n", query->query);
 	gnugol_plugin_gscrape(query);
+        fprintf(stderr,"data packet from subprocess %s\n", query->answer);
+	
 #endif
 
 	// FIXME - COMPRESS THE OUTPUT, HASH THE DATA, ETC, ETC

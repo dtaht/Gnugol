@@ -1,11 +1,13 @@
 /* Fit the results into a buffer of size X */
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <memory.h>
 #include "query.h"
 
 int build_query(QueryData *q) {
-  char *query = q->query;
+  char *query = &q->query;
+  if(query == NULL) { fprintf(stderr, "Null query data, bailing!\n"); return(-1); }
   strcpy(query,"GET ");
   if(q->options.urls) strcat(query, "LNK ");
   if(q->options.titles) strcat(query, "TLE ");
@@ -14,8 +16,8 @@ int build_query(QueryData *q) {
   if(q->options.misc) strcat(query, "MSC ");
   strcat(query,"\n");
   strcat(query,q->keywords);
+  fprintf(stderr,"Debug keywords:%s \n", q->keywords);
   strcat(query,"\nEND\n");
-  strcat(query,NULL);
   return(0);
 }
 

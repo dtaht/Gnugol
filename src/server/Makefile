@@ -4,7 +4,7 @@ HEADERS=../include/*.h
 COMMON=../common/connect_client.o ../common/parser.o ../common/listen_server.o ../common/fit_results.o
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
-DEBUG=-DDEBUG
+DEBUG=-DDEBUG -g # -DDUMMY_SERVER -g
 PROGS=gnugold
 OBJECTS=udp_server.o
 HTMLDIR=/var/www/gnugol
@@ -17,7 +17,7 @@ STRIP=strip
 
 all: $(PROGS) 
 
-gnugold: udp_server.o $(HEADERS)
+gnugold: udp_server.o $(HEADERS) $(COMMON)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) udp_server.o $(COMMON) $(LIBS) $(CGILIB) -o gnugold
 
 udp_server.o: udp_server.c $(HEADERS)

@@ -197,7 +197,7 @@ main(int argc, char **argv) {
 #else
 	char host[1024];
 	int cnt;
-	char *h = getenv("GNUGOL_CLIENT");
+	char *h = getenv("GNUGOL_SERVER");
 	if ( h != NULL) {
 	  strcpy(host,h);
 	} else {
