@@ -76,88 +76,104 @@ static struct option long_options[] = {
   {"secure", 0,0, 'S'},  
   {"html", 0,0, 'H'},    
   {"xml", 0,0, 'X'},     
-  {"defaults", 0,0, 0},   
+  {"verbose", 0,0, 'v'},   
+  {"debug", 0,0, 'd'},   
+  {"defaults", 0,0, 'D'},   
   {"source", 0,0, 0},     
-  {"help", 0,0, 0},       
-  {"config", 0,0,0},
+  {"help", 0,0, 'h'},       
+  {"config", 0,0,'C'},
 };
 
 parse_config_file(QueryOptions *q) {
 } 
 
 //Sometimes I wish the c preprocessor had exited the 80s
-#define penabled(a,b) fprintf(stderr,a " %s\n", o->b ? "enabled":"disabled")
+// #define penabled(a,b) fprintf(stderr,a "%s", o->b ? "enabled":"")
+#define penabled(a,b) if(o->b) fprintf(stderr,a " ");
 
 int 
 print_enabled_options(QueryOptions *o) {
-  penabled("urls",urls);
-  penabled("titles",titles);
-  penabled("snippets",snippets);
-  penabled("ads",ads);
-  penabled("misc",misc);
-  penabled("reverse",reverse);
-  penabled("broadcast",broadcast);
-  penabled("multicast",multicast);
-  penabled("force",force);
-  penabled("cache",cache);
-  penabled("xml",xml);
-  penabled("html",html);
-  penabled("offline",offline);
-  penabled("lucky",lucky);
-  penabled("register",reg);
-  penabled("prime",prime);
-  penabled("engine",engine);
-  penabled("mirroring",mirror);
-  penabled("plugin",plugin);
-
-  printf("You are requesting %d results starting at position %d\n",o->nresults,o->position);
-  
-  //printf("urls %s\n", o->b ? "enabled":"disabled")
+  if(o->verbose) {
+    fprintf(stderr,"Options: ");
+    penabled("urls",urls);
+    penabled("titles",titles);
+    penabled("snippets",snippets);
+    penabled("ads",ads);
+    penabled("misc",misc);
+    penabled("reverse",reverse);
+    penabled("broadcast",broadcast);
+    penabled("multicast",multicast);
+    penabled("force",force);
+    penabled("cache",cache);
+    penabled("xml",xml);
+    penabled("html",html);
+    penabled("offline",offline);
+    penabled("lucky",lucky);
+    penabled("register",reg);
+    penabled("prime",prime);
+    penabled("engine",engine);
+    penabled("mirroring",mirror);
+    penabled("plugin",plugin);
+    fprintf(stderr,"\n");
+    fprintf(stderr,"Result Request: %d\n", o->nresults);
+    fprintf(stderr,"Position: %d\n",o->position);
+  }
 }
 
-int  
-process_options(int argc, char **argv, QueryData *q) {
+#define pifverbose(q,string) if(q->verbose) { printf("%s",val); }
+
+int process_options(int argc, char **argv, QueryData *q) {
   QueryOptions *o = &q->options; 
   int option_index;
   int opt = 0;
+  int count = 0;
+  printf("%d %s\n",argc,argv[2]);
   // FIXME: Parse optional arguments
-  while ((opt = getopt_long(argc, argv, 
-			    "rusateRiPplmbcoOfnpSHX",
-			    long_options, &option_index))>0)
-    {
-      switch (option_index) { 
-      case 'r': o->reverse = 1; break;  
-      case 'u': o->urls = 1; break;
-      case 's': o->snippets = 1; break;
-      case 'a': o->ads = 1; break;
-      case 't': o->titles =1; break;
-      case 'e': o->engine =1; break; // FIXME strcpy engine type
-      case 'R': o->reg = 1; break;
-      case 'i': o->input = 1; break; // FIXME
-      case 'P': o->prime = 1; break;
-      case 'p': o->plugin = 1; break;
-      case 'l': o->lucky = 1; break;
-      case 'm': o->multicast = 1; break;
-      case 'b': o->broadcast = 1; break;
-      case 'c': o->cache = 1; break;
-      case 'o': o->output = 1; break;
-      case 'O': o->offline = 1; break;
-      case 'f': o->force = 1; break;
-      case 'n': o->nresults = 1; break; // FIXME
-      case 'U': o->position = 1; break; // Another obvious fixme 
-      case 'S': o->secure = 1; break; // unimplemented
-      case 'H': o->html = 1; break; 
-      case 'X': o->xml = 1; break;
-      default: break;
-      }
+  while (1) {
+    opt = getopt_long(argc, argv, 
+		      "rusateRiPplmbcoOfn:pSHX",
+		      long_options, &option_index);
+    if(opt == -1) break;
+    //    fprintf(stderr, "option_index: %d\n opt: %c\n", option_index, opt);
+    switch (opt) { 
+      //   case 0: fprintf(stderr,"option %s", long_options[option_index].name);
+      // if(optarg) fprintf(stderr, " with arg %s", optarg);
+      // fprintf(stderr,"\n");
+      // break;
+    case 'r': o->reverse = 1; break;  
+    case 'u': o->urls = 1; break;
+    case 's': o->snippets = 1; break;
+    case 'a': o->ads = 1; break;
+    case 't': o->titles = 1; break;
+    case 'e': o->engine =1; break; // FIXME strcpy engine type
+    case 'R': o->reg = 1; break;
+    case 'i': o->input = 1; break; // FIXME
+    case 'P': o->prime = 1; break;
+    case 'p': o->plugin = 1; break;
+    case 'l': o->lucky = 1; break;
+    case 'm': o->multicast = 1; break;
+    case 'b': o->broadcast = 1; break;
+    case 'c': o->cache = 1; break;
+    case 'o': o->output = 1; break;
+    case 'O': o->offline = 1; break;
+    case 'f': o->force = 1; break;
+    case 'n': o->nresults = 1; break; // FIXME
+    case 'U': o->position = 1; break; // Another obvious fixme 
+    case 'S': o->secure = 1; break; // unimplemented
+    case 'H': o->html = 1; break; 
+    case 'X': o->xml = 1; break;
+    case 'h': usage(); break;
+    case 'v': o->verbose = 1; break;
+    default: break;
     }
+  }
       /* '--trust'       trust networks
 	 '--defaults     show the defaults\n");
 	 '--source       fetch the source code this was compiled with\n");
 	 '--help         this message\n");
 	 '--config"); printf(" --verbose"); printf(" --copyright"); printf(" --license\n"); 
 */
-  return(argc);
+  return(optind);
 }
 
 main(int argc, char **argv) {
@@ -171,12 +187,11 @@ main(int argc, char **argv) {
 	q->options.position = 0;
 	q->options.engine_name = "google";
 	q->options.language = "en";
-
 	q->options.urls = 1; // Always default to fetching urls
 
-	argc = process_options(argc,argv,q);
+	process_options(argc,argv,q);
 	
-	for(i = 1; i < argc; i++) {
+	for(i = optind; i < argc; i++) {
 	  if((querylen += strlen(argv[i]) > MAX_MTU - 80)) {
 	    fprintf(stderr,"Too many words in query, try something smaller\n");
 	    free(q);
@@ -186,10 +201,8 @@ main(int argc, char **argv) {
 	  strcat(q->keywords," ");
 	}
 
-#if DEBUG
 	print_enabled_options(&q->options);
-	fprintf(stderr,"%s\n",q->keywords);
-#endif
+	if(q->options.verbose) fprintf(stderr,"Keywords: %s\n",q->keywords);
 	
 #ifdef DUMMY_CLIENT
 	strcpy(q->keywords,"WHAT THE HECK?");

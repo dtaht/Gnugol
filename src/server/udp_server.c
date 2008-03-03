@@ -6,11 +6,42 @@
 #include <errno.h>
 #include <time.h>
 #include <malloc.h>
+#include <sys/select.h>
 
 #include "listen_server.h"
 #include "port.h"
 #include "query.h"
 #include "plugins.h"
+
+struct connections {
+  int mcast[2];
+  int local[2];
+  int remote[2];
+  int readfds[3];
+  int writefds[3];
+  int exceptfds[2];
+  int nfds;
+};
+
+static int setup_connections(QueryOptions *o) {
+  if (o->multicast) { }
+  if (o->broadcast) { }
+  if (o->cache) { }
+  return 0;
+}
+
+/*
+int get_it(QueryData *q, struct connections *c) {
+  fd_set readfds;
+  fd_set writefds;
+  struct timespec timeout;
+  sigset_t sigmask;
+  timeout.tv_sec = 1;
+  timeout.tv_nsec = 0;
+  int ready = pselect(nfds, &c->readfds, &c->writefds, NULL,
+                           timeout, &sigmask);
+}
+*/
 
 int
 main(int argc, char *argv[])

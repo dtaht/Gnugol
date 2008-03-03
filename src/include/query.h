@@ -28,6 +28,7 @@ struct query_options {
   int plugin:1;
   int output:1;
   int blind:1;
+  int verbose:1;
   int nresults;
   int position;
   char *engine_name;

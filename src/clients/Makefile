@@ -1,7 +1,7 @@
 LIBS=
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
-COMMON=../common/connect_client.o ../common/parser.o
+COMMON=../common/connect_client.o ../common/parser.o udp_client.o
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG:=-DDEBUG -DDUMMY_SERVER
@@ -17,11 +17,11 @@ STRIP=strip
 
 all: $(PROGS) 
 
-gnugol.cgi: gnugol_cgi.c udp_client.o $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) gnugol_cgi.c udp_client.o $(COMMON) $(LIBS) $(CGILIB) -o gnugol.cgi
+gnugol.cgi: gnugol_cgi.c udp_client.o $(HEADERS) $(COMMON)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) gnugol_cgi.c $(COMMON) $(LIBS) $(CGILIB) -o gnugol.cgi
 
-gnugol: gnugol.c udp_client.o $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) gnugol.c udp_client.o $(COMMON) $(LIBS) -o gnugol
+gnugol: gnugol.c udp_client.o $(HEADERS) $(COMMON)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) gnugol.c $(COMMON) $(LIBS) -o gnugol
 
 udp_client.o: udp_client.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) udp_client.c $(LIBS) -c
