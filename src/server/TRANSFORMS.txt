@@ -1,0 +1,14 @@
+SERVER PACKET
+      |
+QUERY IN QUERY PROTOCOL FORM
+(GET LNK,ADV,ETC\nkeyword keyword keyword\nEND;)
+      | 
+CHECK UDP CHECKSUM (fix endianness?)
+      |\no
+      | discard
+CALCULATE SHA1 CHECKSUM
+      |\no
+      | discard           (fix endianness ?)
+q->query in this case 
+      |            (format for scraper pipe)
+      |

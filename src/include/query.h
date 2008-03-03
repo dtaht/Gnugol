@@ -71,8 +71,8 @@ struct query_args {
   char answer[MAX_MTU];	// gonnaleakmemory	      
 };
 
-  typedef struct query_args QueryData;
-  
-  extern int query_main(QueryData *answers, char *host);
-  extern int answer_parse(QueryData *q);
-  extern int build_query(QueryData *q);
+typedef struct query_args QueryData;
+
+extern int query_main  (QueryData *answers, char *host);
+extern int answer_parse(QueryData *q);
+extern int build_query (QueryData *q);

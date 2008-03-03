@@ -47,7 +47,7 @@ main(int argc, char *argv[])
     }
     memset(b, 0, sizeof(b));
     addrlen = sizeof(clientaddr);
-   fprintf(stderr,"Waiting for a gnugol packet\n");
+    fprintf(stderr,"Waiting for a gnugol packet\n");
 
     for ( ; ;) {
         n = recvfrom(listenfd,
@@ -68,7 +68,6 @@ main(int argc, char *argv[])
 #ifdef DUMMY_SERVER
 	strcpy(query->answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLWN ROCKS\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
 #else
-	// gnugol_plugin_google(&query,&answer,&formatter);
         fprintf(stderr,"data packet to subprocess %s\n", query->query);
 	gnugol_plugin_gscrape(query);
         fprintf(stderr,"data packet from subprocess %s\n", query->answer);

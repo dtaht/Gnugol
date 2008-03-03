@@ -130,7 +130,6 @@ void HandleSubmit()
 
 void HandleConfig(QueryOptions *o)
 {
-  //  QueryOptions *o = &q->options;
   fprintf(cgiOut,"You are requesting <input type=text name=results size=1 value=%d> results starting at position <input type=text name=pos size=3 value=%d><br>",o->nresults,o->position);
   penabled("urls",urls);
   penabled("titles",titles);
@@ -151,8 +150,7 @@ void HandleConfig(QueryOptions *o)
   penabled("engine",engine);
   penabled("mirroring",mirror);
   penabled("plugin",plugin);
-
-
+  penabled("blind",blind);
 }
 
 void Entries()
