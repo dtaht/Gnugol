@@ -43,7 +43,7 @@ void SaveEnvironment();
 
 int Query(char *query) { 
 	QueryData q;
-	q.query = query;
+	strcpy(q.query,query);
 	int i;
 #ifdef DUMMY_CLIENT
 	int n = query_main(&q,"localhost"); 

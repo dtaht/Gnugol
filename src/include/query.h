@@ -24,8 +24,15 @@ struct query_options {
   int cache:1;
   int engine:1;
   int mirror:1;
+  int input:1;
+  int plugin:1;
+  int output:1;
+  int nresults;
+  int position;
   char *engine_name;
   char *outputfile;
+  char *inputfile;
+  char *pluginfile;
   char *language;
   char *server;
   char *client;

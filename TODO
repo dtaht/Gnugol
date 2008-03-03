@@ -28,6 +28,9 @@ DB lookaside cache
 Finalize Query protocol standard - things like languages,
 number of results, etc. right now it's just keywords.
 
+Get select on multicast/connectionless to work and timeout
+Override retrys?
+
 Implement compression. Most likely it won't help on queries.
 definately helps on results.
 

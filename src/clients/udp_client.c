@@ -46,6 +46,6 @@ query_main(QueryData *answers, char *host)
              answer,
              MAX_MTU); // FIXME, leave running and timeout
     close(connfd);
-    answers->query = answer;
+    strcpy(answers->query,answer); // ycuk
     return(answer_parse(answers));
 }

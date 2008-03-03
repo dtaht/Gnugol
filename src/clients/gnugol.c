@@ -8,6 +8,7 @@
 #include <cgic.h>
 #include <string.h>
 #include <stdlib.h>
+#include <getopt.h>
 
 #include "query.h"
 
@@ -42,7 +43,11 @@ int usage () {
  printf("--defaults     show the defaults\n");
  printf("--source       fetch the source code this was compiled with\n");
  printf("--help         this message\n");
- printf("--config"); printf(" --verbose"); printf(" --copyright"); printf(" --license\n"); 
+ printf("--config"); 
+ printf(" --verbose"); 
+ printf(" --copyright"); 
+ printf(" --license\n"); 
+ exit(-1);
 }
 
 // There's a version of getopt out there that lets you put in the help text.
@@ -75,6 +80,39 @@ static struct option long_options[] = {
   {"source", 0,0, 0},     
   {"help", 0,0, 0},       
   {"config", 0,0,0},
+};
+
+parse_config_file(QueryOptions *q) {
+} 
+
+//Sometimes I wish the c preprocessor had exited the 80s
+#define penabled(a,b) fprintf(stderr,a " %s\n", o->b ? "enabled":"disabled")
+
+int 
+print_enabled_options(QueryOptions *o) {
+  penabled("urls",urls);
+  penabled("titles",titles);
+  penabled("snippets",snippets);
+  penabled("ads",ads);
+  penabled("misc",misc);
+  penabled("reverse",reverse);
+  penabled("broadcast",broadcast);
+  penabled("multicast",multicast);
+  penabled("force",force);
+  penabled("cache",cache);
+  penabled("xml",xml);
+  penabled("html",html);
+  penabled("offline",offline);
+  penabled("lucky",lucky);
+  penabled("register",reg);
+  penabled("prime",prime);
+  penabled("engine",engine);
+  penabled("mirroring",mirror);
+  penabled("plugin",plugin);
+
+  printf("You are requesting %d results starting at position %d\n",o->nresults,o->position);
+  
+  //printf("urls %s\n", o->b ? "enabled":"disabled")
 }
 
 int  
@@ -85,7 +123,7 @@ process_options(int argc, char **argv, QueryData *q) {
   // FIXME: Parse optional arguments
   while ((opt = getopt_long(argc, argv, 
 			    "rusateRiPplmbcoOfnpSHX",
-			    long_options, &option_index)))
+			    long_options, &option_index))>0)
     {
       switch (option_index) { 
       case 'r': o->reverse = 1; break;  
@@ -106,7 +144,7 @@ process_options(int argc, char **argv, QueryData *q) {
       case 'O': o->offline = 1; break;
       case 'f': o->force = 1; break;
       case 'n': o->nresults = 1; break; // FIXME
-      case 'p': o->position = 1; break; // Another obvious fixme 
+      case 'U': o->position = 1; break; // Another obvious fixme 
       case 'S': o->secure = 1; break; // unimplemented
       case 'H': o->html = 1; break; 
       case 'X': o->xml = 1; break;
@@ -114,12 +152,12 @@ process_options(int argc, char **argv, QueryData *q) {
       }
     }
       /* '--trust'       trust networks
-   '--defaults     show the defaults\n");
- 	'--source       fetch the source code this was compiled with\n");
- 	'--help         this message\n");
- 	'--config"); printf(" --verbose"); printf(" --copyright"); printf(" --license\n"); 
+	 '--defaults     show the defaults\n");
+	 '--source       fetch the source code this was compiled with\n");
+	 '--help         this message\n");
+	 '--config"); printf(" --verbose"); printf(" --copyright"); printf(" --license\n"); 
 */
-  return(0);
+  return(argc);
 }
 
 main(int argc, char **argv) {
@@ -127,10 +165,18 @@ main(int argc, char **argv) {
 	if(argc == 1) usage();
 	int querylen = 0;
   	QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
+
+	// Defaults
+	q->options.nresults = 10;
+	q->options.position = 0;
+	q->options.engine_name = "google";
+	q->options.language = "en";
+
 	q->options.urls = 1; // Always default to fetching urls
+
 	argc = process_options(argc,argv,q);
 	
-	for(i = 0; i < argc; i++) {
+	for(i = 1; i < argc; i++) {
 	  if((querylen += strlen(argv[i]) > MAX_MTU - 80)) {
 	    fprintf(stderr,"Too many words in query, try something smaller\n");
 	    free(q);
@@ -139,6 +185,11 @@ main(int argc, char **argv) {
 	  strcat(q->keywords,argv[i]);
 	  strcat(q->keywords," ");
 	}
+
+#if DEBUG
+	print_enabled_options(&q->options);
+	fprintf(stderr,"%s\n",q->keywords);
+#endif
 	
 #ifdef DUMMY_CLIENT
 	int cnt = query_main(&q,"localhost");
@@ -151,10 +202,10 @@ main(int argc, char **argv) {
 	} else {
 	  strcpy(host,"localhost");
 	}
-	cnt = query_main(&q,host);
+	cnt = query_main(q,host);
 #endif
 	for (i = 0; i <= cnt-1; i++) {
-	  printf("<a href=%s>%s</a><br>", q.links[i], q.snippets[i]); 
+	  printf("<a href=%s>%s</a><br>", q->links[i], q->snippets[i]); 
 	}
 	printf("\n");
  }
