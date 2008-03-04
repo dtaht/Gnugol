@@ -218,9 +218,25 @@ main(int argc, char **argv) {
 	}
 	cnt = query_main(q,host);
 #endif
-	for (i = 0; i <= cnt-1; i++) {
-	  printf("<a href=%s>%s</a><br>", q->links[i], q->snippets[i]); 
+	// Gah, a long, painful combinatorial explosion will have to come below
+	if(q->options.html) {
+	  if(q->options.urls && q->options.snippets) {
+	    for (i = 0; i <= cnt-1; i++) {
+	      printf("<a href=%s>%s</a><br>", q->links[i], q->snippets[i]); 
+	    }
+	  }
 	}
-	printf("\n");
- }
-
+	if(q->options.xml) {
+	}
+	if(!(q->options.html | q->options.xml)) {
+	  for (i = 0; i <= cnt-1; i++) {
+	    if(q->options.urls) printf("%s ", q->links[i]);
+	    if(q->options.snippets) printf("%s\n", q->snippets[i]);
+	    if(q->options.titles) printf("%s\n", q->titles[i]);
+	    if(q->options.misc) printf("%s\n", q->misc[i]);
+	    if(!(q->options.misc | q->options.titles | q->options.snippets)) {
+	      printf("\n");
+	    }
+	  }
+	}
+}
