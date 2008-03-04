@@ -1,0 +1,131 @@
+1) We hit 1100 days before we run out of IPv4 space. That's two release cycles.
+The pressure for double NAT is already intense outside the US.
+
+2) "The effect is trivial" - Linus Torvalds, regarding the idea of gzipping
+then sha1 hashing rather than the reverse in git.
+
+2) "Seriously -- Good luck with that" - Brian Clapper, after explaining 
+he and most people in the US had better things to do than muck with IPv6.
+
+The email exchange that started it all:
+
+
+On Jan 21, 2008 8:49 AM, Brian Clapper <bmc@clapper.org> wrote:
+
+    On 1/21/08 9:07 AM, Mike Taht wrote:
+     > I have more or less decided that this is the year I move to ipv6.
+     > Anybody that wants to communicate with me will need to have their mail
+     > servers capable of sending to an ipv6 address and probably not a port 25...
+     >
+     > It is ridiculously easy to have an ipv6 tunnel setup under most OSes
+     > today... (google for "ipv6 tunnel broker" - I use hurricane electric in
+     > the states) and I fear we'll see far more stupidity from vendors like
+     > comcast in the future, so it is perhaps time to GET OFF THE OLD NET
+     > while you can.
+
+    Realistically--good luck with that. I have a feeling you'll be cutting
+    yourself off from a significant amount of discourse, which may or may not
+    be an issue for you. It might actually be a bonus, depending on your mind
+    set.
+
+
+Cutting myself off from the old net might spur some creativity and more output from me. I did it twice before, abandoning BBSes and fidonet for usenet, and netbui and ipx for tcp/ip. If enough people
+start saying "yes" to ipv6 and move to it...
+
+In my case, for email at least, I'm pretty sure I'll get a lot less spam, at least initially, and the range of potential users is small enough, perhaps, to change the email culture enough to require signed crypto certificates for email, so that A) email transfers are crypted and B)
+
+
+    I know that "easy" is relative, however. It's an easy job, relatively
+    speaking, for me to go clean out my shed (something that desperately needs
+    doing). But I don't seem to be able to make the time to do it. Ditto for
+    pulling or spraying the weeds that crop up in my daughter's swing-set area
+    in the summer; I don't get to those as often as I should, either.
+
+
+It's one of those technical obligation things, driven by a sense of social responsibility for progress. The flaws of the current ipv4 regime include filtering by governments and corporations, a whole raft of unessessary middlemen for things like storage and email and voice that would be (possibly) better served by end to end connectivity.
+
+You make the time to upgrade your servers, software, and spam filters...
+
+
+    Technically, getting IPv6 up and running is well within the skill set of
+    everyone on this list. Making the time to configure it and test it,
+    however, might be a challenge. 
+
+
+It's definately within the range of everyone, but I
+
+    Two of us on this list just joined a new
+    startup; 
+
+
+I haven't been paying attention. Me, I seem to be drifting from country to country, doing work here and there that seems worthwhile... a few weeks back I helped put together a hundred servers for isc (and got one, and ipv6 enabled colo space, out of the bargain)
+
+    I'm willing to bet that the pressures on our already limited spare
+    time are about to increase. I've been meaning to play with IPv6 for some
+    time now, but it never seems to bubble up to the top of the stack compared
+    to all the other technical new things I want to or have to play with.
+
+** WHERE gnugol started!! **  
+Distractions. I'm almost disaffected enough to ditch the web, too, and try other search engines than google. In fact I am thinking that search should be a distributed peer to peer service.... I am certainly going to ditch google mail soon...
+
+Going off the known net, and into a smaller pool of services might spur innovation outside the box.
+
+    I'll bet if you polled a signifact subset of the people with whom you
+    regularly correspond, you'd find that a good percentage of them have little
+    incentive to take the time to enable IPv6.  It's not that IPv6 isn't
+    interesting or valuable, just that other projects have higher incentives
+    associated with them.
+
+
+the only way to raise the bar is  (possibly) to increase the incentives...
+
+- Show quoted text -
+
+
+    Personally, I don't think IPv6 is the answer. More competition in the ISP
+    space is a potential answer, but that market seem to be consolidating
+    rather than expanding. Network Neutrality plays into it, but the answer
+    *there* is far from clear. I recommend reading Lauren Weinsten's NNSquad
+    mailing list for a good ongoing discussion of the issues there. One of the
+    things--in fact, the primary thing right now--that many on NNSquad advocate
+    is increased transparency: Provide tools for monitoring ISPs so people can
+    apply market pressure (at the very least) on ISPs that apply arbitrary
+    unpublished rules about net traffic and insist that it's okay to dick with
+    the packets going through their routers, among other things.
+
+    There *are* still options. My ISP does not dick with the packets flowing
+    through its routers (as far as I know). It's a medium-sized regional ISP
+    that's large enough to sustain itself, so far, amid the market pressure
+    from Verizon and Comcast. I have no trouble whatsoever running on port 25,
+    or connecting to anyone else's port 25. What I pay for this privilege is a
+    slightly higher price per download megabit than I would get if I went with
+    Comcast, but it's nowhere near as large as the difference between Comcast's
+    regional and business tiers.
+
+    Until those alternatives dry up completely, leaving us with only the big
+    oligopolies, I just don't see a huge incentive for people in the US to
+    switch to IPv6. I'd be unwilling to go IPv6-only, as you say you might do,
+    because a significant portion of the people I communicate with on a regular
+    basis will NEVER go to IPv6 until and unless it happens behind the scenes,
+    without the necessity of action on their part. The current annoyances in
+    the status quo aren't big enough for me to overcome the pain of losing
+    email contact with those people.
+
+
+My observation is simply that the interesting action in the spaces I'm in (embedded, primarily) is happening outside the US, where the limitations of the address pool are becoming ever more apparent.  And I have no plans to return to the US.
+
+I should have been more clear as I was mostly proposing to go ipv6 only for email by some future date (say, aug 11, 2008) and at some future date, move more of my stuff (source code, etc) to be over there. It would be cool if people made it into a social movement, embedding in their sig something like "I'm going to ipv6 by august, are you?".
+
+Theoretically the federal government is supposed to be ipv6 in the next 6 months.
+
+I don't much care if I get read or not anymore... perhaps I'll set up some sort of catch and release system that will annoy people running ipv4 on my web site, then direct them to an ipv4 backup url, much like you have /usr/lib and /usr/lib64 on 64 bit architectures.....
+
+    But that's just me, obviously.
+
+Well, you make very good points. Overcoming your objections would be a good start towards making some progress, but I'm still trying to work out what is feasible with current technology. I have a mail exchanger up and running over ipv6 on toutatis.taht.net (required one line of change to my postfix configuration, and a dns entry, at a colo that provides ipv6 automatically). Things like rbl don't work
+for ipv6, so I'm playing with other methods. I don't expect email over ipv6 transport to work well for a long time, but I hope to experiment with interchange with major providers...
+
+I'd like the current social cachet of "do you have a website" to become "do you have an ipv6 address" ,as we are about 3 years away from address exaustion, but services are needed to be run out there, in the wilderness, for people to want to go there. Might as well start, I'm not doing anything else. 
+
+
+
