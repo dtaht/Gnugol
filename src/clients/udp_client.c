@@ -30,7 +30,7 @@ query_main(QueryData *q, char *host)
     } else {
       myhost = host;
     }
-    build_query(q);
+    build_query(q); 
     if(q->options.verbose) fprintf(stderr,"Connecting: %s\n",myhost);
     connfd = connect_client(myhost, QUERY_PORT, AF_UNSPEC, SOCK_DGRAM);
 
@@ -44,6 +44,7 @@ query_main(QueryData *q, char *host)
       fprintf(stderr,"Writing query: \"%s\" to socket of length %d\n", 
 	      query, strlen(query));
     }
+    // fixme - generate legal checksum and check length
     m= write(connfd, query, strlen(query));
     memset(answer, 0, MAX_MTU);
     n = read(connfd,
