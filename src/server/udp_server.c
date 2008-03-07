@@ -12,18 +12,9 @@
 #include "port.h"
 #include "query.h"
 #include "plugins.h"
+#include "server.h"
 
-struct connections {
-  int mcast[2];
-  int local[2];
-  int remote[2];
-  int readfds[3];
-  int writefds[3];
-  int exceptfds[2];
-  int nfds;
-};
-
-static int setup_connections(QueryOptions *o) {
+static int setup_connections(ServerOptions *o) {
   if (o->multicast) { }
   if (o->broadcast) { }
   if (o->cache) { }
@@ -56,17 +47,17 @@ main(int argc, char *argv[])
     char b[1280];
     char clienthost[NI_MAXHOST];
     char clientservice[NI_MAXSERV];
-
-    myhost=NULL;
-    if (argc > 1)
-        myhost=argv[1];
-  
+    ServerOptions *o = calloc(sizeof(ServerOptions),1);
     QueryData *query = (QueryData *) calloc(sizeof(QueryData),1);
- 
-#ifdef DUMMY_SERVER
-#else
-    gnugol_plugin_gscrape_init();
-#endif
+
+    // Setup some sane defaults
+    o->ipv6 = 1;
+    myhost = "::1";
+    server_process_options(argc,argv,o);
+
+    if(!o->dummy) {
+      gnugol_plugin_gscrape_init();
+    }
 
     listenfd= listen_server(myhost, QUERY_PORT, AF_UNSPEC, SOCK_DGRAM);
 
@@ -81,10 +72,7 @@ main(int argc, char *argv[])
     fprintf(stderr,"Waiting for a gnugol packet\n");
 
     for ( ; ;) {
-        n = recvfrom(listenfd,
-                     b,
-                     sizeof(b),
-                     0,
+        n = recvfrom(listenfd, b,sizeof(b), 0,
                      (struct sockaddr *)&clientaddr,
                      &addrlen);
 
@@ -95,15 +83,18 @@ main(int argc, char *argv[])
         memset(clientservice, 0, sizeof(clientservice));
         memset(query->answer, 0,1280);
 	strcpy(query->query,query->answer);
-	fprintf(stderr,"Got a packet\n");
-#ifdef DUMMY_SERVER
-	strcpy(query->answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLWN ROCKS\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
-#else
-        fprintf(stderr,"data packet to subprocess %s\n", query->query);
-	gnugol_plugin_gscrape(query);
-        fprintf(stderr,"data packet from subprocess %s\n", query->answer);
-	
-#endif
+
+	if(o->debug) { 
+	  fprintf(stderr,"Got a packet\n");
+	}
+
+	if(o->dummy) {
+	  strcpy(query->answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLWN ROCKS\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
+	} else {
+	  fprintf(stderr,"data packet to subprocess %s\n", query->query);
+	  gnugol_plugin_gscrape(query);
+	  fprintf(stderr,"data packet from subprocess %s\n", query->answer);
+	}
 
 	// FIXME - COMPRESS THE OUTPUT, HASH THE DATA, ETC, ETC
 
@@ -116,8 +107,10 @@ main(int argc, char *argv[])
                     clientservice, sizeof(clientservice),
                     NI_NUMERICHOST);
 
-        printf("Received request from host=[%s] port=[%s] string=%s\n",
-               clienthost, clientservice,b);
+        if(o->verbose || o->debug) { 
+	  fprintf(stderr,"Received request from host=[%s] port=[%s] string=%s\n",
+		  clienthost, clientservice,b);
+	}
 
         memset(b, 0, sizeof(b));
 

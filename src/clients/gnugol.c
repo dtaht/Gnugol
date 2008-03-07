@@ -12,7 +12,7 @@
 
 #include "query.h"
 
-/* FIXME - look over wget options for useful stuff
+/* FIXME - look over apache options for useful stuff
 
 */
 
@@ -40,6 +40,11 @@ int usage () {
  printf("-S --Secure    use secure transport\n");
  printf("-H --html      output html\n");
  printf("-X --xml       output gnugol XML\n");
+ printf("-d --debug [level]    Debug output");
+ printf("-B --dummy dummy input (useful for stress testing)");
+ printf("-6 --ipv6 listen on ipv6");
+ printf("-4 --ipv4 listen on ipv4");
+ printf("-F --dontfork don't fork off the server");
  printf("--defaults     show the defaults\n");
  printf("--source       fetch the source code this was compiled with\n");
  printf("--help         this message\n");
@@ -79,9 +84,13 @@ static struct option long_options[] = {
   {"verbose", 0,0, 'v'},   
   {"debug", 0,0, 'd'},   
   {"defaults", 0,0, 'D'},   
+  {"ipv6", 0,0, '6'},   
+  {"ipv4", 0,0, '4'},   
+  {"dontfork", 0,0, 'F'},   
   {"source", 0,0, 0},     
   {"help", 0,0, 'h'},       
   {"config", 0,0,'C'},
+  {"dummy", 0,0,'B'},
 };
 
 parse_config_file(QueryOptions *q) {
@@ -114,6 +123,11 @@ print_enabled_options(QueryOptions *o) {
     penabled("engine",engine);
     penabled("mirroring",mirror);
     penabled("plugin",plugin);
+    penabled("ipv4",ipv4);
+    penabled("ipv6",ipv6);
+    penabled("dummy",dummy);
+    penabled("debug",debug);
+    penabled("blind",blind);
     fprintf(stderr,"\n");
     fprintf(stderr,"Result Request: %d\n", o->nresults);
     fprintf(stderr,"Position: %d\n",o->position);
@@ -127,14 +141,12 @@ int process_options(int argc, char **argv, QueryData *q) {
   int option_index;
   int opt = 0;
   int count = 0;
-  printf("%d %s\n",argc,argv[2]);
   // FIXME: Parse optional arguments
   while (1) {
     opt = getopt_long(argc, argv, 
-		      "rusateRiPplmbcoOfn:pSHX",
+		      "rusateRiPplmbcoOfdDFTBn:pSHX",
 		      long_options, &option_index);
     if(opt == -1) break;
-    //    fprintf(stderr, "option_index: %d\n opt: %c\n", option_index, opt);
     switch (opt) { 
       //   case 0: fprintf(stderr,"option %s", long_options[option_index].name);
       // if(optarg) fprintf(stderr, " with arg %s", optarg);
@@ -163,7 +175,13 @@ int process_options(int argc, char **argv, QueryData *q) {
     case 'H': o->html = 1; break; 
     case 'X': o->xml = 1; break;
     case 'h': usage(); break;
+    case 'B': o->blind = 1; break;
+    case 'D': o->debug = 1; break;
+    case 'F': o->dontfork = 1; break;
     case 'v': o->verbose = 1; break;
+    case '6': o->ipv6 = 1; break;
+    case '4': o->ipv4 = 1; break;
+
     default: break;
     }
   }
@@ -178,6 +196,8 @@ int process_options(int argc, char **argv, QueryData *q) {
 
 main(int argc, char **argv) {
 	int i = 0;
+	int cnt = 0;
+	char host[1024];
 	if(argc == 1) usage();
 	int querylen = 0;
   	QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
@@ -201,23 +221,24 @@ main(int argc, char **argv) {
 	  strcat(q->keywords," ");
 	}
 
-	print_enabled_options(&q->options);
-	if(q->options.verbose) fprintf(stderr,"Keywords: %s\n",q->keywords);
+	if(q->options.debug) print_enabled_options(&q->options);
+	if(q->options.verbose) fprintf(stderr,"Search Keywords: %s\n",q->keywords);
 	
-#ifdef DUMMY_CLIENT
-	strcpy(q->keywords,"WHAT THE HECK?");
-	int cnt = query_main(q,"localhost");
-#else
-	char host[1024];
-	int cnt;
-	char *h = getenv("GNUGOL_SERVER");
-	if ( h != NULL) {
-	  strcpy(host,h);
+	// FIXME clean out all this logic
+	if(q->options.dummy) {
+	  strcpy(q->keywords,"WHAT THE HECK?");
+	  int cnt = query_main(q,"::1");
 	} else {
-	  strcpy(host,"localhost");
+	  // FIXME - move this setup to options
+	  char *h = getenv("GNUGOL_SERVER");
+	  if ( h != NULL) {
+	    strcpy(host,h);
+	  } else {
+	    strcpy(host,"::1");
+	  }
+	  cnt = query_main(q,host);
 	}
-	cnt = query_main(q,host);
-#endif
+
 	// Gah, a long, painful combinatorial explosion will have to come below
 	if(q->options.html) {
 	  if(q->options.urls && q->options.snippets) {

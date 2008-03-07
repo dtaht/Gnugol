@@ -1,5 +1,6 @@
 LIBS=-I/usr/local/include -lcgic
-DEBUG=-DDEBUG -DDUMMY_SERVER -DDUMMY_CLIENT
+DEBUG=-DDEBUG 
+#DEBUG=-DDEBUG -DDUMMY_SERVER -DDUMMY_CLIENT
 PROGS=gnugol.cgi parser_test fpipe # gnugold
 HTMLDIR=/var/www/gnugol
 CGIDIR=/usr/lib/cgi-bin

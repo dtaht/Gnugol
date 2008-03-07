@@ -29,6 +29,12 @@ struct query_options {
   int output:1;
   int blind:1;
   int verbose:1;
+  int ipv4:1;
+  int ipv6:1;
+  int trust:1;
+  int dontfork:1;
+  int dummy:1;
+  int debug:1;
   int nresults;
   int position;
   char *engine_name;

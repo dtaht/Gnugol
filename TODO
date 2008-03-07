@@ -42,3 +42,17 @@ Emacs minor mode - gimmie X number of urls. Download Y files
 
 In order to be http://tools.ietf.org/html/rfc2460#page-24 compliant, we
 have to compute an IPv6 checksum.
+
+http://www.faqs.org/rfcs/rfc2375.html
+Site local multicast addresses are in the range:
+
+2.3 Site-Local Scope
+
+   FF05:0:0:0:0:0:0:2       All Routers Address              [ADDARCH]
+
+   FF05:0:0:0:0:0:1:3       All-dhcp-servers           [Bound,Perkins]
+   FF05:0:0:0:0:0:1:4       All-dhcp-relays            [Bound,Perkins]
+   FF05:0:0:0:0:0:1:1000    Service Location                 [RFC2165]
+   -FF05:0:0:0:0:0:1:13FF
+
+ FF0X:0:0:0:0:0:0:114   any private experiment                 [JBP]

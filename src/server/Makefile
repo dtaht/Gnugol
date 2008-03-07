@@ -4,7 +4,7 @@ HEADERS=../include/*.h
 COMMON=../common/connect_client.o ../common/parser.o ../common/listen_server.o ../common/fit_results.o
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
-DEBUG=-DDEBUG -g # -DDUMMY_SERVER -g
+DEBUG=-DDEBUG 
 PROGS=gnugold
 OBJECTS=udp_server.o
 HTMLDIR=/var/www/gnugol
@@ -17,14 +17,14 @@ STRIP=strip
 
 all: $(PROGS) 
 
-gnugold: udp_server.o $(HEADERS) $(COMMON)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) udp_server.o $(COMMON) $(LIBS) $(CGILIB) -o gnugold
+gnugold: udp_server.o server_options.o $(HEADERS) $(COMMON)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) udp_server.o server_options.o $(COMMON) $(LIBS) $(CGILIB) -o gnugold
 
 udp_server.o: udp_server.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) udp_server.c $(LIBS) -c
-	
-#gnugold: gnugold.o 
-#	$(CC) gnugold.o -o gnugold ${LIBS}
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c udp_server.c 
+
+server_options.o: server_options.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c server_options.c 
 
 install: $(PROGS)
 	cp gnugold $(DESTDIR)$(BINDIR)
