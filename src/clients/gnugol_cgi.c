@@ -1,31 +1,3 @@
-/* Change this if the SERVER_NAME environment variable does not report
-	the true name of your web server. */
-#if 1
-#define SERVER_NAME cgiServerName
-#endif
-#if 0
-#define SERVER_NAME "www.boutell.com"
-#endif
-
-/* The format of the google query string is well known. The only required
-field is the q.
-
-http://www.google.com.au/search?q=gnogal+test&ie=utf-8&oe=utf-8&aq=t&rls=com.ubuntu:en-US:official&client=firefox-a
-
-*/
-
-/* You may need to change this, particularly under Windows;
-	it is a reasonable guess as to an acceptable place to
-	store a saved environment in order to test that feature. 
-	If that feature is not important to you, you needn't
-	concern yourself with this. */
-
-#ifdef WIN32
-#define SAVED_ENVIRONMENT "c:\\cgicsave.env"
-#else
-#define SAVED_ENVIRONMENT "/tmp/cgicsave.env"
-#endif /* WIN32 */
-
 #include <stdio.h>
 #include <cgic.h>
 #include <string.h>
@@ -39,101 +11,96 @@ void ShowForm();
 void CookieSet();
 void Entries();
 void Cookies();
-void LoadEnvironment();
-void SaveEnvironment();
 
+#define SERVER_NAME "gnu.gol.org"
+#define SAVED_ENVIRONMENT "/tmp/gnugol.env"
 
-int Query(char *query) { 
-	QueryData q;
-	strcpy(q.query,query);
-	int i;
-#ifdef DUMMY_CLIENT
-	int n = query_main(&q,"localhost"); 
-#else
-	int n = query_main(&q,NULL); 
-#endif
-	for (i = 0; i < n; i++) {
-		fprintf(cgiOut,"<a href=\"%s\">%s</a><br>",q.links[i],q.snippets[i]);
-	}
-	return (n);
+int Query(QueryData *q) { 
+  int i;
+  int n = query_main(q,"::1");
+  int output = q->options.urls << 3 | q->options.snippets << 2 | 
+    q->options.titles << 1 | q->options.ads ;
+  for (i = 0; i < n; i++) {
+    switch(output) {
+    case 0: break;
+    case 1: break;
+    case 8: break;
+    case 4: break;
+    case 12: fprintf(cgiOut,"<a href=\"%s\">%s</a><br>",q->links[i],q->snippets[i]);
+      break;
+    default: break;
+    }
+  }
+  fprintf(cgiOut,"<a href=\"%s\">%s</a><br>",q->links[i],q->links[i]);
+  return (n);
+}
+
+int Config(QueryData *q) {
+      // Fixme, only allow trusted hosts to run the configuration
+      // loadConfig(whatever); FIXME FAKE IT FOR NOW
+      q->options.urls = 1;
+      q->options.titles= 0;
+      q->options.snippets= 1;
+      q->options.nresults=3;
+      q->options.position=0;
+      titlepage("Gnugol config");
+      fprintf(cgiOut,"<form action=/cgi-bin/gnugol.cgi?config method=post>");
+      HandleConfig(&q->options);
+      fprintf(cgiOut,"<input type=submit name=reconfig>");
+      fprintf(cgiOut,"</form>");
+      fprintf(cgiOut, "<hr>\n");
+}
+
+int titlepage(char *title) {
+  fprintf(cgiOut, "<html><head>\n");
+  fprintf(cgiOut, "<title>%s</title></head>\n",title);
+  fprintf(cgiOut, "<body><span style=\"font-size:1em; text-align:top\"><img src=/gnugol/images/gnugol.png><a href=gnugol://gnugol>Way Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
+}
+
+int EmptySubmit(QueryData *q) {
+  titlepage("Gnugol Search");
+  ShowForm(q);
+  // FIXME - check to see if we've primed the cache recently
+  // q->options.prime=1;
+  // int n = query_main(q,"::1"); 
+}
+
+void HandleSubmit(QueryData *q)
+{
+  char query[1024];
+  strcpy(query,q->keywords);
+  //  cgiFormStringNoNewlines("q", query, 1024);
+  cgiHtmlEscape(query);
+  titlepage(query);
+  q->options.urls = q->options.snippets = 1;
+  q->options.nresults = 3;
+  Query(q);
+  //  if (cgiFormSubmitClicked("saveenvironment") == cgiFormSuccess) {
+  //  SaveEnvironment();
+  // }
+  fprintf(cgiOut,"<hr>");
+  ShowForm(q);
 }
 
 int cgiMain() {
-	char searchterm[1024];
-	searchterm[0]= '\0';
-#ifdef DEBUG
-	// LoadEnvironment();
-#endif /* DEBUG */
-	/* Load a previously saved CGI scenario if that button
-		has been pressed. */
-	//	if (cgiFormSubmitClicked("loadenvironment") == cgiFormSuccess) {
-	//	LoadEnvironment();
-	//}
-	/* Set any new cookie requested. Must be done *before*
-		outputting the content type. */
-	CookieSet();
-	/* Send the content type, letting the browser know this is HTML */
-	cgiHeaderContentType("text/html");
-	/* Top of the page */
-	fprintf(cgiOut, "<html><head>\n");
-	fprintf(cgiOut, "<title>GnuGol</title></head>\n");
-	fprintf(cgiOut, "<body><span style=\"font-size:1em; text-align:top\"><img src=/gnugol/images/gnugol.png><a href=gnugol://gnugol>Way Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
-	/* If a submit button has already been clicked, act on the 
-		submission of the form. */
-
-	QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
-
-	if (cgiFormSubmitClicked("config") == cgiFormSuccess)
-	{
-	// Fixme, only allow trusted hosts to run the configuration
-	// loadConfig(whatever); FIXME FAKE IT FOR NOW
-	q->options.urls = 1;
-	q->options.titles= 1;
-	q->options.snippets= 1;
-	q->options.nresults=10;
-	q->options.position=0;
-		fprintf(cgiOut,"<form action=/cgi-bin/gnugol.cgi method=post>");
-		HandleConfig(&q->options);
-		fprintf(cgiOut,"<input type=submit name=reconfig>");
-		fprintf(cgiOut,"</form>");
-		fprintf(cgiOut, "<hr>\n");
-	} else {
-
-	if ((cgiFormSubmitClicked("btnG") == cgiFormSuccess) ||
-		cgiFormSubmitClicked("saveenvironment") == cgiFormSuccess)
-	{
-		HandleSubmit();
-		fprintf(cgiOut, "<hr>\n");
-	} else {
-	// FIXME - check to see if we've primed the cache recently
-		q->options.prime=1;
-#ifdef DUMMY_CLIENT
-	int n = query_main(q,"::1"); 
-#else
-	int n = query_main(q,NULL); 
-#endif
-		
-	}
-	
-	/* Now show the form */
-	ShowForm();
-	}
-	/* Finish up the page */
-	fprintf(cgiOut, "</body></html>\n");
-	return 0;
-}
-
-void HandleSubmit()
-{
-  char query[1024];
-  cgiFormStringNoNewlines("q", query, 1024);
-  cgiHtmlEscape(query);
-  fprintf(cgiOut, "<BR>\n");
-  Query(query);
-  if (cgiFormSubmitClicked("saveenvironment") == cgiFormSuccess) {
-    SaveEnvironment();
+  QueryData *q = calloc(sizeof(QueryData),1);
+  CookieSet();
+  /* Send the content type, letting the browser know this is HTML */
+  cgiHeaderContentType("text/html");
+  if (cgiFormSubmitClicked("config") == cgiFormSuccess)
+    {
+      Config(q);
+    } else {
+    if (cgiFormSubmitClicked("btnG") == cgiFormSuccess) {
+      HandleSubmit(q);
+    } else {
+      EmptySubmit(q);
+    }
   }
+  fprintf(cgiOut, "</body></html>\n");
+  return 0;
 }
+
 
 #define penabled(a,b)  fprintf(cgiOut,"<input type=checkbox name=\"" a "\" %s%s<br>", o->b ? "checked>" : ">",a);
 
@@ -233,9 +200,9 @@ void ShowForm(char *value)
 	fprintf(cgiOut, "<input type=\"checkbox\" name=\"prefetch\" checked>");
 	if(value != NULL) {
 		cgiValueEscape(value);
-		fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\" value=%s >\n",value);
+		fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\" value=\"%s\" >\n",value);
 	} else {
-		fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\">\n");
+		fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\" >\n");
 	}
 	fprintf(cgiOut, "<input type=submit name=\"btnG\" value=\"Search\">");
 	fprintf(cgiOut, "</form>\n");

@@ -32,7 +32,11 @@ struct server_options {
   int ipv6:1;
   int trust:1;
   int dontfork:1;
-
+  int reverselookup:1;
+  int longhelp:1;
+  int help:1;
+  int retry;
+  int wait;
   char *engine_name;
   char *outputfile;
   char *inputfile;

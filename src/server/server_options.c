@@ -16,8 +16,8 @@
 
 */
 
-static int usage () {
- printf("gnugold [options] keywords\n");
+static int usage (ServerOptions *o) {
+ printf("gnugold [options] engine [engine opts] ...\n");
  printf("-u --urls ");
  printf("-s --snippets ");
  printf("-a --ads ");
@@ -44,10 +44,12 @@ static int usage () {
  printf("-6 --ipv6 listen on ipv6\n");
  printf("-4 --ipv4 listen on ipv4\n");
  printf("-F --dontfork don't fork off the server\n");
+ printf("-r --reverselookup do reverse lookups in DNS (slow) \n");
  
  printf("--defaults     show the defaults\n");
  printf("--source       fetch the source code this was compiled with\n");
  printf("--help         this message\n");
+ printf("-L --longhelp  Longer Help\n");
  printf("--config [file]"); 
  printf(" --verbose"); 
  printf(" --copyright"); 
@@ -89,10 +91,12 @@ static struct option long_options[] = {
   {"dontfork", 0,0, 'F'},   
   {"source", 0,0, 0},     
   {"help", 0,0, 'h'},       
+  {"longhelp", 0,0, 'L'},       
   {"config", 0,0,'C'},
+  {"reverselookup", 0,0,'r'},
 };
 
-parse_config_file(ServerOptions *q) {
+parse_config_file(ServerOptions *o) {
 } 
 
 //Sometimes I wish the c preprocessor had exited the 80s
@@ -126,6 +130,7 @@ print_enabled_options(ServerOptions *o) {
     penabled("ipv6",ipv6);
     penabled("ipv4",ipv4);
     penabled("dontfork",dontfork);
+    penabled("reverselookup",reverselookup);
   }
 }
 
@@ -150,7 +155,7 @@ int server_process_options(int argc, char **argv, ServerOptions *o)
     case 's': o->snippets = 1; break;
     case 'a': o->ads = 1; break;
     case 't': o->titles = 1; break;
-    case 'e': o->engine =1; break; // FIXME strcpy engine type
+    case 'e': o->engine = 1; break; // FIXME strcpy engine type
     case 'R': o->reg = 1; break;
     case 'i': o->input = 1; break; // FIXME
     case 'P': o->prime = 1; break;
@@ -165,12 +170,14 @@ int server_process_options(int argc, char **argv, ServerOptions *o)
     case 'S': o->secure = 1; break; // unimplemented
     case 'H': o->html = 1; break; 
     case 'X': o->xml = 1; break;
-    case 'h': usage(); break;
+    case 'h': o->help = 1; break; 
+    case 'L': o->longhelp = 1; break; 
     case 'v': o->verbose = 1; break;
     case 'T': o->trust = 1; break;
     case 'd': o->debug = 1; break;
     case 'D': o->dummy = 1; break;
     case 'F': o->dontfork = 1; break;
+    case 'r': o->reverselookup = 1; break;
     default: break;
     }
   }
@@ -180,6 +187,10 @@ int server_process_options(int argc, char **argv, ServerOptions *o)
 	 '--help         this message\n");
 	 '--config"); printf(" --verbose"); printf(" --copyright"); printf(" --license\n"); 
 */
+  if(o->help | o->longhelp) {
+    usage(o);
+  }
+
   return(optind);
 }
 
