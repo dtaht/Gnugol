@@ -40,11 +40,11 @@ int usage () {
  printf("-S --Secure    use secure transport\n");
  printf("-H --html      output html\n");
  printf("-X --xml       output gnugol XML\n");
- printf("-d --debug [level]    Debug output");
- printf("-B --dummy dummy input (useful for stress testing)");
- printf("-6 --ipv6 listen on ipv6");
- printf("-4 --ipv4 listen on ipv4");
- printf("-F --dontfork don't fork off the server");
+ printf("-d --debug [level]    Debug output\n");
+ printf("-B --dummy dummy input (useful for stress testing)\n");
+ printf("-6 --ipv6 listen on ipv6\n");
+ printf("-4 --ipv4 listen on ipv4\n");
+ printf("-F --dontfork don't fork off the server\n");
  printf("--defaults     show the defaults\n");
  printf("--source       fetch the source code this was compiled with\n");
  printf("--help         this message\n");

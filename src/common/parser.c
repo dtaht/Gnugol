@@ -7,9 +7,12 @@
 #define log(a,b) printf(a,b);
 #endif
 
+// FIXME, this needed to be more free format
+// See snippet
+// And we need to init the 
 int answer_parse(QueryData *q) {
   char *s = q->query;
-    char *pstart;
+    char *pstart = q->query; // Answer?
     char *pend;
     char *pprev;
     char *p;
@@ -17,6 +20,7 @@ int answer_parse(QueryData *q) {
 
     /* Parse LNK...END section -----------------------------------*/
 
+    if(q->options.urls) {
     pstart = strstr(s, "LNK\n");
     if (pstart == NULL) {
 	log("blew up looking for LNK\n","");
@@ -28,7 +32,7 @@ int answer_parse(QueryData *q) {
 	return -2;
     }
 
-    p = pstart;
+    p = pstart; // BAD!
     pprev = strsep(&p, "\n");
     n1 = 0;
     do {
@@ -39,16 +43,17 @@ int answer_parse(QueryData *q) {
 	}
     } while((pprev < pend) && (n1 < MAX_ENTRIES));
 
-    if (n1 >= MAX_ENTRIES) {
-	log("Overrand entries table \n","");
+    if (n1 > MAX_ENTRIES) {
+	log("Overran entries table %d \n",n1);
 	// return -3;
      }
     /* Parse SNP...END section -----------------------------------*/
-
+    }
+    if(q->options.snippets) {
     pstart = strstr(p, "SNP\n");
     if (pstart == NULL) {
 	log("No Snippet\n","");
-	return -1;
+	//return -1;
     }
     pend = strstr(p, "END\n");
     if (pend == NULL) {
@@ -69,10 +74,11 @@ int answer_parse(QueryData *q) {
 
 //    if (n2 >= MAX_ENTRIES)
 //	return -1;
+    }
 
-    if (n1 != n2) {
-	log("More q->snippets than q->links","");
-	return -5;
+    if (n1 != n2 && (q->options.snippets & q->options.urls)) {
+	log("More q->snippets than q->urls",""); // FIXME
+	// return -5;
     }
 
     return n1;

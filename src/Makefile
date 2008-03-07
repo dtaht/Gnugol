@@ -7,13 +7,18 @@ all:
 	make -C server all
 
 install: 
-	make -C clients install
+	make -C common all
 	make -C plugins all
+	make -C clients install
 	make -C server install
+	make -C scripts install
 
 install-stripped: 
+	make -C common all
+	make -C plugins all
 	make -C clients install-stripped
 	make -C server install
+	make -C scripts install
 
 clean:
 	make -C common clean

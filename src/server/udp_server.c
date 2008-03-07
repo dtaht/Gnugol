@@ -38,6 +38,7 @@ int
 main(int argc, char *argv[])
 {
     int pdes[2];
+    int result;
     int listenfd, n;
     socklen_t addrlen;
     char *myhost;
@@ -82,33 +83,29 @@ main(int argc, char *argv[])
         memset(clienthost, 0, sizeof(clienthost));
         memset(clientservice, 0, sizeof(clientservice));
         memset(query->answer, 0,1280);
-	strcpy(query->query,query->answer);
-
-	if(o->debug) { 
-	  fprintf(stderr,"Got a packet\n");
-	}
+	strcpy(query->query,b);
 
 	if(o->dummy) {
 	  strcpy(query->answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLWN ROCKS\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
 	} else {
-	  fprintf(stderr,"data packet to subprocess %s\n", query->query);
-	  gnugol_plugin_gscrape(query);
-	  fprintf(stderr,"data packet from subprocess %s\n", query->answer);
-	}
-
-	// FIXME - COMPRESS THE OUTPUT, HASH THE DATA, ETC, ETC
+	  if(o->debug) fprintf(stderr,"Sent data packet to subprocess %s\n", query->query);
+	  result = gnugol_plugin_gscrape(query);
+	  if(o->debug) fprintf(stderr,"Got data packet from subprocess %s\n", query->answer);
+	  }
+      
+	// FIXME - COMPRESS THE OUTPUT, HASH THE DATA, ETC, ETC +1??
 
         n = sendto(listenfd, query->answer, strlen(query->answer)+1, 0,
                    (struct sockaddr *)&clientaddr,
                    addrlen);
 
-        getnameinfo((struct sockaddr *)&clientaddr, addrlen,
-                    clienthost, sizeof(clienthost),
-                    clientservice, sizeof(clientservice),
-                    NI_NUMERICHOST);
+        if(o->verbose & o->debug) { 
+	  getnameinfo((struct sockaddr *)&clientaddr, addrlen,
+		      clienthost, sizeof(clienthost),
+		      clientservice, sizeof(clientservice),
+		      NI_NUMERICHOST);
 
-        if(o->verbose || o->debug) { 
-	  fprintf(stderr,"Received request from host=[%s] port=[%s] string=%s\n",
+	  fprintf(stderr,"Processed request from host=[%s] port=[%s] string=%s\n",
 		  clienthost, clientservice,b);
 	}
 

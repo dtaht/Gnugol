@@ -9,7 +9,7 @@ PROGS=gnugold
 OBJECTS=udp_server.o
 HTMLDIR=/var/www/gnugol
 CGIDIR=/usr/lib/cgi-bin
-BINDIR=$(HOME)/bin
+BINDIR=/usr/sbin
 CC=gcc
 STRIP=strip
 

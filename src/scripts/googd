@@ -23,7 +23,6 @@ args = f.readline()
 query = f.readline()
 end = f.readline()
 while query :
-	print query
         data = google.doGoogleSearch(query)
         if string.find(args,"LNK") != -1 :
 		print "LNK"
