@@ -249,11 +249,17 @@ main(int argc, char **argv) {
 
 	// Gah, a long, painful combinatorial explosion will have to come below
 	if(q->options.html) {
+	  if(q->options.urls && q->options.snippets && q->options.titles) {
+	    for (i = 0; i <= cnt-1; i++) {
+	      printf("<a href=%s>%s</a> %s<br>", q->links[i], q->titles[i],q->snippets[i]); 
+	    }
+	  } else {
 	  if(q->options.urls && q->options.snippets) {
 	    for (i = 0; i <= cnt-1; i++) {
 	      printf("<a href=%s>%s</a><br>", q->links[i], q->snippets[i]); 
 	    }
 	  }
+	}
 	}
 	if(q->options.xml) {
 	  printf("<xml format=gnugol.xml link=http://xml.gnugol.com>");

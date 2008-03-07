@@ -17,13 +17,18 @@ o = sys.stdout
 google.LICENSE_KEY = 'gHbcd0RQFHKbR2PQ7o4q/LKfCMVB03Ru'
 sys.stdout = codecs.lookup('utf-8')[-1](sys.stdout)
 
+#q, start = 0, maxResults = 10, filter = 1,^M
+#                    restrict='', safeSearch = 0, language = '',^M
+#                    inputencoding = '', outputencoding = '',\^M
+#                    license_key = None, http_proxy = None ):
+
 argk = 1
 argc = len(sys.argv)
 args = f.readline()
 query = f.readline()
 end = f.readline()
 while query :
-        data = google.doGoogleSearch(query)
+        data = google.doGoogleSearch(query,0,3)
         if string.find(args,"LNK") != -1 :
 		print "LNK"
         	for result in data.results:

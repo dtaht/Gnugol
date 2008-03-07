@@ -10,13 +10,46 @@
 // FIXME, this needed to be more free format
 // See snippet
 // And we need to init the 
+
+/* 
+int parse_section(QueryData *q,char *proto) {
+    pstart = strstr(s, "LNK\n");
+    if (pstart == NULL) {
+	log("blew up looking for LNK\n","");
+	return -1;
+    }
+    pend = strstr(s, "END\n");
+    if (pend == NULL) {
+	log("blew up looking for END\n","");
+	return -2;
+    }
+
+    p = pstart; // BAD!
+    pprev = strsep(&p, "\n");
+    n1 = 0;
+    do {
+	pprev = strsep(&p, "\n");
+	if (pprev != pend) {
+	    q->links[n1] = pprev;
+	    n1++;
+	}
+    } while((pprev < pend) && (n1 < MAX_ENTRIES));
+
+    if (n1 > MAX_ENTRIES) {
+	log("Overran entries table %d \n",n1);
+	// return -3;
+     }
+    }
+}
+*/
+
 int answer_parse(QueryData *q) {
   char *s = q->query;
     char *pstart = q->query; // Answer?
     char *pend;
     char *pprev;
     char *p;
-    int   n1,n2;
+    int   n1,n2,n3;
 
     /* Parse LNK...END section -----------------------------------*/
 
@@ -75,6 +108,34 @@ int answer_parse(QueryData *q) {
 //    if (n2 >= MAX_ENTRIES)
 //	return -1;
     }
+
+    if(q->options.titles) {
+    pstart = strstr(p, "TLE\n");
+    if (pstart == NULL) {
+	log("No titles\n","");
+	//return -1;
+    }
+    pend = strstr(p, "END\n");
+    if (pend == NULL) {
+	log("No End\n","");
+	return -1;
+    }
+
+    p = pstart;
+    pprev = strsep(&p, "\n");
+    n3 = 0;
+    do {
+	pprev = strsep(&p, "\n");
+	if (pprev != pend) {
+	    q->titles[n3] = pprev;
+	    n3++;
+	}
+    } while((pprev < pend) && (n3 < MAX_ENTRIES));
+
+//    if (n2 >= MAX_ENTRIES)
+//	return -1;
+    }
+
 
     if (n1 != n2 && (q->options.snippets & q->options.urls)) {
 	log("More q->snippets than q->urls",""); // FIXME
