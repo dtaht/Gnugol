@@ -160,6 +160,11 @@ void HandleConfig(QueryOptions *o)
   penabled("mirroring",mirror);
   penabled("plugin",plugin);
   penabled("blind",blind);
+  penabled("ipv4",ipv4);
+  penabled("ipv6",ipv6);
+  penabled("dummy",dummy);
+  penabled("debug",debug);
+  penabled("trust",trust);
 }
 
 void Entries()

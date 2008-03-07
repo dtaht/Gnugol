@@ -139,12 +139,15 @@ print_enabled_options(QueryOptions *o) {
 int process_options(int argc, char **argv, QueryData *q) {
   QueryOptions *o = &q->options; 
   int option_index;
+  int i = 0;
+  int querylen = 0;
   int opt = 0;
   int count = 0;
   // FIXME: Parse optional arguments
+  if(argc == 1) usage();
   while (1) {
     opt = getopt_long(argc, argv, 
-		      "rusateRiPplmbcoOfdDFTBn:pSHX",
+		      "rusateRiPplmbcoOfdDFTBDvn:pSHX",
 		      long_options, &option_index);
     if(opt == -1) break;
     switch (opt) { 
@@ -157,6 +160,7 @@ int process_options(int argc, char **argv, QueryData *q) {
     case 's': o->snippets = 1; break;
     case 'a': o->ads = 1; break;
     case 't': o->titles = 1; break;
+    case 'T': o->trust = 1; break;
     case 'e': o->engine =1; break; // FIXME strcpy engine type
     case 'R': o->reg = 1; break;
     case 'i': o->input = 1; break; // FIXME
@@ -191,26 +195,6 @@ int process_options(int argc, char **argv, QueryData *q) {
 	 '--help         this message\n");
 	 '--config"); printf(" --verbose"); printf(" --copyright"); printf(" --license\n"); 
 */
-  return(optind);
-}
-
-main(int argc, char **argv) {
-	int i = 0;
-	int cnt = 0;
-	char host[1024];
-	if(argc == 1) usage();
-	int querylen = 0;
-  	QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
-
-	// Defaults
-	q->options.nresults = 10;
-	q->options.position = 0;
-	q->options.engine_name = "google";
-	q->options.language = "en";
-	q->options.urls = 1; // Always default to fetching urls
-
-	process_options(argc,argv,q);
-	
 	for(i = optind; i < argc; i++) {
 	  if((querylen += strlen(argv[i]) > MAX_MTU - 80)) {
 	    fprintf(stderr,"Too many words in query, try something smaller\n");
@@ -223,6 +207,30 @@ main(int argc, char **argv) {
 
 	if(q->options.debug) print_enabled_options(&q->options);
 	if(q->options.verbose) fprintf(stderr,"Search Keywords: %s\n",q->keywords);
+	
+  return(optind);
+}
+
+main(int argc, char **argv) {
+	int i = 0;
+	int cnt = 0;
+	char host[1024];
+	int querylen = 0;
+  	QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
+
+	// Defaults
+	q->options.nresults = 10;
+	q->options.position = 0;
+	q->options.engine_name = "google";
+	q->options.language = "en";
+
+	process_options(argc,argv,q);
+
+	if(!(q->options.urls | q->options.prime |
+	     q->options.snippets | q->options.ads |
+	     q->options.titles)) { 
+	  	q->options.urls = 1; // Always default to fetching urls 
+	}
 	
 	// FIXME clean out all this logic
 	if(q->options.dummy) {
@@ -248,6 +256,8 @@ main(int argc, char **argv) {
 	  }
 	}
 	if(q->options.xml) {
+	  printf("<xml format=gnugol.xml link=http://xml.gnugol.com>");
+	  
 	}
 	if(!(q->options.html | q->options.xml)) {
 	  for (i = 0; i <= cnt-1; i++) {
