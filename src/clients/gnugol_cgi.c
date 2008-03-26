@@ -18,8 +18,8 @@ void Cookies();
 int Query(QueryData *q) { 
   int i;
   // 2001:4f8:3:36:2e0:81ff:fe23:90d3
-  int n = query_main(q,"::1");
-  // int n = query_main(q,"2001:4f8:3:36:2e0:81ff:fe23:90d3");
+  //int n = query_main(q,"::1");
+   int n = query_main(q,"2001:4f8:3:36:2e0:81ff:fe23:90d3");
   //  fprintf(cgiOut,"n=%d",n);
   int output = 
     q->options.urls >> 3 | q->options.snippets >> 2 | 

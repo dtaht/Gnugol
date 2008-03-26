@@ -38,8 +38,10 @@ int build_query(QueryData *q) {
     }
   } else {
     strcat(query,q->keywords);
-    fprintf(stderr,"Debug keywords:%s \n", q->keywords);
-  }
+    if(q->options.debug) { 
+    fprintf(stderr,"Keywords:%s \n", q->keywords);
+    }
+}
   strcat(query,"\nEND\n");
   return(0);
 }
