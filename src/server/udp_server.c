@@ -31,13 +31,13 @@
 static int setup_connections(ServerOptions *o) {
 
   int numfds = 0;
-  int readfds[];
-  int writefds[];
-  int errorfds[];
+  int readfds[2];
+  int writefds[2];
+  int errorfds[2];
 
   if (o->multicast) { 
     if(o->ipv6) {
-      o->mcast_addr,
+      //o->mcast_addr,
 	}
     
     if(o->ipv4) {
@@ -50,8 +50,8 @@ static int setup_connections(ServerOptions *o) {
   }
   if (o->cache) { 
   }
-  if (o->peers) {
-  }
+  //if (o->peers) {
+  //}
   return 0;
 }
 
