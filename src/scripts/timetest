@@ -1,0 +1,31 @@
+#!/bin/sh
+# This script runs tests of gnugol
+# both locally 
+
+export RESULTS=/tmp/gnugol.times
+export TIMER="/usr/bin/time -a -o $RESULTS -f %E-%C gnugol --links"
+export WTIMER="/usr/bin/time -a -o $RESULTS -f %E-%C gnugol --links"
+
+echo "TESTING LOCALHOST" > $RESULTS
+export GNUGOL_SERVER=::1
+killall gnugold
+gnugold &
+sleep 2
+
+$TIMER ipv6
+$TIMER testing speed 
+$TIMER shakespeare gutenburg
+$TIMER billy joel my life lyrics
+$TIMER ipv6
+
+killall gnugold
+export GNUGOL_SERVER=2001:4f8:3:36:2e0:81ff:fe23:90d3
+echo "TESTING TOUTATIS" >> $RESULTS
+
+$TIMER ipv6
+$TIMER testing speed 
+$TIMER shakespeare gutenburg
+$TIMER billy joel my life lyrics
+$TIMER ipv6
+
+
