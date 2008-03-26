@@ -12,53 +12,80 @@ void CookieSet();
 void Entries();
 void Cookies();
 
-#define SERVER_NAME "gnu.gol.org"
+#define SERVER_NAME "gnugol.org"
 #define SAVED_ENVIRONMENT "/tmp/gnugol.env"
 
 int Query(QueryData *q) { 
   int i;
+  // 2001:4f8:3:36:2e0:81ff:fe23:90d3
   int n = query_main(q,"::1");
-  int output = q->options.urls << 3 | q->options.snippets << 2 | 
-    q->options.titles << 1 | q->options.ads ;
+  // int n = query_main(q,"2001:4f8:3:36:2e0:81ff:fe23:90d3");
+  //  fprintf(cgiOut,"n=%d",n);
+  int output = 
+    q->options.urls >> 3 | q->options.snippets >> 2 | 
+    q->options.titles >> 1; // | q->options.ads ;
+  //  fprintf(cgiOut,"shift = %d\n",output);
+
   for (i = 0; i < n; i++) {
     switch(output) {
     case 0: break;
     case 1: break;
-    case 8: break;
+    case 2: break;
+    case 3: break;
     case 4: break;
+    case 5: break;
+    case 6: break;
+    case 7: break;
+    case 8: break;
+    case 9: break;
+    case 10: break;
+    case 11: break;
     case 12: fprintf(cgiOut,"<a href=\"%s\">%s</a><br>",q->links[i],q->snippets[i]);
       break;
     default: break;
     }
+    // ignore all that for now
+    fprintf(cgiOut,"<a href=\"%s\">%s</a><br>",q->links[i],q->snippets[i]);
   }
-  fprintf(cgiOut,"<a href=\"%s\">%s</a><br>",q->links[i],q->links[i]);
   return (n);
 }
 
 int Config(QueryData *q) {
       // Fixme, only allow trusted hosts to run the configuration
       // loadConfig(whatever); FIXME FAKE IT FOR NOW
-      q->options.urls = 1;
-      q->options.titles= 0;
-      q->options.snippets= 1;
-      q->options.nresults=3;
-      q->options.position=0;
-      titlepage("Gnugol config");
-      fprintf(cgiOut,"<form action=/cgi-bin/gnugol.cgi?config method=post>");
-      HandleConfig(&q->options);
-      fprintf(cgiOut,"<input type=submit name=reconfig>");
-      fprintf(cgiOut,"</form>");
-      fprintf(cgiOut, "<hr>\n");
+  q->options.urls = 1;
+  q->options.titles= 0;
+  q->options.snippets= 1;
+  q->options.nresults=3;
+  q->options.position=0;
+  titlepage(q,"Gnugol config");
+  fprintf(cgiOut,"<form action=/cgi-bin/gnugol.cgi?config method=post>");
+  HandleConfig(&q->options);
+  fprintf(cgiOut,"<input type=submit name=reconfig>");
+  fprintf(cgiOut,"</form>");
+  fprintf(cgiOut, "<hr>\n");
 }
 
-int titlepage(char *title) {
+int titlepage(QueryData *q, char *title) {
   fprintf(cgiOut, "<html><head>\n");
   fprintf(cgiOut, "<title>%s</title></head>\n",title);
-  fprintf(cgiOut, "<body><span style=\"font-size:1em; text-align:top\"><img src=/gnugol/images/gnugol.png><a href=gnugol://gnugol>Way Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
+  if(!q->options.blind) {
+    fprintf(cgiOut, "<body><span style=\"font-size:.8em; text-align:top\">");
+    if(q->options.ipv6) {
+      fprintf(cgiOut, "<a href=http://ipv6.google.com/images>Images</a> ");
+      fprintf(cgiOut, "<a href=http://ipv6.google.com/news>News</a> ");
+    } else {
+      fprintf(cgiOut, "<a href=http://www.google.com/images>Images</a> ");
+      fprintf(cgiOut, "<a href=http://www.google.com/news>News</a> ");
+    }
+    fprintf(cgiOut,"<img src=/gnugol/images/gnugol.png><a href=gnugol://gnugol>Way Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
+  } else {
+    fprintf(cgiOut, "<body>");
+  } 
 }
 
 int EmptySubmit(QueryData *q) {
-  titlepage("Gnugol Search");
+  titlepage(q,"Gnugol Search");
   ShowForm(q);
   // FIXME - check to see if we've primed the cache recently
   // q->options.prime=1;
@@ -71,7 +98,7 @@ void HandleSubmit(QueryData *q)
   strcpy(query,q->keywords);
   //  cgiFormStringNoNewlines("q", query, 1024);
   cgiHtmlEscape(query);
-  titlepage(query);
+  titlepage(q,query);
   q->options.urls = q->options.snippets = 1;
   q->options.nresults = 3;
   Query(q);
@@ -82,6 +109,41 @@ void HandleSubmit(QueryData *q)
   ShowForm(q);
 }
 
+// cgiFormStringNoNewlines("q",query->keywords,MAX_MTU);
+
+#ifdef penabled
+#undef penabled
+#endif
+#define penabled(a,b)  q->options.b = (cgiFormSubmitClicked(a) == cgiFormSuccess) ? 0:1
+
+int setup_options(QueryData *q) {
+  penabled("urls",urls);
+  penabled("titles",titles);
+  penabled("snippets",snippets);
+  penabled("ads",ads);
+  penabled("misc",misc);
+  penabled("reverse",reverse);
+  penabled("broadcast",broadcast);
+  penabled("multicast",multicast);
+  penabled("force",force);
+  penabled("cache",cache);
+  penabled("xml",xml);
+  penabled("html",html);
+  penabled("offline",offline);
+  penabled("lucky",lucky);
+  penabled("register",reg);
+  penabled("prime",prime);
+  penabled("engine",engine);
+  penabled("mirroring",mirror);
+  penabled("plugin",plugin);
+  penabled("blind",blind);
+  penabled("ipv4",ipv4);
+  penabled("ipv6",ipv6);
+  penabled("dummy",dummy);
+  penabled("debug",debug);
+  penabled("trust",trust);
+}
+
 int cgiMain() {
   QueryData *q = calloc(sizeof(QueryData),1);
   CookieSet();
@@ -89,11 +151,14 @@ int cgiMain() {
   cgiHeaderContentType("text/html");
   if (cgiFormSubmitClicked("config") == cgiFormSuccess)
     {
+      q->options.blind = cgiFormSubmitClicked("blind") == cgiFormSuccess ? 0:1;
       Config(q);
     } else {
     if (cgiFormSubmitClicked("btnG") == cgiFormSuccess) {
+      q->options.blind = cgiFormSubmitClicked("blind") == cgiFormSuccess ? 0:1;
       HandleSubmit(q);
     } else {
+      q->options.blind = cgiFormSubmitClicked("blind") == cgiFormSuccess ? 0:1;
       EmptySubmit(q);
     }
   }
@@ -102,6 +167,10 @@ int cgiMain() {
 }
 
 
+// #define penabled(a,b)  fprintf(cgiOut,"<input type=checkbox name=\"" a "\" %s%s<br>", o->b ? "checked>" : ">",_(a));
+#ifdef penabled
+#undef penabled
+#endif
 #define penabled(a,b)  fprintf(cgiOut,"<input type=checkbox name=\"" a "\" %s%s<br>", o->b ? "checked>" : ">",a);
 
 void HandleConfig(QueryOptions *o)
@@ -190,22 +259,20 @@ void Cookies()
 	cgiStringArrayFree(array);
 }
 	
-void ShowForm(char *value)
+void ShowForm(QueryData *q)
 {
-	fprintf(cgiOut, "<form method=\"GET\"");
-	fprintf(cgiOut, "action=\"");
-	cgiValueEscape(cgiScriptName);
-	fprintf(cgiOut, "\"><p>");
-	fprintf(cgiOut, "Prefetch");
-	fprintf(cgiOut, "<input type=\"checkbox\" name=\"prefetch\" checked>");
-	if(value != NULL) {
-		cgiValueEscape(value);
-		fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\" value=\"%s\" >\n",value);
-	} else {
-		fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\" >\n");
-	}
-	fprintf(cgiOut, "<input type=submit name=\"btnG\" value=\"Search\">");
-	fprintf(cgiOut, "</form>\n");
+  fprintf(cgiOut, "<form method=\"GET\"");
+  fprintf(cgiOut, "action=\"");
+  cgiValueEscape(cgiScriptName);
+  fprintf(cgiOut, "\"><p>");
+  if(q->keywords != NULL) {
+    //		cgiValueEscape(value);
+    fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\" value=\"%s\" >\n",cgiValueEscape(q->keywords));
+  } else {
+    fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\" >\n");
+  }
+  fprintf(cgiOut, "<input type=submit name=\"btnG\" value=\"Search\">");
+  fprintf(cgiOut, "</form>\n");
 }
 
 void CookieSet()

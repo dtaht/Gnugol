@@ -1,8 +1,32 @@
 // Lazy DNS
 
+int getgnugolbyintuition();
+int gethostbyintuition();
+
+/* 
+  Find available gnugol servers by "intuition".
+  This includes: 
+  reverse DNS lookup
+  DNS record lookup
+  Recursive DNS lookup - as in 
+    gnugol.whatever.l.y.com 
+    gnugol.l.y.com
+    gnugol.y.com
+    gnugol.com
+
+  static configuration via conf file
+  command line configuration
+  gnugol broadcast 
+  ???
+  Not in this order.
+*/
+
+int getgnugolbyintuition() {
+}
+
 // This abuses the filesystem worse than early versions of git did
 // It's terrible, as the largest file will be about 50 bytes in 
-// length
+// length. Far better to adopt Berkley DB.
 
 static FILE *search_dns(sha1 *sha1) {
   FILE *fp;

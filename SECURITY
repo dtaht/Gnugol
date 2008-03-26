@@ -1,0 +1,38 @@
+Several high end security models have been investigated for gnugol,
+to add encryption and strong authentication. The most promising
+appears to be DTLS - datagram TLS - which is part of openssl. 
+
+The disadvantages of this are several round trips required for setup,
+a large packet size, and the license appears to be incompatible with
+the GPL.
+
+Gnugol is intended to be a lightweight information sharing
+protocol. This is in conflict with it also being a secure protocol.
+For now addressing serious privacy concerns is on the back burner.
+
+This isn't to say that there isn't some inherent security built in.
+
+The basic security model will probably consist of trusted networks
+and trusted devices:
+
+trusted networks: A network is detected by the combination of
+mac address and ip of the default gateway. While this can be spoofed,
+if someone already has subverted these two pieces of information, 
+you've got bigger problems.
+
+Networks are assigned unique SSID like identifiers, and assigned relative
+degrees of trust. To give an example, let's say you have a laptop that 
+you use at home, at work, and at a cafe. 
+
+At home, you access material you got from work, and from the cafe.
+You share it on your home network, but you might choose not to share
+the information from the cafe.
+
+At work, you access material from work, but not from home, or the cafe,
+and you share information from work at work, but not from home or the cafe.
+
+At the cafe, you access material from home, and work, but share none of it.
+
+As for trusted devices, this gets trickier. The answer to this problem
+is too small to be written in the margin of this missive.
+

@@ -9,9 +9,12 @@ BINDIR=$(HOME)/bin
 CC=gcc
 TESTDIR=../tests/
 
-OBJECTS := connect_client.o listen_server.o parser.o fit_results.o
+OBJECTS := connect_client.o listen_server.o parser.o fit_results.o multicast.o
 
-all: $(PROGS) $(OBJECTS)
+all: $(PROGS) $(OBJECTS) $(TESTDIR)/multicast_test
+
+$(TESTDIR)/multicast_test: multicast.c
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -DTEST_MULTICAST multicast.c -o $(TESTDIR)/multicast_test
 
 fpipe: fpipe.c
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) fpipe.c -o fpipe
@@ -37,3 +40,5 @@ listen_server.o: listen_server.c $(INC)/listen_server.h
 fit_results.o: fit_results.c $(INC)/query.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c fit_results.c
 
+multicast.o: multicast.c $(INC)/query.h
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c multicast.c

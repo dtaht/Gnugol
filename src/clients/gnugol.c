@@ -19,9 +19,9 @@
 int usage () {
  printf("gnugol [options] keywords\n");
  printf("-r --reverse   unreverse the list. The default IS reversed already\n");
- printf("-u --urls\n");
- printf("-s --snippets\n");
- printf("-a --ads\n");
+ printf("-u --urls ");
+ printf("-s --snippets ");
+ printf("-a --ads ");
  printf("-t --titles\n");
  printf("-e --engine    use an alternate engine\n");
  printf("-R --register\n");
@@ -61,6 +61,7 @@ int usage () {
 static struct option long_options[] = {
   {"reverse", 0, 0, 'r' }, 
   {"urls", 0, 0, 'u' },
+  {"links", 0, 0, 'u' },
   {"snippets", 0, 0,'s'},
   {"ads", 0,0,'a' },
   {"titles", 0,0, 't'},
