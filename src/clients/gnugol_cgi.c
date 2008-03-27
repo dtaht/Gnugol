@@ -12,15 +12,15 @@ void CookieSet();
 void Entries();
 void Cookies();
 
-#define SERVER_NAME "gnugol.org"
+#define SERVER_NAME "g.gnugol.org"
 #define SAVED_ENVIRONMENT "/tmp/gnugol.env"
+
+/* It will be simpler to just generate a cookie based on the set options */
 
 int Query(QueryData *q) { 
   int i;
-  // 2001:4f8:3:36:2e0:81ff:fe23:90d3
-  //int n = query_main(q,"::1");
-   int n = query_main(q,"2001:4f8:3:36:2e0:81ff:fe23:90d3");
-  //  fprintf(cgiOut,"n=%d",n);
+  int n = query_main(q,"::1");
+  // int n = query_main(q,"2001:4f8:3:36:2e0:81ff:fe23:90d3");
   int output = 
     q->options.urls >> 3 | q->options.snippets >> 2 | 
     q->options.titles >> 1; // | q->options.ads ;
@@ -35,7 +35,8 @@ int Query(QueryData *q) {
     case 4: break;
     case 5: break;
     case 6: break;
-    case 7: break;
+    case 7: fprintf(cgiOut,"<a href=\"%s\">%s</a><br>",q->links[i],q->snippets[i]);
+      break;
     case 8: break;
     case 9: break;
     case 10: break;
@@ -66,19 +67,28 @@ int Config(QueryData *q) {
   fprintf(cgiOut, "<hr>\n");
 }
 
+int metadata(QueryData *q) {
+  // Style sheets & Javascript
+  return 0;
+}
 int titlepage(QueryData *q, char *title) {
   fprintf(cgiOut, "<html><head>\n");
-  fprintf(cgiOut, "<title>%s</title></head>\n",title);
+  fprintf(cgiOut, "<title>%s</title>",title);
+  metadata(q);
+  fprintf(cgiOut,"</head>\n");
   if(!q->options.blind) {
     fprintf(cgiOut, "<body><span style=\"font-size:.8em; text-align:top\">");
     if(q->options.ipv6) {
       fprintf(cgiOut, "<a href=http://ipv6.google.com/images>Images</a> ");
       fprintf(cgiOut, "<a href=http://ipv6.google.com/news>News</a> ");
+      fprintf(cgiOut, "<a href=http://ipv6.google.com/maps>Maps</a> ");
     } else {
       fprintf(cgiOut, "<a href=http://www.google.com/images>Images</a> ");
       fprintf(cgiOut, "<a href=http://www.google.com/news>News</a> ");
     }
-    fprintf(cgiOut,"<img src=/gnugol/images/gnugol.png><a href=gnugol://gnugol>Way Faster Search</a> <a href=gnugol://IpV6>Ipv6 Enabled</a></span>\n");
+    fprintf(cgiOut,"<span style=\"text-align:left\"> <a href=gnugol://gnugol>Way Faster Search</a> ");
+    fprintf(cgiOut,"<a href=gnugol://IpV6>Ipv6 Enabled</a></span></span><br>\n");
+    fprintf(cgiOut,"<img src=/gnugol/images/gnugol.png><br><hr>");
   } else {
     fprintf(cgiOut, "<body>");
   } 
@@ -94,10 +104,12 @@ int EmptySubmit(QueryData *q) {
 
 void HandleSubmit(QueryData *q)
 {
-  char query[1024];
+  char query[1280];
+
   strcpy(query,q->keywords);
   //  cgiFormStringNoNewlines("q", query, 1024);
   cgiHtmlEscape(query);
+  cgiFormString("q", query, sizeof(query));	
   titlepage(q,query);
   q->options.urls = q->options.snippets = 1;
   q->options.nresults = 3;
@@ -114,7 +126,7 @@ void HandleSubmit(QueryData *q)
 #ifdef penabled
 #undef penabled
 #endif
-#define penabled(a,b)  q->options.b = (cgiFormSubmitClicked(a) == cgiFormSuccess) ? 0:1
+#define penabled(a,b)  q->options.b = (cgiFormCheckboxSingle(a) == cgiFormSuccess) ? 0:1
 
 int setup_options(QueryData *q) {
   penabled("urls",urls);
@@ -151,18 +163,19 @@ int cgiMain() {
   cgiHeaderContentType("text/html");
   if (cgiFormSubmitClicked("config") == cgiFormSuccess)
     {
-      q->options.blind = cgiFormSubmitClicked("blind") == cgiFormSuccess ? 0:1;
+      q->options.blind = cgiFormCheckboxSingle("blind") == cgiFormSuccess ? 0:1;
       Config(q);
     } else {
     if (cgiFormSubmitClicked("btnG") == cgiFormSuccess) {
-      q->options.blind = cgiFormSubmitClicked("blind") == cgiFormSuccess ? 0:1;
+      q->options.blind = cgiFormCheckboxSingle("blind") == cgiFormSuccess ? 0:1;
       HandleSubmit(q);
     } else {
-      q->options.blind = cgiFormSubmitClicked("blind") == cgiFormSuccess ? 0:1;
+      q->options.blind = cgiFormCheckboxSingle("blind") == cgiFormSuccess ? 0:1;
       EmptySubmit(q);
     }
   }
   fprintf(cgiOut, "</body></html>\n");
+  free(q);
   return 0;
 }
 
@@ -172,6 +185,7 @@ int cgiMain() {
 #undef penabled
 #endif
 #define penabled(a,b)  fprintf(cgiOut,"<input type=checkbox name=\"" a "\" %s%s<br>", o->b ? "checked>" : ">",a);
+// (cgiFormCheckboxSingle("hungry") == cgiFormSuccess)
 
 void HandleConfig(QueryOptions *o)
 {
@@ -261,13 +275,19 @@ void Cookies()
 	
 void ShowForm(QueryData *q)
 {
+  char keywords[1080];
   fprintf(cgiOut, "<form method=\"GET\"");
   fprintf(cgiOut, "action=\"");
   cgiValueEscape(cgiScriptName);
   fprintf(cgiOut, "\"><p>");
-  if(q->keywords != NULL) {
-    //		cgiValueEscape(value);
-    fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\" value=\"%s\" >\n",cgiValueEscape(q->keywords));
+  if(cgiFormString("q", keywords, sizeof(keywords)));	
+
+  if(keywords[0] != '\0') {
+    strcpy(q->keywords,keywords);
+    //		cgiValueEscape(value); ?
+    fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\" value=\"");
+    cgiValueEscape(q->keywords);
+    fprintf(cgiOut,"\" >\n");
   } else {
     fprintf(cgiOut, "Query: <input type=\"text\" name=\"q\" >\n");
   }
