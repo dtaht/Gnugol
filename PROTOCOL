@@ -1,0 +1,10 @@
+I stopped work on this because I was still inventing a new protocol.
+
+I didn't want to do that. I didn't want to parse it, either.
+
+I went around and around on it.
+
+Today I discovered json. That, wrapped in a pgp package,
+might do the trick.
+
+It has libraries for C
