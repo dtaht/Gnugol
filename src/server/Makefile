@@ -18,7 +18,7 @@ STRIP=strip
 all: $(PROGS) 
 
 gnugold: udp_server.o server_options.o $(HEADERS) $(COMMON)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) udp_server.o server_options.o $(COMMON) $(LIBS) $(CGILIB) -o gnugold
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) udp_server.o server_options.o $(COMMON) $(LIBS) -o gnugold
 
 udp_server.o: udp_server.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c udp_server.c 
