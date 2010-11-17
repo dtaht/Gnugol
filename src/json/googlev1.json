@@ -1,0 +1,21 @@
+  {"responseData":   {
+  "results":[
+  {
+  "GsearchResultClass":"GwebSearch",
+  "unescapedUrl":       
+  "http://the-edge.blogspot.com/2009/08/going-retro-re-adopting-emacs.html",
+  "url":"http://the-edge.blogspot.com/2009/08/going-retro-re-adopting-emacs.html",
+  "visibleUrl":"the-edge.blogspot.com",
+  "cacheUrl":"http://www.google.com/search?q\u003dcache:Kh-BN4cSqywJ:the-edge.blogspot.com",
+  "title":"Postcards from the Bleeding Edge: Going retro, re-adopting Emacs!",
+  "titleNoFormatting":"Postcards from the Bleeding Edge: Going retro, re-adopting Emacs!",
+  "content":"Aug 10, 2009 \u003cb\u003e...\u003c/b\u003e G \u0026quot;* [[\u003cb\u003egnugol\u003c/b\u003e:%^{Keywords}]]\u0026quot; \u0026quot;~/org/\u003cb\u003egnugol\u003c/b\u003e.org\u0026quot; \u0026quot;Search Later\u0026quot;) \u003cb\u003e...\u003c/b\u003e n %u\u0026quot; \u0026quot;~/  org/\u003cb\u003eipv6\u003c/b\u003e.org\u0026quot; \u0026quot;Notes\u0026quot;) (\u0026quot;Vocab\u0026quot; ?v \u0026quot;** [[dict:%^{Word?}]]\\n%? \u003cb\u003e...\u003c/b\u003e"
+  }
+  ],
+  "cursor":{
+  "pages":[ {"start":"0","label":1} ],
+  "estimatedResultCount":"1",
+  "currentPageIndex":0,
+"moreResultsUrl":"http://www.google.com/search?oe\u003dutf8\u0026ie\u003dutf8\u0026source\u003duds\u0026start\u003d0\u0026hl\u003den\u0026q\u003dipv6+gnugol"}}, 
+ "responseDetails": null, 
+ "responseStatus": 200}

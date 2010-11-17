@@ -1,8 +1,7 @@
 #define MAX_MTU 1280
-#define MAX_ENTRIES 10
+#define MAX_ENTRIES 8
 
 /* bitfields are underused these days - use 'em or nuke em */
-/* FIXME, make a union */
 
 struct query_options {
   int urls:1;
@@ -16,9 +15,16 @@ struct query_options {
   int multicast:1;
   int force:1; 
   int secure:1;
+  int org:1;
+  int wiki:1;
+  int mdwn:1;
   int xml:1;
   int html:1;
+  int ssml:1;
+  int json:1;
+  int text:1;
   int offline:1;
+  int page:1;
   int lucky:1;
   int prime:1;
   int cache:1;
@@ -34,16 +40,19 @@ struct query_options {
   int trust:1;
   int dontfork:1;
   int dummy:1;
-  int debug:1;
+  int debug;
   int nresults;
   int position;
+  int safe; // 0, 1, 2
   char *engine_name;
-  char *outputfile;
-  char *inputfile;
-  char *pluginfile;
+  char *output_file;
+  char *input_file;
+  char *plugin_file;
   char *language;
+  char *output_language;
   char *server;
   char *client;
+  char keywords[1024];
   // sockaddr in here maybe
 };
 

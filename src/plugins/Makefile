@@ -5,12 +5,12 @@ COMMON=../common/connect_client.o ../common/parser.o ../common/listen_server.o
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
-OBJECTS=gscrape.o
+OBJECTS=gscrape.o googlev1.o
 PROGS=$(TESTDIR)gscrape_test
 CC=gcc
 STRIP=strip
 TESTDIR=../tests/
-
+CFLAGS+=-std=c99
 all: $(OBJECTS) $(PROGS)
 
 $(TESTDIR)gscrape_test: gscrape.c $(HEADERS)
@@ -18,6 +18,9 @@ $(TESTDIR)gscrape_test: gscrape.c $(HEADERS)
 
 gscrape.o: gscrape.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) gscrape.c -c
+
+googlev1.o: googlev1.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev1.c -c
 	
 #install-stripped: $(PROGS)
 #	$(STRIP) $(PROGS)

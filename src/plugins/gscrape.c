@@ -43,7 +43,6 @@ int gnugol_plugin_gscrape_init()
 	dup2(p2c[0], 0); // stdin comes from p2c[0]
 
 #ifdef EXECV
-//        if(execv("/home/d/bin/googd",NULL)>0) {
         if(execv("/usr/sbin/googd",NULL)>0) {
 		printf("NPG\n"); // No plugin
 	    	fprintf(stderr, "No plugin backend available\n");

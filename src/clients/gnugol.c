@@ -1,67 +1,72 @@
-/* Command line client for gnugol *
 /* This code is Copyright (C) 2008 by Michael David Taht 
    and released under the terms of the GNU AFFERO PUBLIC_LICENSE, version 3 
    for details of this license see the COPYRIGHT file */
 
+/* Command line client for gnugol */
+
 #include <stdio.h>
 #include <unistd.h>
-#include <cgic.h>
 #include <string.h>
 #include <stdlib.h>
 #include <getopt.h>
 
 #include "query.h"
 
-/* FIXME - look over apache options for useful stuff
+extern int plugin_googlev1(QueryOptions *q);
 
-*/
-
-int usage () {
- printf("gnugol [options] keywords\n");
- printf("-r --reverse   unreverse the list. The default IS reversed already\n");
- printf("-u --urls ");
- printf("-s --snippets ");
- printf("-a --ads ");
- printf("-t --titles\n");
- printf("-e --engine    use an alternate engine\n");
- printf("-R --register\n");
- printf("-i --input     input from a file\n");
- printf("-P --prime     prime the caches, routes, etc\n");
- printf("-p --plugin    use an alternate plugin\n");
- printf("-l --lucky     autofetch the first result\n");
- printf("-m --multicast ask for results from local network\n");
- printf("-b --broadcast broadcast results to local network\n");
- printf("-c --cache     serve only results from cache(s)\n");
- printf("-o --output    output to a file\n");
- printf("-O --Offline   store up query for later\n");
- printf("-f --force     force a new query, even if cached\n");
- printf("-n --nresults  number of results to fetch\n");
- printf("-p --position  start of results to fetch\n");
- printf("-S --Secure    use secure transport\n");
- printf("-H --html      output html\n");
- printf("-X --xml       output gnugol XML\n");
- printf("-d --debug [level]    Debug output\n");
- printf("-B --dummy dummy input (useful for stress testing)\n");
- printf("-6 --ipv6 listen on ipv6\n");
- printf("-4 --ipv4 listen on ipv4\n");
- printf("-F --dontfork don't fork off the server\n");
- printf("--defaults     show the defaults\n");
- printf("--source       fetch the source code this was compiled with\n");
- printf("--help         this message\n");
- printf("--config"); 
- printf(" --verbose"); 
- printf(" --copyright"); 
- printf(" --license\n"); 
- exit(-1);
+int usage (char *err) {
+  if(err) fprintf(stderr,"%s\n",err);
+  printf("gnugol [options] keywords\n");
+  printf("-r --reverse   unreverse the list. The default IS reversed already\n"
+	 "-u --urls "
+	 "-s --snippets "
+	 "-a --ads "
+	 "-t --titles\n"
+	 "-e --engine    use an alternate engine\n"
+	 "-R --register\n"
+	 "-i --input [filename] input from a file\n"
+	 "-P --prime     prime the caches, routes, etc\n"
+	 "-p --plugin    use an alternate plugin\n"
+	 "-l --lucky     autofetch the first result\n"
+	 "-m --multicast ask for results from local network\n"
+	 "-b --broadcast broadcast results to local network\n"
+	 "-c --cache     serve only results from cache(s)\n"
+	 "-o --output    output to a file\n"
+	 "-O --Offline   store up query for later\n"
+	 "-f --force     force a new query, even if cached\n"
+	 "-n --nresults  number of results to fetch\n"
+	 "-p --position  start of results to fetch\n"
+	 "-S --Secure    use secure transport\n"
+	 "\nOutput Options:\n"
+	 "-H --html      output html\n"
+	 "-J --json      output json\n"
+	 "-X --xml       output gnugol XML\n"
+	 "-O --org       output org format\n"
+	 "-M --mdwn      output gnugol XML\n"
+	 "-W --wiki      output gnugol XML\n"
+	 "-X --xml       output gnugol XML\n"
+	 "-d --debug [level]    Debug output\n"
+	 "-B --dummy dummy input (useful for stress testing)\n"
+	 "-6 --ipv6 listen on ipv6\n"
+	 "-4 --ipv4 listen on ipv4\n"
+	 "-F --dontfork don't fork off the server\n"
+	 "--defaults     show the defaults\n"
+	 "--source       fetch the source code this was compiled with\n"
+	 "--help         this message\n"
+	 "--config "
+	 "--verbose "
+	 "--copyright "
+	 "--license\n");
+  exit(-1);
 }
 
 // There's a version of getopt out there that lets you put in the help text.
-// Silly to seperate the two.
+// Silly to separate the two, but...
 
 static struct option long_options[] = {
   {"reverse", 0, 0, 'r' }, 
   {"urls", 0, 0, 'u' },
-  {"links", 0, 0, 'u' },
+  {"links", 0, 0, 'l' },
   {"snippets", 0, 0,'s'},
   {"ads", 0,0,'a' },
   {"titles", 0,0, 't'},
@@ -70,18 +75,25 @@ static struct option long_options[] = {
   {"input", 1,0, 'i'},
   {"prime", 0,0, 'P'},     
   {"plugin", 1,0, 'g'},    
-  {"lucky", 0,0, 'l'},     
+  {"lucky", 0,0, 'L'},     
   {"multicast", 2,0, 'm'}, 
   {"broadcast", 0,0, 'b'}, 
   {"cache", 0,0, 'c'},     
   {"output", 1,0, 'o'},  
-  {"Offline", 0,0, 'O'}, 
+  {"Offline", 0,0, '5'}, 
   {"force", 0,0, 'f'},   
   {"nresults", 1,0, 'n'},
-  {"position", 1,0, 'p'},
-  {"secure", 0,0, 'S'},  
+  {"position", 1,0, 'U'},
+  {"secure", 0,0, 'Z'},  
+  {"trust", 0,0, 'T'},  
+
   {"html", 0,0, 'H'},    
   {"xml", 0,0, 'X'},     
+  {"org", 0,0, 'O'},     
+  {"wiki", 0,0, 'W'},     
+  {"json", 0,0, 'J'},     
+  {"text", 0,0, '7'},     
+
   {"verbose", 0,0, 'v'},   
   {"debug", 0,0, 'd'},   
   {"defaults", 0,0, 'D'},   
@@ -89,50 +101,54 @@ static struct option long_options[] = {
   {"ipv4", 0,0, '4'},   
   {"dontfork", 0,0, 'F'},   
   {"source", 0,0, 0},     
+  {"safe", 0,0, 'S'},       
   {"help", 0,0, 'h'},       
   {"config", 0,0,'C'},
   {"dummy", 0,0,'B'},
 };
 
 parse_config_file(QueryOptions *q) {
+
 } 
 
-//Sometimes I wish the c preprocessor had exited the 80s
-// #define penabled(a,b) fprintf(stderr,a "%s", o->b ? "enabled":"")
-#define penabled(a,b) if(o->b) fprintf(stderr,a " ");
+#define penabled(a) if(o->a) fprintf(stderr,"  " # a " enabled\n");
 
 int 
 print_enabled_options(QueryOptions *o) {
-  if(o->verbose) {
-    fprintf(stderr,"Options: ");
-    penabled("urls",urls);
-    penabled("titles",titles);
-    penabled("snippets",snippets);
-    penabled("ads",ads);
-    penabled("misc",misc);
-    penabled("reverse",reverse);
-    penabled("broadcast",broadcast);
-    penabled("multicast",multicast);
-    penabled("force",force);
-    penabled("cache",cache);
-    penabled("xml",xml);
-    penabled("html",html);
-    penabled("offline",offline);
-    penabled("lucky",lucky);
-    penabled("register",reg);
-    penabled("prime",prime);
-    penabled("engine",engine);
-    penabled("mirroring",mirror);
-    penabled("plugin",plugin);
-    penabled("ipv4",ipv4);
-    penabled("ipv6",ipv6);
-    penabled("dummy",dummy);
-    penabled("debug",debug);
-    penabled("blind",blind);
-    fprintf(stderr,"\n");
-    fprintf(stderr,"Result Request: %d\n", o->nresults);
-    fprintf(stderr,"Position: %d\n",o->position);
-  }
+  fprintf(stderr,"Results Requested: %d\n", o->nresults);
+  fprintf(stderr,"Starting position: %d\n",o->position);
+  fprintf(stderr,"Options:\n");
+  penabled(urls);
+  penabled(titles);
+  penabled(snippets);
+  penabled(ads);
+  penabled(misc);
+  penabled(reverse);
+  penabled(broadcast);
+  penabled(multicast);
+  penabled(force);
+  penabled(cache);
+  penabled(json);
+  penabled(org);
+  penabled(wiki);
+  penabled(mdwn);
+  penabled(xml);
+  penabled(html);
+  penabled(ssml);
+  penabled(offline);
+  penabled(lucky);
+  penabled(safe);
+  penabled(reg);
+  penabled(prime);
+  penabled(engine);
+  penabled(mirror);
+  penabled(plugin);
+  penabled(ipv4);
+  penabled(ipv6);
+  penabled(dummy);
+  penabled(debug);
+  penabled(blind);
+  fprintf(stderr,"\n");
 }
 
 #define pifverbose(q,string) if(q->verbose) { printf("%s",val); }
@@ -145,70 +161,71 @@ int process_options(int argc, char **argv, QueryData *q) {
   int opt = 0;
   int count = 0;
   // FIXME: Parse optional arguments
-  if(argc == 1) usage();
+  if(argc == 1) usage("");
   while (1) {
     opt = getopt_long(argc, argv, 
-		      "rusateRiPplmbcoOfdDFTBDvn:pSHX",
+		      "7654C:rusate:Ri:PplmS:bcoOfdOZFTBWD:vU:jn:p:SHX",
 		      long_options, &option_index);
     if(opt == -1) break;
     switch (opt) { 
-      //   case 0: fprintf(stderr,"option %s", long_options[option_index].name);
-      // if(optarg) fprintf(stderr, " with arg %s", optarg);
-      // fprintf(stderr,"\n");
-      // break;
     case 'r': o->reverse = 1; break;  
     case 'u': o->urls = 1; break;
     case 's': o->snippets = 1; break;
     case 'a': o->ads = 1; break;
     case 't': o->titles = 1; break;
     case 'T': o->trust = 1; break;
-    case 'e': o->engine =1; break; // FIXME strcpy engine type
+    case 'e': o->engine = 1; o->engine_name = optarg; break; // FIXME strcpy engine type
     case 'R': o->reg = 1; break;
-    case 'i': o->input = 1; break; // FIXME
+    case 'i': o->input = 1; o->input_file = optarg; break; // FIXME
     case 'P': o->prime = 1; break;
     case 'p': o->plugin = 1; break;
-    case 'l': o->lucky = 1; break;
+    case 'L': o->lucky = 1; break;
     case 'm': o->multicast = 1; break;
     case 'b': o->broadcast = 1; break;
     case 'c': o->cache = 1; break;
     case 'o': o->output = 1; break;
-    case 'O': o->offline = 1; break;
+    case '5': o->offline = 1; break;
     case 'f': o->force = 1; break;
-    case 'n': o->nresults = 1; break; // FIXME
-    case 'U': o->position = 1; break; // Another obvious fixme 
-    case 'S': o->secure = 1; break; // unimplemented
+    case 'n': o->nresults = atoi(optarg); break; // FIXME
+    case 'U': o->position = atoi(optarg); break; // Another obvious fixme 
+    case 'Z': o->secure = 1; break; // unimplemented
+    case 'S': o->safe = 1; atoi(optarg); break; 
+    case 'J': o->json = 1; break; 
     case 'H': o->html = 1; break; 
     case 'X': o->xml = 1; break;
-    case 'h': usage(); break;
+    case 'O': o->org = 1; break;
+    case 'W': o->wiki = 1; break;
+    case '7': o->text = 1; break;
     case 'B': o->blind = 1; break;
-    case 'D': o->debug = 1; break;
+    case 'D': o->debug = atoi(optarg); break;
     case 'F': o->dontfork = 1; break;
     case 'v': o->verbose = 1; break;
     case '6': o->ipv6 = 1; break;
     case '4': o->ipv4 = 1; break;
+    case 'h': 
+    case '?': usage(NULL); break;
 
-    default: break;
+    default: fprintf(stderr,"%c",opt); usage("Invalid option"); break;
     }
   }
-      /* '--trust'       trust networks
-	 '--defaults     show the defaults\n");
-	 '--source       fetch the source code this was compiled with\n");
-	 '--help         this message\n");
-	 '--config"); printf(" --verbose"); printf(" --copyright"); printf(" --license\n"); 
-*/
-	for(i = optind; i < argc; i++) {
-	  if((querylen += strlen(argv[i]) > MAX_MTU - 80)) {
-	    fprintf(stderr,"Too many words in query, try something smaller\n");
-	    free(q);
-	    exit(-1);
-	  }
-	  strcat(q->keywords,argv[i]);
-	  strcat(q->keywords," ");
-	}
+  for(i = optind; i < argc; i++) {
+    if((querylen += strlen(argv[i]) > MAX_MTU - 80)) {
+      fprintf(stderr,"Too many words in query, try something smaller\n");
+      free(q);
+      exit(-1);
+    }
+    strcat(o->keywords,argv[i]);
+    if(i+1 < argc) strcat(o->keywords,"%20");
+  }
 
-	if(q->options.debug) print_enabled_options(&q->options);
-	if(q->options.verbose) fprintf(stderr,"Search Keywords: %s\n",q->keywords);
-	
+  if(q->options.debug > 0) print_enabled_options(&q->options);
+  if(q->options.verbose) fprintf(stderr,"Search Keywords: %s\n",q->keywords);
+
+  // FIXME: Figure out more mutually exclusive options
+  if(q->options.html + q->options.xml + q->options.json + q->options.org + q->options.text + q->options.wiki > 1) {
+    usage("You can only select one of json, xml, org, text, wiki, or html");
+  }
+  print_enabled_options(&q->options);	
   return(optind);
 }
 
@@ -220,7 +237,7 @@ main(int argc, char **argv) {
   	QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
 
 	// Defaults
-	q->options.nresults = 10;
+	q->options.nresults = 8;
 	q->options.position = 0;
 	q->options.engine_name = "google";
 	q->options.language = "en";
@@ -232,7 +249,10 @@ main(int argc, char **argv) {
 	     q->options.titles)) { 
 	  	q->options.urls = 1; // Always default to fetching urls 
 	}
-	
+
+	plugin_googlev1(&q->options);
+	exit(-1);
+
 	// FIXME clean out all this logic
 	if(q->options.dummy) {
 	  strcpy(q->keywords,"WHAT THE HECK?");
@@ -263,8 +283,7 @@ main(int argc, char **argv) {
 	}
 	}
 	if(q->options.xml) {
-	  printf("<xml format=gnugol.xml link=http://xml.gnugol.com>");
-	  
+	  printf("<xml format=gnugol.xml link=http://xml.gnugol.com>");	  
 	}
 	if(!(q->options.html | q->options.xml)) {
 	  for (i = 0; i <= cnt-1; i++) {

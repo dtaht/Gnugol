@@ -126,6 +126,7 @@ void HandleSubmit(QueryData *q)
 #ifdef penabled
 #undef penabled
 #endif
+
 #define penabled(a,b)  q->options.b = (cgiFormCheckboxSingle(a) == cgiFormSuccess) ? 0:1
 
 int setup_options(QueryData *q) {

@@ -8,8 +8,9 @@ CGIDIR=/usr/lib/cgi-bin
 BINDIR=$(HOME)/bin
 CC=gcc
 TESTDIR=../tests/
+CFLAGS+=-std=c99
 
-OBJECTS := connect_client.o listen_server.o parser.o fit_results.o multicast.o
+OBJECTS := connect_client.o listen_server.o parser.o fit_results.o multicast.o handy.o utf8.o
 
 all: $(PROGS) $(OBJECTS) $(TESTDIR)/multicast_test
 
@@ -39,6 +40,12 @@ listen_server.o: listen_server.c $(INC)/listen_server.h
 
 fit_results.o: fit_results.c $(INC)/query.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c fit_results.c
+
+handy.o: handy.c $(INC)/query.h
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c handy.c
+
+utf8.o: utf8.c $(INC)/utf8.h
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c utf8.c
 
 multicast.o: multicast.c $(INC)/query.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c multicast.c

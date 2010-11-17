@@ -37,6 +37,7 @@ static int usage (ServerOptions *o) {
  printf("-n --nresults  number of results to fetch\n");
  printf("-p --position  start of results to fetch\n");
  printf("-S --Secure    use secure transport\n");
+ printf("-j --json      output json\n");
  printf("-H --html      output html\n");
  printf("-X --xml       output gnugol XML\n");
  printf("-d --debug [level]    Debug output\n");
@@ -59,7 +60,7 @@ static int usage (ServerOptions *o) {
 
 // FIXME
 // There's a version of getopt out there that lets you put in the help text.
-// Silly to seperate the two.
+// Silly to separate the two.
 
 static struct option long_options[] = {
   {"urls", 0, 0, 'u' },
@@ -83,6 +84,7 @@ static struct option long_options[] = {
   {"secure", 0,0, 'S'},  
   {"html", 0,0, 'H'},    
   {"xml", 0,0, 'X'},     
+  {"json", 0,0, 'j'},     
   {"verbose", 0,0, 'v'},   
   {"debug", 0,0, 'd'},   
   {"dummy", 0,0, 'D'},   
@@ -96,11 +98,13 @@ static struct option long_options[] = {
   {"reverselookup", 0,0,'r'},
 };
 
+// Config file is in json format
+
 parse_config_file(ServerOptions *o) {
 } 
 
-//Sometimes I wish the c preprocessor had exited the 80s
-// #define penabled(a,b) fprintf(stderr,a "%s", o->b ? "enabled":"")
+// ## # concat
+
 #define penabled(a,b) if(o->b) fprintf(stderr,a " ");
 
 int 
@@ -116,6 +120,7 @@ print_enabled_options(ServerOptions *o) {
     penabled("multicast",multicast);
     penabled("force",force);
     penabled("cache",cache);
+    penabled("json",json);
     penabled("xml",xml);
     penabled("html",html);
     penabled("offline",offline);
@@ -154,6 +159,7 @@ int server_process_options(int argc, char **argv, ServerOptions *o)
     case 'u': o->urls = 1; break;
     case 's': o->snippets = 1; break;
     case 'a': o->ads = 1; break;
+    case 'j': o->json = 1; break;
     case 't': o->titles = 1; break;
     case 'e': o->engine = 1; break; // FIXME strcpy engine type
     case 'R': o->reg = 1; break;

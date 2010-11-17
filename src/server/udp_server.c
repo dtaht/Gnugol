@@ -76,10 +76,10 @@ main(int argc, char *argv[])
   int listenfd, n;
   socklen_t addrlen;
   char *myhost;
-  char answer[1280];
+  char answer[1024*64];
   struct sockaddr_storage clientaddr;
   time_t now;
-  char b[1280];
+  char b[1024*64];
   char clienthost[NI_MAXHOST];
   char clientservice[NI_MAXSERV];
   ServerOptions *o = calloc(sizeof(ServerOptions),1);

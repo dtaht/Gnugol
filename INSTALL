@@ -6,7 +6,7 @@ many tunnel brokers out there and use that on the gateway or client machine.
 A whole lot of gateways don't pass protocol 41, either, though. That's
 part of the fun, I guess.
 
-At present you need to install pygoogle. This requires a license key. For now, you can use mine. 
+At present you need to install pygoogle. This requires a license key. 
 
 You also need the boutell c cgilib library.
 

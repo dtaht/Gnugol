@@ -13,8 +13,10 @@ struct server_options {
   int multicast:1;
   int force:1; 
   int secure:1;
+  int ssml:1;
   int xml:1;
   int html:1;
+  int json:1;
   int offline:1;
   int lucky:1;
   int prime:1;
