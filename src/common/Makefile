@@ -2,7 +2,7 @@ LIBS=-I/usr/local/include -lcgic
 INC=../include
 INCLUDES=-I../include
 DEBUG=-DDEBUG
-PROGS=$(TESTDIR)parser_test fpipe # gnugold
+PROGS=$(TESTDIR)parser_test # gnugold
 HTMLDIR=/var/www/gnugol
 CGIDIR=/usr/lib/cgi-bin
 BINDIR=$(HOME)/bin
@@ -10,7 +10,8 @@ CC=gcc
 TESTDIR=../tests/
 CFLAGS+=-std=c99
 
-OBJECTS := connect_client.o listen_server.o parser.o fit_results.o multicast.o handy.o utf8.o
+#OBJECTS := listen_server.o parser.o fit_results.o multicast.o handy.o utf8.o
+OBJECTS := parser.o fit_results.o multicast.o handy.o utf8.o
 
 all: $(PROGS) $(OBJECTS) $(TESTDIR)/multicast_test
 

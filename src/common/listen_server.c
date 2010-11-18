@@ -1,13 +1,11 @@
 #include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <unistd.h>
 #include <memory.h>
-
-//#include <b.h>
-//#include <o.h>
 
 #include "listen_server.h"
 
@@ -19,7 +17,8 @@ listen_server(const char *hostname,
               int         family,
               int         socktype)
 {
-  struct addrinfo hints, *res, *ressave;
+  struct addrinfo *res, *ressave;
+  struct addrinfo hints;
   int n, sockfd;
   char host[1024];
   if(hostname == NULL) {
