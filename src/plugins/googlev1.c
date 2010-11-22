@@ -11,6 +11,7 @@
 #include <string.h>
 #include <jansson.h>
 #include <curl/curl.h>
+#include "formats.h"
 #include "query.h"
 #include "utf8.h"
 #include "handy.h"
@@ -18,28 +19,9 @@
 #define TEMPLATE  "http://ajax.googleapis.com/ajax/services/search/web?v=1.0"
 #define BUFFER_SIZE  (64 * 1024)  /* 64 KB */
 #define URL_SIZE     (2048)
-
-/*    format = q->text | q->xml << 1 | q->html << 2 | 
-      q->ssml << 3 | q->org << 4 | q->wiki << 5; */
-
-// <a href=url>title</a> content
-#define FORMATHTML (1 << 2)
-
-// [[Title|url]] content
-#define FORMATWIKI (1 << 5)
-
-// * [[Title][url]] content
-#define FORMATORG  (1 << 4)
-
-// url title content
-#define FORMATTERM (0)
-
-// Tiny web page of results
-#define FORMATELINKS (1 << 2) 
-
-#define FORMATDEFAULT FORMATORG
-
 #define PATH_MAX 1024
+
+#define STRIPHTML(a) strip_html(2048,a)
 
 /* See options at 
    http://code.google.com/apis/ajaxsearch/documentation/reference.html#_intro_fonje 
@@ -71,13 +53,15 @@ static int setup(QueryOptions *q, char *string) {
     while(size > 0 && (key[size-1] == ' ' || key[size-1] == '\n')) size--;
     key[size] = '\0';
   }
+  if(q->nresults > 8) q->nresults = 8; // google enforces a maximum result of 8
+
   if(size > 0) { 
-    snprintf(string,URL_SIZE-1,"%s&key=%s&rsz=large&q=",TEMPLATE,key); 
+    snprintf(string,URL_SIZE-1,"%s&key=%s&rsz=%d&start=%d&q=",TEMPLATE,key,q->nresults,q->position); 
   } else {
-    snprintf(string,URL_SIZE-1,"%s&q=",TEMPLATE);
+    snprintf(string,URL_SIZE-1,"%s&%d&%d&q=",TEMPLATE, q->nresults,q->position);
   }
   if(q->debug) printf("KEYWORDS = %s\n", q->keywords);
-  strcat(string,q->keywords);
+  strcat(string,q->keywords); // FIXME: convert to urlencoding
   return size;
 }
 
@@ -85,8 +69,8 @@ static int setup(QueryOptions *q, char *string) {
 // turn <b>whatever</b> into *whatever*
 // turn quotes back into quotes and other utf-8 stuff
 // FIXME Error outs cause a memory leak from "root"
+
 static int getresult(QueryOptions *q, char *urltxt) {
-    int format = FORMATORG;
     unsigned int i;
     char *text;
     char url[URL_SIZE];
@@ -111,20 +95,28 @@ static int getresult(QueryOptions *q, char *urltxt) {
     
     GETOBJ(root,responseData);
     GETARRAY(responseData,results);  
+    
+    if(q->header) {
+      char buffer[2048];
+      strncpy(buffer,q->keywords,2048);
+      STRIPHTML(buffer); // FIXME, need to convert % escapes to strings
+      switch(q->format) {
+	
+      case FORMATELINKS: 
+	fprintf(stdout, "<html><head><title>Search for: %s", buffer);
+	fprintf(stdout, "</title></head><body>");
+	break;
+	
+      case FORMATORG: 
+	fprintf(stdout, "* Search: %s\n", buffer); // FIXME keywords
+	break;
 
-    format = abs(q->text | q->xml << 1 | q->html << 2 | 
-		 q->ssml << 3 | q->org << 4 | q->wiki << 5); 
-    //    printf("FORMAT: %d\n ELINKS: %d\nFORMATORG:%d\n", format, FORMATELINKS, FORMATORG);
-    // I am doing this shift wrong
+      case FORMATSSML: 
+       	fprintf(stdout, "Result for <emphasis level='moderate'> %s </emphasis>\n", buffer); // FIXME keywords
+	break;
 
-    switch(format) {
-    case FORMATELINKS: 
-      fprintf(stdout, "<html><head><title>Search for: %s", q->keywords);
-      fprintf(stdout, "</title></head><body>");
-      break;
-    case FORMATORG: 
-      fprintf(stdout, "* Search: %s\n", q->keywords); // FIXME keywords
-    default: break;
+      default: break;
+      }
     }
 
     for(i = 0; i < json_array_size(results); i++)
@@ -136,50 +128,59 @@ static int getresult(QueryOptions *q, char *urltxt) {
       GETSTRING(result,url);
       GETSTRING(result,titleNoFormatting);
       GETSTRING(result,content);
-
-      switch (format) {
+      
+      switch (q->format) {
 	case FORMATWIKI: printf("[[%s|%s]] %s  \n",
 				jsv(titleNoFormatting), 
 				jsv(url), 
 				jsv(content));  break;
+	case FORMATSSML:  
+	  { 
+	    char tempstr[2048]; 
+	    strcpy(tempstr,jsv(content));
+	    STRIPHTML(tempstr);
+	    printf("%s <mark name='%d'>%s</mark>.", tempstr, i+1, jsv(url)); 
+	  }
+	    break;
 	case FORMATORG:  
 	  { 
 	    char tempstr[2048]; 
 	    strcpy(tempstr,jsv(titleNoFormatting));
-	    strip_html(2048,tempstr);
+	    STRIPHTML(tempstr);
 	    printf("\n** [[%s][%s]]\n", jsv(url), tempstr);
 	    strcpy(tempstr,jsv(content));
-	    strip_html(2048,tempstr);
+	    STRIPHTML(tempstr);
 	    printf("   %s", tempstr); 
 	  }
-	    break;
+	  break;
 	case FORMATTERM: 
 	  { 
 	    char tempstr[2048]; 
 	    strcpy(tempstr,jsv(content));
-	    strip_html(2048,tempstr);
+	    STRIPHTML(tempstr);
 	    printf("%s %s %s\n", jsv(url), 
 		   jsv(titleNoFormatting), 
 		   tempstr); 
 	  }
 	  break;
 
-	case FORMATELINKS: printf("<p><a href=\"%s\">%s</a> %s</p>", 
-				  jsv(url), 
-				  jsv(titleNoFormatting), 
-				  jsv(content)); break;
-
-	default: printf("<a href=\"%s\">%s</a> %s\n", 
-			jsv(url), jsv(titleNoFormatting), jsv(content)); 
-	}
-    } 
-
-    if(format == FORMATELINKS) {
-      fprintf(stdout, "</body></html>");
+      case FORMATELINKS: printf("<p><a href=\"%s\">%s</a> %s</p>", 
+				jsv(url), 
+				jsv(titleNoFormatting), 
+				jsv(content)); break;
+	
+      default: printf("<a href=\"%s\">%s</a> %s\n", 
+		      jsv(url), jsv(titleNoFormatting), jsv(content)); 
+      }
     }
 
-    if(format == FORMATORG) {
-      fprintf(stdout, "\n");
+    if(q->footer) {
+      switch(q->format) {
+      case FORMATELINKS: fprintf(stdout, "</body></html>"); break;
+      case FORMATORG:    fprintf(stdout, "\n"); break;
+      case FORMATTERM:   fprintf(stdout, "\n"); break;
+      default: break;
+      }
     }
 
     json_decref(root);

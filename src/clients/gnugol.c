@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 
+#include "formats.h"
 #include "query.h"
 
 extern int plugin_googlev1(QueryOptions *q);
@@ -42,9 +43,10 @@ int usage (char *err) {
 	 "-J --json      output json\n"
 	 "-X --xml       output gnugol XML\n"
 	 "-O --org       output org format\n"
-	 "-M --mdwn      output gnugol XML\n"
-	 "-W --wiki      output gnugol XML\n"
-	 "-X --xml       output gnugol XML\n"
+	 "-M --mdwn      output markdown format\n"
+	 "-W --wiki      output ikiwiki format\n"
+	 "-X --xml       output gnugol XML format\n"
+	 "-B --ssml      output SSML format\n"
 	 "-d --debug [level]    Debug output\n"
 	 "-B --dummy dummy input (useful for stress testing)\n"
 	 "-6 --ipv6 listen on ipv6\n"
@@ -93,9 +95,10 @@ static struct option long_options[] = {
   {"wiki", 0,0, 'W'},     
   {"json", 0,0, 'J'},     
   {"text", 0,0, '7'},     
+  {"ssml", 0,0, 'B'},     
 
   {"verbose", 0,0, 'v'},   
-  {"debug", 0,0, 'd'},   
+  {"debug", 1,0, 'd'},   
   {"defaults", 0,0, 'D'},   
   {"ipv6", 0,0, '6'},   
   {"ipv4", 0,0, '4'},   
@@ -111,13 +114,16 @@ parse_config_file(QueryOptions *q) {
 
 } 
 
-#define penabled(a) if(o->a) fprintf(stderr,"  " # a " enabled\n");
+#define penabled(a) if(o->a) fprintf(fp," " # a " ");
 
 int 
-print_enabled_options(QueryOptions *o) {
-  fprintf(stderr,"Results Requested: %d\n", o->nresults);
-  fprintf(stderr,"Starting position: %d\n",o->position);
-  fprintf(stderr,"Options:\n");
+print_enabled_options(QueryOptions *o, FILE *fp) {
+  if(o->verbose) fprintf(fp,"Search Keywords: %s\n",o->keywords);
+  fprintf(fp,"Results Requested: %d\n", o->nresults);
+  fprintf(fp,"Starting position: %d\n",o->position);
+  fprintf(fp,"Enabled Options: ");
+  penabled(header);
+  penabled(footer);
   penabled(urls);
   penabled(titles);
   penabled(snippets);
@@ -147,26 +153,26 @@ print_enabled_options(QueryOptions *o) {
   penabled(ipv6);
   penabled(dummy);
   penabled(debug);
-  penabled(blind);
-  fprintf(stderr,"\n");
+  fprintf(fp,"\n");
 }
 
 #define pifverbose(q,string) if(q->verbose) { printf("%s",val); }
 
 int process_options(int argc, char **argv, QueryData *q) {
   QueryOptions *o = &q->options; 
-  int option_index;
+  int option_index = 0;
   int i = 0;
   int querylen = 0;
   int opt = 0;
   int count = 0;
-  // FIXME: Parse optional arguments
   if(argc == 1) usage("");
-  while (1) {
+  
+  do {
     opt = getopt_long(argc, argv, 
-		      "7654C:rusate:Ri:PplmS:bcoOfdOZFTBWD:vU:jn:p:SHX",
+		      "7654C:rusate:Ri:PplmS:bcoOfdOZFTBWDd:vU:jn:p:SHX",
 		      long_options, &option_index);
     if(opt == -1) break;
+
     switch (opt) { 
     case 'r': o->reverse = 1; break;  
     case 'u': o->urls = 1; break;
@@ -186,8 +192,8 @@ int process_options(int argc, char **argv, QueryData *q) {
     case 'o': o->output = 1; break;
     case '5': o->offline = 1; break;
     case 'f': o->force = 1; break;
-    case 'n': o->nresults = atoi(optarg); break; // FIXME
-    case 'U': o->position = atoi(optarg); break; // Another obvious fixme 
+    case 'n': o->nresults = atoi(optarg); break; 
+    case 'U': o->position = atoi(optarg); break; 
     case 'Z': o->secure = 1; break; // unimplemented
     case 'S': o->safe = 1; atoi(optarg); break; 
     case 'J': o->json = 1; break; 
@@ -196,8 +202,9 @@ int process_options(int argc, char **argv, QueryData *q) {
     case 'O': o->org = 1; break;
     case 'W': o->wiki = 1; break;
     case '7': o->text = 1; break;
-    case 'B': o->blind = 1; break;
-    case 'D': o->debug = atoi(optarg); break;
+    case '8': o->text = 1; break;
+    case 'B': o->ssml = 1; break;
+    case 'd': o->debug = atoi(optarg); break;
     case 'F': o->dontfork = 1; break;
     case 'v': o->verbose = 1; break;
     case '6': o->ipv6 = 1; break;
@@ -206,8 +213,9 @@ int process_options(int argc, char **argv, QueryData *q) {
     case '?': usage(NULL); break;
 
     default: fprintf(stderr,"%c",opt); usage("Invalid option"); break;
-    }
-  }
+    } 
+  } while (1); 
+
   for(i = optind; i < argc; i++) {
     if((querylen += strlen(argv[i]) > MAX_MTU - 80)) {
       fprintf(stderr,"Too many words in query, try something smaller\n");
@@ -218,83 +226,46 @@ int process_options(int argc, char **argv, QueryData *q) {
     if(i+1 < argc) strcat(o->keywords,"%20");
   }
 
-  if(q->options.debug > 0) print_enabled_options(&q->options);
-  if(q->options.verbose) fprintf(stderr,"Search Keywords: %s\n",q->keywords);
+  if(q->options.debug > 0) print_enabled_options(&q->options, stderr);
+  if(q->options.html + q->options.xml + q->options.json + 
+     q->options.org + q->options.text + q->options.wiki + q->options.ssml > 1) {
+    usage("You can only select one of json, xml, org, text, wiki, html, or ssml");
+  } 
 
-  // FIXME: Figure out more mutually exclusive options
-  if(q->options.html + q->options.xml + q->options.json + q->options.org + q->options.text + q->options.wiki > 1) {
-    usage("You can only select one of json, xml, org, text, wiki, or html");
-  }
-  print_enabled_options(&q->options);	
+  if(q->options.html) q->options.format = FORMATHTML;
+  if(q->options.xml)  q->options.format = FORMATXML;
+  if(q->options.json) q->options.format = FORMATJSON; 
+  if(q->options.org)  q->options.format = FORMATORG;
+  if(q->options.text) q->options.format = FORMATTERM; 
+  if(q->options.wiki) q->options.format = FORMATWIKI;
+  if(q->options.ssml) q->options.format = FORMATSSML;
+
   return(optind);
 }
 
 main(int argc, char **argv) {
-	int i = 0;
-	int cnt = 0;
-	char host[1024];
-	int querylen = 0;
-  	QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
+  int i = 0;
+  int cnt = 0;
+  char host[1024];
+  int querylen = 0;
+  QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
+  
+  // Defaults
+  q->options.nresults = 4;
+  q->options.position = 0;
+  q->options.engine_name = "google";
+  q->options.language = "en";
+  q->options.header = 1;
+  q->options.footer = 1;
+  q->options.format = 0; // NONE
 
-	// Defaults
-	q->options.nresults = 8;
-	q->options.position = 0;
-	q->options.engine_name = "google";
-	q->options.language = "en";
-
-	process_options(argc,argv,q);
-
-	if(!(q->options.urls | q->options.prime |
-	     q->options.snippets | q->options.ads |
-	     q->options.titles)) { 
-	  	q->options.urls = 1; // Always default to fetching urls 
-	}
-
-	plugin_googlev1(&q->options);
-	exit(-1);
-
-	// FIXME clean out all this logic
-	if(q->options.dummy) {
-	  strcpy(q->keywords,"WHAT THE HECK?");
-	  int cnt = query_main(q,"::1");
-	} else {
-	  // FIXME - move this setup to options
-	  char *h = getenv("GNUGOL_SERVER");
-	  if ( h != NULL) {
-	    strcpy(host,h);
-	  } else {
-	    strcpy(host,"::1");
-	  }
-	  cnt = query_main(q,host);
-	}
-
-	// Gah, a long, painful combinatorial explosion will have to come below
-	if(q->options.html) {
-	  if(q->options.urls && q->options.snippets && q->options.titles) {
-	    for (i = 0; i <= cnt-1; i++) {
-	      printf("<a href=%s>%s</a> %s<br>", q->links[i], q->titles[i],q->snippets[i]); 
-	    }
-	  } else {
-	  if(q->options.urls && q->options.snippets) {
-	    for (i = 0; i <= cnt-1; i++) {
-	      printf("<a href=%s>%s</a><br>", q->links[i], q->snippets[i]); 
-	    }
-	  }
-	}
-	}
-	if(q->options.xml) {
-	  printf("<xml format=gnugol.xml link=http://xml.gnugol.com>");	  
-	}
-	if(!(q->options.html | q->options.xml)) {
-	  for (i = 0; i <= cnt-1; i++) {
-	    if(q->options.urls) printf("%s ", q->links[i]);
-	    if(q->options.snippets) printf("%s\n", q->snippets[i]);
-	    if(q->options.titles) printf("%s\n", q->titles[i]);
-	    if(q->options.misc) printf("%s\n", q->misc[i]);
-	    if(!(q->options.misc | q->options.titles | q->options.snippets)) {
-	      printf("\n");
-	    }
-	  }
-	}
-exit(0);
+  process_options(argc,argv,q);
+  
+  if(!(q->options.urls | q->options.prime |
+       q->options.snippets | q->options.ads |
+       q->options.titles)) { 
+    q->options.urls = 1; // Always default to fetching urls 
+  }
+  
+  return(plugin_googlev1(&q->options));
 }

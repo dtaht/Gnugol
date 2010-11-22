@@ -40,10 +40,16 @@ struct query_options {
   int trust:1;
   int dontfork:1;
   int dummy:1;
+  int footer:1;
+  int header:1;
   int debug;
   int nresults;
   int position;
   int safe; // 0, 1, 2
+  int format;
+  char *header_str;
+  char *footer_str;
+  char *license_str;
   char *engine_name;
   char *output_file;
   char *input_file;
@@ -53,7 +59,6 @@ struct query_options {
   char *server;
   char *client;
   char keywords[1024];
-  // sockaddr in here maybe
 };
 
 typedef struct query_options QueryOptions;
