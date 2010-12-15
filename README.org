@@ -2,11 +2,13 @@
 
 Unfortunately the UDP based system described below proved unreliable enough in practice for me to discard it (at least temporarily) in favor of a few other network backend ideas. 
 
-And THEN google obsoleted their soap API in favor of json, rendering the original client useless.
+And THEN google obsoleted their soap API in favor of json, rendering the original front-end client useless.
 
-I recently rewrote the front end to use json as it's transport and am fiddling with sctp on the backend. 
+I recently rewrote the front end to use json as its transport and am fiddling with sctp on the backend. 
 
-If all you are looking for a command line search client 
+If all you are looking for a command line search client, I highly recommend surfraw instead.
+
+If instead, you want something written in C, integrated with emacs, that outputs stuff in org and markdown format, please feel free to participate in this project!
 
 * INTRO
 ** Combatting Featuritus
@@ -33,10 +35,13 @@ Additional benefits - vastly reduced data traffic. Control of the formatting can
 The second nice thing about end to end networking is that it makes it  possible -assuming a static ip address - to have for-pay search. I'd gladly pay a few bucks a month for faster - and ad-free searching!
 
 ** Being small 
-As a C language tool gnugol is much faster than (for example) a python based one. Smaller, too.
+As a C language tool gnugol is much faster than (for example) a python based one. Smaller, too. 
 
 ** Getting custom output
 I write in org or markdown format. When I get a search back via surfraw, it's in pure html which is both ugly and hard to reformat, so I have output formatters in the current release of gnugol that give me the output in a timesaving format.
 
 * Current Status
 The code is undergoing a major rewrite to be generalized and support more json backends (notably Xapian), and clean up the plugin idea and so on, so I can go back to exploring the original idea which was using some other transport than tcp to carry this sort of query, over international links. 
+
+There are all sorts of vestiges of the old code currently in here. It doesn't even build without hand tweaking. The emacs code in this repo is totally obsolete and depends on another unreleased library anyway. And so on.
+
