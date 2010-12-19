@@ -4,11 +4,12 @@
 #+DATE:      <2008-08-25 Mo>
 #+LANGUAGE:  en
 #+TEXT:      Searching the Web over persistent protocols
-#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:t tags:not-in-toc
-#+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
-#+LINK_UP:
+#+OPTIONS:   H:1 num:nil todo:nil toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:org-info.js
+#+LINK_UP: index.html
 #+LINK_HOME:
 #+STYLE:    <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+#+STYLE:    <script type="text/javascript" src="org-info.js"> 
 
 * Why is it called GNUGOLD?
   The name came from a 2008, late night discussion/hacking/music session between Michael Taht and Nick Mainsbridge, in his music studio near Sydney, Australia. Mike had been working on a set of concepts designed to push the outer limits of the internet back out to the edges, and was about to give a talk on the subject, so they thrashed it through. 
