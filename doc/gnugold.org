@@ -1,0 +1,49 @@
+#+TITLE:     GNUGOLD FAQ
+#+AUTHOR:    Dave Täht
+#+EMAIL:     d at taht.net
+#+DATE:      <2008-08-25 Mo>
+#+LANGUAGE:  en
+#+TEXT:      Searching the Web over persistent protocols
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:t tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+LINK_UP:
+#+LINK_HOME:
+#+STYLE:    <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+
+* Why is it called GNUGOLD?
+  The name came from a 2008, late night discussion/hacking/music session between Michael Taht and Nick Mainsbridge, in his music studio near Sydney, Australia. Mike had been working on a set of concepts designed to push the outer limits of the internet back out to the edges, and was about to give a talk on the subject, so they thrashed it through. 
+
+  While Mike was playing piano, Nick came rushing in with the name. Mike dropped the piano, spent a week locked up in a hotel room writing up what they'd been talking about, gave the talk... then got some proof of concept code over a weekend a few weeks later. Thus - gnugol was born!
+
+  The name is a play on several words - Canoodle, google, gnu, and "New Goal" - which is what designing a custom protocol for client distributed search is all about....
+
+* Where did the idea come from?
+  Mike has had a long experience with search engines, having written one in 1996, and another in 1999. 
+** Genesis 
+   Gnugol began life in 1996 as a shell script that scraped altavista's search results into a format that was compatable with the links text-mode web browser. It went through various incarnations over the years.
+** Frustration with "truth in advertising"
+   In a meeting with some web advertising executives in 99, I started describing the new IPv13 protocol, which would guarantee that after so many data packets, ADV (advertising) packets had to be sent. Everybody in the room bought it, to my dismay, even a few that shouldn't have been fooled. Soon afterwards he started working on privoxy and other tools like that. 
+** A trip to Belize
+   where he noticed how slow the internet was in remote locations. 
+** Losing an argument with Linus Torvalds 
+   about the sha1/gzip ordering in git. 
+** ISC.org
+   came from a visit to isc.org and some discussions about the efficiency of dns and udp over ipv6. 
+** Trips to Nicaragua and Australia 
+   Where it was painfully obvious that the internet, especially over lossy 802.11 networks, was often too slow to actually use. Last inputs were the talk, and the name. Mike says "I am a derived work". 
+* Non surprises
+  used a protocol like this internally to assemble their outputs. It's better that protocols like this exist on the edges of the internet, however that may affect others' business models remains to be seen. 
+* How does it work? 
+  The crux of gnugold is that simple searches easily fit into a single packet, and that establishing short distance http connections on well connected networks is much faster than long distance connections over flaky networks. The simple math for it is something Mike will write up when he gets around to it. 
+* How much does it cost? 
+  It's currently free. It's my hope that something like this could become an internet standard for search. There are numerous options for paid search that I'm looking into. 
+** Dual-licensing the code under the GNU AFFERO public license
+** Paid secure searching (crypted)
+** Wave hands and say that search inevitably must become a commodity. 
+* Use Cases
+** Scenario: OLPC - A teacher and 20 students 
+A teacher prepares a lesson plan using internet resources and gnugold. In her (well-connected) home, she does her queries using the gnugol plugin, which downloads and keeps organized her data set, collecting the bits of data that she will use to teach the lesson. She then goes to the school for the lesson. Her students, while receiving the lesson, also do queries, many of which the teacher has already asked, and are cached on her laptop, and thus are presented immediately to the kids without the need for external network access.
+
+See also: [[file:trust.org][Trust relationships]].
+* How can I help? 
+  Download the source code. Build it. Contribute. Run a server in a well connected location. Share it. Spread the program around your workplace.

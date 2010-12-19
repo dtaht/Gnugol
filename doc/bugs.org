@@ -1,0 +1,67 @@
+#+TITLE:     GNUGOL's Bugs
+#+AUTHOR:    Dave Täht
+#+EMAIL:     d at taht.net
+#+DATE:      <2008-08-25 Mo>
+#+LANGUAGE:  en
+#+TEXT:      All the bugs fit to print
+#+OPTIONS:   H:1 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:t tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:http://localhost/~d/gnugol/org-info.js
+#+LINK_UP: index.html
+#+LINK_HOME: index.html
+#+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
+#+STYLE:    <script type="text/javascript" src="org-info.js"> 
+* Gnugol Bugs
+** Shell mode
+*** UTF-8 
+   Gnugol has currently a very limited selection of html escapes to utf-8 support, implemented via a silly lookup routine. It would be better to have it be complete, and hashed with gperf.
+   There are many tools out there that try to do this (php and perl have examples), I just haven't got around to doing it myself.
+** Line/word breaking support
+   Coping with [[UTF-8]] is a difficult problem in C. What needs to happen is a fairly complex routine that does line breaking based on the value of the environment variable "COLUMNS" and the nearest UTF-8 word.
+** Non-utf-8 terminals
+   Gnugol does not detect when it has a different character set than UTF-8.
+(I am not particularly interested in anything other than html<->utf-8 conversion, frankly)
+** org mode
+*** gnugol.el is incomplete
+   In addition to browsing the output from 
+** Output needs to be sensitive to the level of the current outline
+   --level 3
+** Does not properly escape "[" characters when in a url or text snippet.
+** Limited search engine support
+*** Google's basic engine is essentially complete
+** TODO Bing
+** TODO Wikipedia
+** TODO DNS
+** TODO Opensearch
+** TODO RFCs
+** TODO Citeseer
+** SSML 
+*** SSML is totally untested at present
+** Need a marking scheme for speech enabled search
+** XML
+*** Need a standardized XML definition for gnugol's output
+** 
+** SQL
+*** SQL output would be nice
+   but has much potential for abuse.
+** SearchMarks
+*** Unimplemented
+* Gnugold Bugs
+** Complete rewrite in progress
+** The old UDP based protocol didn't work out
+** Misbehaving clients 
+
+** Evil/renegade clients 
+A renegade client could respond to local multicast queries with spam - links and offensive stuff unrelated to the query itself. 
+
+This is a violation of the gnugol protocol. I would like to be able to take violent or legal action against those that violate it. 
+
+There are not a lot of good answers to this problem.
+
+*** Rate-limit incoming requests?
+*** Report offending clients to a more central authority. 
+*** Migrate to a new multicast network address. 
+*** require encryption/authentication on responses.
+
+
+* Ggl bugs
+** Not even started yet

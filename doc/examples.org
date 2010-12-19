@@ -1,0 +1,27 @@
+* Here are a few examples of basic gnugol usage
+
+* Basic
+
+* Advanced
+** Top 4 search engines
+#+BEGIN_SRC sh
+#!/bin/sh
+
+KEYWORDS="$*"
+OPTIONS="-notitle"
+ENGINES="bing google opensearch wikipedia"
+
+(
+
+gnugol --header --title "Search Comparison for $KEYWORDS"
+for I in $ENGINES
+do
+gnugol --divid $I
+gnugol --noheader --nofooter --engine $I --level 3 $KEYWORDS
+gnugol --enddiv 
+done
+
+gnugol --footer 
+
+) > $OUTPUT
+#+END_SRC
