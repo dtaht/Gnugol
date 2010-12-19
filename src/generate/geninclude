@@ -1,0 +1,59 @@
+#!/bin/sh
+
+OFILEH=whatever.h
+OFILEC=whatever.c
+
+IFILE=$1
+
+# Generate Structure
+
+(
+echo '// THIS IS A GENERATED FILE DO NOT EDIT'
+echo 'struct options {'
+
+cat $IFILE | while read t name
+do
+	case $t in 
+		bool) echo "\tint ${name}:1;" ;;
+		string) echo "\tchar *${name};" ;;
+		array) echo "\tchar *${name};" ;;
+	esac
+done
+echo '};\n'
+	
+) > $OFILEH
+
+# Generation OptionsToJason
+
+(
+echo '// THIS IS A GENERATED FILE DO NOT EDIT'
+echo '#define otob(a) do { json_set_value(a , #a); } while 0'
+echo '#define otos(a) do { json_set_string(a , #a); } while 0'
+echo 'int options_to_json(options *o, json_t *root) {'
+
+cat $IFILE | while read t name
+do
+	case $t in 
+		bool) echo "\totob(${name});" ;;
+		string) echo "\totos(${name});" ;;
+	esac
+done
+echo '}\n'
+	
+) > $OFILEC
+
+(
+echo '#define btoo(a) do { json_get_value(a , #a); } while 0'
+echo '#define stoo(a) do { json_get_string(a , #a); } while 0'
+echo 'int json_to_options(options *o, json_t *root) {'
+
+cat $IFILE | while read t name
+do
+	case $t in 
+		bool) echo "\tbtoo(${name});" ;;
+		string) echo "\tstoo(${name});" ;;
+	esac
+done
+echo '}\n'
+	
+) >> $OFILEC
