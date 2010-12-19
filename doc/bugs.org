@@ -39,7 +39,6 @@
 ** Need a marking scheme for speech enabled search
 ** XML
 *** Need a standardized XML definition for gnugol's output
-** 
 ** SQL
 *** SQL output would be nice
    but has much potential for abuse.
@@ -49,19 +48,45 @@
 ** Complete rewrite in progress
 ** The old UDP based protocol didn't work out
 ** Misbehaving clients 
-
 ** Evil/renegade clients 
 A renegade client could respond to local multicast queries with spam - links and offensive stuff unrelated to the query itself. 
 
 This is a violation of the gnugol protocol. I would like to be able to take violent or legal action against those that violate it. 
 
 There are not a lot of good answers to this problem.
-
 *** Rate-limit incoming requests?
 *** Report offending clients to a more central authority. 
 *** Migrate to a new multicast network address. 
 *** require encryption/authentication on responses.
-
-
 * Ggl bugs
 ** Not even started yet
+* WIP
+** Decisions
+*** Switch to a build system
+*** Enable Internationalization
+*** Decide on a protocol
+*** Security infrastructure
+** IDEAS
+*** Interface for blind users
+*** Firefox plugin
+*** Transclusion
+* Roadmap
+  Get to plausible promise
+** Must: 
+*** Implement timeouts
+*** sha1 hashes
+*** Lookaside cache
+*** Compression
+*** Lookaside DNS
+** Should:
+*** Work on OLPC, fedora, ubuntu
+*** work on non-x86 architectures (nokia n810, blackfin
+*** multicast on local networks
+*** Have a stable server/website to use
+** WON'T:
+*** be clean code
+*** not core dump occasionally
+*** have firefox plugin
+*** work over ipv4 
+*** have windows port 
+
