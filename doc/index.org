@@ -12,6 +12,10 @@
 #+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
 #+STYLE:    <script type="text/javascript" src="org-info.js"> 
 #+STARTUP: overview hideblocks
+#+begin_html
+<!-- The logo links to the root of the website -->
+<a href="/"><img src="images/gnugol.png" class="logo-link" /></a>
+#+end_html
 * About Gnugol
   Gnugol is a command line web search client, written in C, that can make searching and utilizing the web more efficient.
 ** Gnugol is fast
