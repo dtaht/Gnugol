@@ -1,3 +1,4 @@
+#+begin_html
 <html><head><title>Search via GnuGol</title></head>
 <body>
 <!-- move the default search page to pure html for a while. It's still better to invoke the binary to start
@@ -8,3 +9,4 @@
 <input type=submit name="btnG" value="Search"></form>
 </body>
 </html>
+#+end_html
