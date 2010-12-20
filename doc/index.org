@@ -38,7 +38,7 @@
 
    [[shell:gnugol --text in the beginning was the command line]]
 ** Emacs 
-   Emacs has an incredibly powerful outliner called [[http://www.orgmode.org][org-mode]] that uses plain text and a wiki-like format for various url forms. It does not grok html natively, instead using a variety of markdown-like mechanisms to make it possible to view your personal database of projects within emacs. 
+   Emacs has an incredibly powerful outliner called [[http://www.orgmode.org][org-mode]] that uses plain text and a wiki-like format for various url forms. It does not grok html natively, instead using a variety of markdown-like mechanisms to make it possible to view your personal database of projects within emacs. Put lisp/gnugol.el into your .emacs.d directory and do a (require 'gnugol)
 
 [[shell:gnugol --org in the beginning was the command line]] 
 *** Search: in the beginning was the command line
@@ -58,7 +58,7 @@
      You can also use gnugol to output results directly into emacs's w3 browser or any other browser, within emacs, as per the below.
 
      This website and documentation for gnugol are all managed as org-mode files.
-** For the command line guys
+** Scripts for the command line
    If you are like me, you spend large portions of your day in front of a very large terminal or editor window, working.
 
    It's a difficult context switch to make, from, in my case, green on black text, to the blazing black on white of most web sites. Enter gnugol!
