@@ -1,7 +1,7 @@
 @media all
 {
   body {
-    margin: 10px 8% 10px 8%;
+    margin: 0 0 0 0;
     font-family: Verdana;
     text-align: justify;
     font-size: 10pt;
@@ -50,7 +50,7 @@
   .title {
     color: #990000;
     padding-bottom: 7px;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
     border-bottom: 1px solid #222;
   }
 
