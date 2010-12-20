@@ -11,7 +11,7 @@
 #+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
 #+STYLE:    <script type="text/javascript" src="org-info.js"> 
 * Why is it called GNUGOLD?
-  The name is a play on several words - Canoodle, google, gnu, and I am in search of "New Gold" - what designing a custom protocol for client distributed search...
+  The name is a play on several words - Canoodle, google, gnu, and I am in search of "New Gold" while designing a custom protocol for client distributed search...
 * What will it do?
   Act as a proxy query router using udp or sctp to more well connected search sites.
 * How does it work? 
