@@ -23,9 +23,11 @@
 ** Gnugol is simple
    The default output of gnugol is spartan, to say the least. While it can be extensively customized, the motto is "just the results, please", and be damned to everything else.
 ** Gnugol is flexible
+   As a command line utility, supplied with easy to understand source code, it is possible to (eventually) make gnugol have more features that are common on the web browser side. 
 ** Gnugol is portable
-   Well, I hope one day it will be. 
+   Well, I hope one day it will be. I am trying hard to use techniques that will result in a small memory footprint.
 ** Gnugol integrates with emacs
+   Supplied in the elisp directory is an interface to emacs, gnugol.el
 * Use Cases
 ** Command Line
    The simplest way to use gnugol is on the command line. 
@@ -52,7 +54,7 @@
      You can also use gnugol to output results directly into emacs's w3 browser or any other browser, within emacs, as per the below.
 
      This website and documentation for gnugol are all managed as org-mode files.
-** Older Browsers
+** For the command line guys
    If you are like me, you spend large portions of your day in front of a very large terminal or editor window, working.
 
    It's a difficult context switch to make, from, in my case, green on black text, to the blazing black on white of most web sites. Enter gnugol!
@@ -60,20 +62,9 @@
    gnugol --html carpal tunnel syndrome | elinks
 
 I make things even simpler for myself by having a set of shell scripts to make my typing even less. In the above case I have a simple shell script, "gl" which looks like this:
-#+BEGIN_SRC sh
-#!/bin/sh
-#Simple shortcut for gnugol to elinks
-gnugol --html "$*" | elinks
-#+END_SRC
+#+INCLUDE: "../src/scripts/gl" src sh
 I have a similar one (ge) to bring up the results in emacs:
-#+BEGIN_SRC sh
-#!/bin/sh
-#Simple shortcut for gnugol to bring up emacs
-TEMP=/tmp/t.org
-gnugol --org "$*" >> $TEMP
-emacsclient $TEMP
-rm -f $TEMP
-#+END_SRC
+#+INCLUDE: "../src/scripts/ge" src sh
 One of these days I'll get around to something more elaborate.
 ** For the blind
    Navigating today's internet is an increasingly difficult prospect for those with disabilities such as blindness. Using a speech synthesiser to navigate a world with hundreds of irrelevant graphics and urls on a page is very difficult to say the least.
@@ -85,7 +76,7 @@ One of these days I'll get around to something more elaborate.
 * Other Resources
 ** [[file:faq.org][FAQ]]
 ** [[file:history.org][History]]
-** [[file:gnugol.odp][2008 Openoffice presentation on gnugol]]
+** [[file:gnugol.odp][2008 Openoffice presentation on gnugol and gnugold]]
 ** [[file:bugs.org][Bugs]]
 ** [[file:gnugold.org][Gnugold query router]]
 * Tests

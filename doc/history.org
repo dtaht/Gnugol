@@ -9,6 +9,28 @@
 #+LINK_UP:
 #+LINK_HOME:
 #+STYLE:    <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+* Where did the idea come from?
+  Dave has had a long experience with search engines, having written one in 1996, and another in 1999. 
+** Genesis 
+   Gnugol began life in 1996 as a shell script that scraped altavista's search results into a format that was compatible with the links text-mode web browser. It went through various incarnations over the years.
+** Frustration with "truth in advertising"
+   In a meeting with some web advertising executives in 99, I started describing the new IPv13 protocol, which would guarantee that after so many data packets, “ADV” (advertising) packets had to be sent. Everybody in the room bought it, to my dismay, even a few that shouldn't have been fooled. 
+
+Soon afterwards he started working on privoxy and other tools like that. 
+
+** A trip to Belize
+   where he noticed how slow the internet was in remote locations. 
+** Losing an argument with Linus Torvalds 
+   about the sha1/gzip ordering in git. 
+** ISC.org
+   came from a visit to isc.org and some discussions about the efficiency of dns and udp over ipv6. 
+** Trips to Nicaragua and Australia 
+   Where it was painfully obvious that the internet, especially over lossy 802.11 networks, was often too slow to actually use. Last inputs were the talk, and the name. Mike says "I am a derived work". 
+** Latency
+
+When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
+$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+
 * Early life
 * Adolescence
 * Death #1
@@ -16,3 +38,8 @@
 * Death #3
 * Rebirth #1
 * Rebirth #2
+* The origin of this name
+  The name came from a 2008, late night discussion/hacking/music session between Michael Taht and Nick Mainsbridge, in his music studio near Sydney, Australia. Mike had been working on a set of concepts designed to push the outer limits of the internet back out to the edges, and was about to give a talk on the subject, so they thrashed it through. 
+
+  While Mike was playing piano, Nick came rushing in with the name. Mike dropped the piano, spent a week locked up in a hotel room writing up what they'd been talking about, gave the talk... then got some proof of concept code over a weekend a few weeks later. Thus - gnugol was born!
+
