@@ -13,7 +13,7 @@
 * Why is it called GNUGOLD?
   The name is a play on several words - Canoodle, google, gnu, and I am in search of "New Gold" while designing a custom protocol for client distributed search...
 * What will it do?
-  Act as a proxy query router using udp or sctp to more well connected search sites.
+  Act as a proxy query router using udp or sctp to more well connected search sites. This will reduce DNS lookups, AND the 3 way handshake required for TCP/ip to connect. For example, (assuming the DNS cache is "hot") running gnugol on a machine 4ms away from google takes about 50ms for a query to complete. The same gnugol command on a host that is 80ms away takes anywhere between 220 and 240ms to complete. The numbers get worse and worse the farther from California you get. Bridging this divide is what I hope to accomplish with using the gnugold query router.
 * How does it work? 
 - Simple searches easily fit into a single packet
 - Most responses - when cleared of extra stuff - are less than 16K
@@ -21,16 +21,18 @@
 - DNS lookups done at the center of the internet are fast
 - Short distance http connections on well connected networks are much faster than long distance connections over flaky networks. 
 * How much does it cost? 
-  It's currently free. It's my hope that something like this could become an internet standard for search. There are numerous options for paid search that I'm looking into. 
+  Free. It's my hope that something like this could become an internet standard for search. There are numerous options for paid search that I'm looking into. 
 ** Selling rights to the "default" search engine
    Mozilla does this with google
 ** Dual-licensing the code under the GNU AFFERO public license
 ** Paid secure searching (crypted)
 ** Wave hands and say that search inevitably must become a commodity. 
 * Use Cases
+** Scenario: Searching from outside the USA
 ** Scenario: OLPC - A teacher and 20 students 
 A teacher prepares a lesson plan using internet resources and gnugold. In her (well-connected) home, she does her queries using the gnugol plugin, which downloads and keeps organized her data set, collecting the bits of data that she will use to teach the lesson. She then goes to the school for the lesson. Her students, while receiving the lesson, also do queries, many of which the teacher has already asked, and are cached on her laptop, and thus are presented immediately to the kids without the need for external network access.
 
 See also: [[file:trust.org][Trust relationships]].
+
 * How can I help? 
   Download the source code. Build it. Contribute. Run a server in a well connected location. Share it. Spread the program around your workplace.
