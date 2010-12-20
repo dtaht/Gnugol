@@ -19,7 +19,9 @@
 #define TEMPLATE  "http://ajax.googleapis.com/ajax/services/search/web?v=1.0"
 #define BUFFER_SIZE  (64 * 1024)  /* 64 KB */
 #define URL_SIZE     (2048)
-#define PATH_MAX 1024
+#define PATH_MAX (1024)
+#define SNIPPETSIZE (2048) 
+#define OUTPUTSIZE (64*1024)
 
 #define STRIPHTML(a) strip_html(2048,a)
 
@@ -68,26 +70,29 @@ static int setup(QueryOptions *q, char *string) {
 
 // turn quotes back into quotes and other utf-8 stuff
 // FIXME: Error outs cause a memory leak from "root"
-// use thread local storage or malloc for the buffer
-// FIXME: do fuller error checking and use error buffers, too
+// use thread local storage? or malloc for the buffer
+// FIXME: do fuller error checking 
+//        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
- 
-#define OUTPUTSIZE (64*1024)
+
 #define OUTF(...) do { outsize += snprintf(&outbuf[outsize], OUTPUTSIZE-outsize, __VA_ARGS__); } while (0)
+#define OUTE(...) do { outesize += snprintf(&errbuf[outesize], OUTPUTSIZE-outesize, __VA_ARGS__); } while (0)
 
 static int getresult(QueryOptions *q, char *urltxt) {
+    static __thread char outbuf[OUTPUTSIZE];
+    static __thread char errbuf[OUTPUTSIZE];
     unsigned int i;
     char *text;
     char url[URL_SIZE];
     json_t *root,*responseData, *results;
     json_error_t error;
     int outsize = 0;
-    char outbuf[OUTPUTSIZE];
-    if(q->debug) fprintf(stderr,"trying url: %s", urltxt); 
+    int outesize = 0;
+    if(q->debug) OUTE("trying url: %s", urltxt); 
 
     text = jsonrequest(urltxt);
     if(!text) {
-      fprintf(stderr,"url failed to work: %s", urltxt); 
+      OUTE("url failed to work: %s", urltxt); 
       return 1;
     }
 
@@ -96,7 +101,7 @@ static int getresult(QueryOptions *q, char *urltxt) {
 
     if(!root)
     {
-        fprintf(stderr, "error: on line %d: %s\n", error.line, error.text);
+        OUTE("error: on line %d: %s\n", error.line, error.text);
         return 1;
     }
     
@@ -104,8 +109,8 @@ static int getresult(QueryOptions *q, char *urltxt) {
     GETARRAY(responseData,results);  
     
     if(q->header) {
-      char buffer[2048];
-      strncpy(buffer,q->keywords,2048);
+      char buffer[SNIPPETSIZE];
+      strncpy(buffer,q->keywords,SNIPPETSIZE);
       STRIPHTML(buffer); // FIXME, need to convert % escapes to strings
       switch(q->format) {
 	
@@ -139,7 +144,7 @@ static int getresult(QueryOptions *q, char *urltxt) {
 				jsv(content));  break;
 	case FORMATSSML:  
 	  { 
-	    char tempstr[2048]; 
+	    char tempstr[SNIPPETSIZE]; 
 	    strcpy(tempstr,jsv(content));
 	    STRIPHTML(tempstr);
 	    OUTF("%s <mark name='%d'>%s</mark>.", tempstr, i+1, jsv(url)); 
@@ -147,7 +152,7 @@ static int getresult(QueryOptions *q, char *urltxt) {
 	    break;
 	case FORMATORG:  
 	  { 
-	    char tempstr[2048]; 
+	    char tempstr[SNIPPETSIZE]; 
 	    strcpy(tempstr,jsv(titleNoFormatting));
 	    STRIPHTML(tempstr);
 	    OUTF("\n** [[%s][%s]]\n", jsv(url), tempstr);
@@ -158,7 +163,7 @@ static int getresult(QueryOptions *q, char *urltxt) {
 	  break;
 	case FORMATMDWN:  
 	  { 
-	    char tempstr[2048]; 
+	    char tempstr[SNIPPETSIZE]; 
 	    strcpy(tempstr,jsv(titleNoFormatting));
 	    STRIPHTML(tempstr);
 	    OUTF("\n[%s](%s)\n", jsv(url), tempstr);
@@ -169,7 +174,7 @@ static int getresult(QueryOptions *q, char *urltxt) {
 	  break;
 	case FORMATTERM: 
 	  { 
-	    char tempstr[2048]; 
+	    char tempstr[SNIPPETSIZE]; 
 	    strcpy(tempstr,jsv(content));
 	    STRIPHTML(tempstr);
 	    OUTF("%s %s %s\n", jsv(url), 
@@ -197,9 +202,13 @@ static int getresult(QueryOptions *q, char *urltxt) {
       default: break;
       }
     }
-
+    // FIXME: Go recursive if we overflowed the buffer
+    // FIXME: Figure out sane memory management
+    // FIXME: 
+ 
     json_decref(root);
-    printf("%s",outbuf);
+    fprintf(stderr,"%s",errbuf);
+    fprintf(stdout,"%s",outbuf);
     return 0;
 }
 
