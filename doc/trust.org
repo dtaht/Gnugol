@@ -57,3 +57,13 @@ At the cafe, you access material from home, and work, but share none of it.
 As for trusted devices, this gets trickier. The answer to this problem
 is too small to be written in the margin of this missive.
 
+
+* Message oriented cryptography
+There are two choices for implementing per-message cryptography for small objects.
+
+Using the gpgme library, we can sign and encrypt a given message to a given destination in a split second. This provides both authentication and authenticity, in addition to security.
+
+Using otr instead would give plausible deniability.
+
+* Multiple transports
+While the fastest transport would be direct, we could also use jabber as a transport. I think.
