@@ -149,6 +149,17 @@ static int getresult(QueryOptions *q, char *urltxt) {
 	    printf("   %s", tempstr); 
 	  }
 	  break;
+	case FORMATMDWN:  
+	  { 
+	    char tempstr[2048]; 
+	    strcpy(tempstr,jsv(titleNoFormatting));
+	    STRIPHTML(tempstr);
+	    printf("\n[%s](%s)\n", jsv(url), tempstr);
+	    strcpy(tempstr,jsv(content));
+	    STRIPHTML(tempstr);
+	    printf("   %s", tempstr); 
+	  }
+	  break;
 	case FORMATTERM: 
 	  { 
 	    char tempstr[2048]; 
@@ -173,7 +184,8 @@ static int getresult(QueryOptions *q, char *urltxt) {
     if(q->footer) {
       switch(q->format) {
       case FORMATELINKS: fprintf(stdout, "</body></html>"); break;
-      case FORMATORG:    fprintf(stdout, "\n"); break;
+      case FORMATORG:
+      case FORMATMDWN:
       case FORMATTERM:   fprintf(stdout, "\n"); break;
       default: break;
       }

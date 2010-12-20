@@ -96,6 +96,7 @@ static struct option long_options[] = {
   {"json", 0,0, 'J'},     
   {"text", 0,0, '7'},     
   {"ssml", 0,0, 'B'},     
+  {"mdwn", 0,0, 'M'},     
 
   {"verbose", 0,0, 'v'},   
   {"debug", 1,0, 'd'},   
@@ -204,6 +205,7 @@ int process_options(int argc, char **argv, QueryData *q) {
     case '7': o->text = 1; break;
     case '8': o->text = 1; break;
     case 'B': o->ssml = 1; break;
+    case 'M': o->mdwn = 1; break;
     case 'd': o->debug = atoi(optarg); break;
     case 'F': o->dontfork = 1; break;
     case 'v': o->verbose = 1; break;
@@ -227,9 +229,9 @@ int process_options(int argc, char **argv, QueryData *q) {
   }
 
   if(q->options.debug > 0) print_enabled_options(&q->options, stderr);
-  if(q->options.html + q->options.xml + q->options.json + 
-     q->options.org + q->options.text + q->options.wiki + q->options.ssml > 1) {
-    usage("You can only select one of json, xml, org, text, wiki, html, or ssml");
+  if(q->options.html + q->options.xml + q->options.json + q->options.mdwn +
+     q->options.org + q->options.text + q->options.wiki + q->options.ssml > 1) { 
+    usage("You can only select one of json, xml, org, mdwn, text, wiki, html, or ssml");
   } 
 
   if(q->options.html) q->options.format = FORMATHTML;
@@ -239,6 +241,7 @@ int process_options(int argc, char **argv, QueryData *q) {
   if(q->options.text) q->options.format = FORMATTERM; 
   if(q->options.wiki) q->options.format = FORMATWIKI;
   if(q->options.ssml) q->options.format = FORMATSSML;
+  if(q->options.mdwn) q->options.format = FORMATMDWN;
 
   return(optind);
 }

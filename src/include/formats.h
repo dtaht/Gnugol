@@ -18,6 +18,7 @@
 #define FORMATSSML (6)
 #define FORMATJSON (7) 
 #define FORMATXML (8) 
+#define FORMATMDWN (9) 
 #define FORMATDEFAULT FORMATORG
 
 #endif
