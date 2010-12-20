@@ -1,7 +1,7 @@
 /* This file implements a gnugol -> google web api -> gnugol json translator plugin 
    using the google web api v1, deprecated Nov 1, 2010. */
 
-/* Reminder, use thread local storage */
+/* Reminder, use thread local storage eventually */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -107,10 +107,6 @@ static int getresult(QueryOptions *q, char *urltxt) {
 	fprintf(stdout, "</title></head><body>");
 	break;
 	
-      case FORMATORG: 
-	fprintf(stdout, "* Search: %s\n", buffer); // FIXME keywords
-	break;
-
       case FORMATSSML: 
        	fprintf(stdout, "Result for <emphasis level='moderate'> %s </emphasis>\n", buffer); // FIXME keywords
 	break;

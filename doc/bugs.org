@@ -57,15 +57,27 @@ There are not a lot of good answers to this problem.
 *** Rate-limit incoming requests?
 *** Report offending clients to a more central authority. 
 *** Migrate to a new multicast network address. 
-*** require encryption/authentication on responses.
+*** Require encryption/authentication on queries and responses.
 * Ggl bugs
-** Not even started yet
+** Not even started yet!
 * WIP
 ** Decisions
+*** Get the command line options under control
+**** for output switch to -o {format,format,format} (obsolete --wiki --org --etc)
+**** also have printf-like format options for snippets, ads, etc (obsolete -a -s -t)
+     [[http://sources.redhat.com/bugzilla/attachment.cgi?id=3874&action=view][Glibc has a standard for extending printf]] but does uclibc?
+
 *** Switch to a build system
+    - configure is ancient but we do want to cross compile. Configure takes longer than the actual compile!
 *** Enable Internationalization
-*** Decide on a protocol
+    - autodetect 
+*** Decide on a transport protocol
+    - sctp: main target
+    - udp:  makes sense for small queries
+    - tcp:  While well understood I really don't care
 *** Security infrastructure
+*** Engine infrastructure
+*** Cleanly distribute api across client/transport/server
 ** IDEAS
 *** Interface for blind users
 *** Firefox plugin
@@ -80,9 +92,10 @@ There are not a lot of good answers to this problem.
 *** Lookaside DNS
 ** Should:
 *** Work on OLPC, fedora, ubuntu
-*** work on non-x86 architectures (nokia n810, blackfin
+*** work on non-x86 architectures (nokia n810, blackfin)
 *** multicast on local networks
 *** Have a stable server/website to use
+*** deb package
 ** WON'T:
 *** be clean code
 *** not core dump occasionally

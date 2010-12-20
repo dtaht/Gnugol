@@ -19,7 +19,7 @@ struct entitymap {
   char *utf8;
 };
 
-// Haven't got around to building a full lookup table yet.
+// FIXME: Haven't got around to building a full lookup table yet.
 
 static struct entitymap emap[] = { 
   { "quot", "\"" },
@@ -27,6 +27,8 @@ static struct entitymap emap[] = {
   { "amp", "&" },
   { "lt", "<" },
   { "gt", ">" },
+  { "#39","'" },
+  { "nbsp","'" },
   { NULL, NULL },
 };
 
@@ -46,7 +48,7 @@ int substitute_utf8(char *string, char *entity) {
 // Strip out newlines from string, too.
 static int strip_newlines(char *string, int len) {
   int j = 0;
-  for (int i = 0; i < len; i++) if(string[i] != '\n') string[j++] = string[i]; 
+  for (int i = 0; i < len; i++) if(string[i] != '\n' &&string[i] != '\r') string[j++] = string[i]; 
   string[j] = '\0';
   return(j);
 }
@@ -135,13 +137,15 @@ int strip_html(int len, char *htmlstr) {
 	break; 
       
       case ' ': 
+      case '\n': 
+      case '\r':
 	if(isspace == 0) { 
 	  isspace = 1; 
-	  if(j > 0 && string[j-1] != ' ') string[j++] = ' '; 
+	  if(j > 0 && string[j-1] != ' ') 
+	    string[j++] = ' '; 
 	} 
 	if(inperiod) inperiod = 0;
 	if(inentity) inentity = 0;
-
 	break;
 
       case '.': 
