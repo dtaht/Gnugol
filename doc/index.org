@@ -74,6 +74,7 @@ One of these days I'll get around to something more elaborate.
    See also: [[file:trust.org][Trust Relationships]]
 ** For integration with other tools
 * Other Resources
+** [[file:concepts.org][Concepts]]
 ** [[file:faq.org][FAQ]]
 ** [[file:history.org][History]]
 ** [[file:gnugol.odp][2008 Openoffice presentation on gnugol and gnugold]]
