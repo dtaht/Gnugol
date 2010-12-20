@@ -25,3 +25,6 @@ clean:
 	make -C engines clean
 	make -C clients clean
 	make -C server clean
+	rm TAGS
+tags:
+	find . -type f \( -name \*.c -o -name \*.h \) -print | xargs etags --append

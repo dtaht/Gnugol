@@ -256,7 +256,7 @@ main(int argc, char **argv) {
   // Defaults
   q->options.nresults = 4;
   q->options.position = 0;
-  q->options.engine_name = "google";
+  q->options.engine_name = "googlev1";
   q->options.language = "en";
   q->options.header = 1;
   q->options.footer = 1;

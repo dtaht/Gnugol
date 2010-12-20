@@ -34,13 +34,14 @@
 
 */
 
-static struct search_opt {
+static struct {
   int start;
   int rsz; // number of results
   int safe;
   char language[16];
   char ip[8*5+1]; // Room for ipv6 requests
-};
+} search_opt;
+
 
 static int setup(QueryOptions *q, char *string) {
   char path[PATH_MAX];
@@ -65,10 +66,14 @@ static int setup(QueryOptions *q, char *string) {
   return size;
 }
 
-// for markdown get rid of <b>...</b>
-// turn <b>whatever</b> into *whatever*
 // turn quotes back into quotes and other utf-8 stuff
-// FIXME Error outs cause a memory leak from "root"
+// FIXME: Error outs cause a memory leak from "root"
+// use thread local storage or malloc for the buffer
+// FIXME: do fuller error checking and use error buffers, too
+// Maybe back off the number of results when we overflow the buffer
+ 
+#define OUTPUTSIZE (64*1024)
+#define OUTF(...) do { outsize += snprintf(&outbuf[outsize], OUTPUTSIZE-outsize, __VA_ARGS__); } while (0)
 
 static int getresult(QueryOptions *q, char *urltxt) {
     unsigned int i;
@@ -76,6 +81,8 @@ static int getresult(QueryOptions *q, char *urltxt) {
     char url[URL_SIZE];
     json_t *root,*responseData, *results;
     json_error_t error;
+    int outsize = 0;
+    char outbuf[OUTPUTSIZE];
     if(q->debug) fprintf(stderr,"trying url: %s", urltxt); 
 
     text = jsonrequest(urltxt);
@@ -103,12 +110,12 @@ static int getresult(QueryOptions *q, char *urltxt) {
       switch(q->format) {
 	
       case FORMATELINKS: 
-	fprintf(stdout, "<html><head><title>Search for: %s", buffer);
-	fprintf(stdout, "</title></head><body>");
+	OUTF( "<html><head><title>Search for: %s", buffer);
+	OUTF( "</title></head><body>");
 	break;
 	
       case FORMATSSML: 
-       	fprintf(stdout, "Result for <emphasis level='moderate'> %s </emphasis>\n", buffer); // FIXME keywords
+       	OUTF( "Result for <emphasis level='moderate'> %s </emphasis>\n", buffer); // FIXME keywords
 	break;
 
       default: break;
@@ -126,7 +133,7 @@ static int getresult(QueryOptions *q, char *urltxt) {
       GETSTRING(result,content);
       
       switch (q->format) {
-	case FORMATWIKI: printf("[[%s|%s]] %s  \n",
+	case FORMATWIKI: OUTF("[[%s|%s]] %s  \n",
 				jsv(titleNoFormatting), 
 				jsv(url), 
 				jsv(content));  break;
@@ -135,7 +142,7 @@ static int getresult(QueryOptions *q, char *urltxt) {
 	    char tempstr[2048]; 
 	    strcpy(tempstr,jsv(content));
 	    STRIPHTML(tempstr);
-	    printf("%s <mark name='%d'>%s</mark>.", tempstr, i+1, jsv(url)); 
+	    OUTF("%s <mark name='%d'>%s</mark>.", tempstr, i+1, jsv(url)); 
 	  }
 	    break;
 	case FORMATORG:  
@@ -143,10 +150,10 @@ static int getresult(QueryOptions *q, char *urltxt) {
 	    char tempstr[2048]; 
 	    strcpy(tempstr,jsv(titleNoFormatting));
 	    STRIPHTML(tempstr);
-	    printf("\n** [[%s][%s]]\n", jsv(url), tempstr);
+	    OUTF("\n** [[%s][%s]]\n", jsv(url), tempstr);
 	    strcpy(tempstr,jsv(content));
 	    STRIPHTML(tempstr);
-	    printf("   %s", tempstr); 
+	    OUTF("   %s", tempstr); 
 	  }
 	  break;
 	case FORMATMDWN:  
@@ -154,10 +161,10 @@ static int getresult(QueryOptions *q, char *urltxt) {
 	    char tempstr[2048]; 
 	    strcpy(tempstr,jsv(titleNoFormatting));
 	    STRIPHTML(tempstr);
-	    printf("\n[%s](%s)\n", jsv(url), tempstr);
+	    OUTF("\n[%s](%s)\n", jsv(url), tempstr);
 	    strcpy(tempstr,jsv(content));
 	    STRIPHTML(tempstr);
-	    printf("   %s", tempstr); 
+	    OUTF("   %s", tempstr); 
 	  }
 	  break;
 	case FORMATTERM: 
@@ -165,33 +172,34 @@ static int getresult(QueryOptions *q, char *urltxt) {
 	    char tempstr[2048]; 
 	    strcpy(tempstr,jsv(content));
 	    STRIPHTML(tempstr);
-	    printf("%s %s %s\n", jsv(url), 
+	    OUTF("%s %s %s\n", jsv(url), 
 		   jsv(titleNoFormatting), 
 		   tempstr); 
 	  }
 	  break;
 
-      case FORMATELINKS: printf("<p><a href=\"%s\">%s</a> %s</p>", 
+      case FORMATELINKS: OUTF("<p><a href=\"%s\">%s</a> %s</p>", 
 				jsv(url), 
 				jsv(titleNoFormatting), 
 				jsv(content)); break;
 	
-      default: printf("<a href=\"%s\">%s</a> %s\n", 
+      default: OUTF("<a href=\"%s\">%s</a> %s\n", 
 		      jsv(url), jsv(titleNoFormatting), jsv(content)); 
       }
     }
 
     if(q->footer) {
       switch(q->format) {
-      case FORMATELINKS: fprintf(stdout, "</body></html>"); break;
+      case FORMATELINKS: OUTF("</body></html>"); break;
       case FORMATORG:
       case FORMATMDWN:
-      case FORMATTERM:   fprintf(stdout, "\n"); break;
+      case FORMATTERM:   OUTF("\n"); break;
       default: break;
       }
     }
 
     json_decref(root);
+    printf("%s",outbuf);
     return 0;
 }
 
