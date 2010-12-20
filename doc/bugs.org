@@ -28,22 +28,29 @@
 ** Does not properly escape "[" characters when in a url or text snippet.
 ** Limited search engine support
 *** Google's basic engine is essentially complete
-** TODO Bing
-** TODO Wikipedia
-** TODO DNS
-** TODO Opensearch
-** TODO RFCs
-** TODO Citeseer
-** SSML 
-*** SSML is totally untested at present
-** Need a marking scheme for speech enabled search
-** XML
-*** Need a standardized XML definition for gnugol's output
-** SQL
-*** SQL output would be nice
+*** TODO Bing
+*** TODO Wikipedia
+*** TODO DNS
+*** TODO Opensearch
+*** TODO RFCs
+*** TODO Citeseer
+** TODO outputs
+*** Custom printf-like string
+*** Markdown
+    Decide on output formatting
+*** CSV
+*** XML
+    Need a standardized XML definition for gnugol's output. There must be one out there.
+*** SQL
+    SQL output would be nice
    but has much potential for abuse.
+*** JSON
+    Be able to dump the raw json output
+*** TODO SSML 
+    SSML is totally untested at present
+**** Need a marking scheme for speech enabled search
 ** SearchMarks
-*** Unimplemented
+   Unimplemented, prototyping in emacs
 * Gnugold Bugs
 ** Complete rewrite in progress
 ** The old UDP based protocol didn't work out
