@@ -21,7 +21,7 @@
 ** Gnugol is fast
    By eliminating all the extra stuff most search engines return for their results and returning the results in a simple format, you get just the answers you need for the tool you are using. As gnugol is written in C, startup time is vastly reduced verses something written in a higher level language, such as python.
 ** Gnugol is smart
-   The basics of most searching is keyword based. All search engines return standardized results in the form of the title of a page, a relevant snippet from your search, and a link to the page. (Almost) everything else is fluff. Why not get it in a form you can read in the tool of your choice, whether that be plain text, plain html, or plain org or wiki formats?
+   The basics of most searching is keyword based. All search engines return standardized results in the form of the title of a page, a relevant snippet from your search, and a link to the page. (Almost) everything else is fluff. Why not get it in a form you can read in the tool of your choice, whether that be plain text, basic html, org, mdwn, or wiki formats?
 ** Gnugol is small
    Presently the command line binary weighs in at less than 40k stripped - admittedly with a huge dependence on the curl library and a much smaller one on the jansson library. 
 ** Gnugol is simple
