@@ -80,6 +80,6 @@ One of these days I'll get around to something more elaborate.
 ** [[file:bugs.org][Bugs]]
 ** [[file:gnugold.org][Gnugold query router]]
 * Tests
-** [[file:search.html][Test CGI search]]
+** [[file:search.org][Test CGI search]]
 * Where to get it?
 Gnugol is being maintained in a repository on [[https://github.com/dtaht/Gnugol][github]]. 
