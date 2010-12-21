@@ -37,6 +37,7 @@
     :PROPERTIES:
     :Effort:   1:00
     :END:
+*** Refactor
 ** Shell mode
 *** UTF-8 
    Gnugol has currently a very limited selection of html escapes to utf-8 support, implemented via a silly lookup routine. It would be better to have it be complete, and hashed with gperf.
@@ -46,24 +47,38 @@
 ** Non-utf-8 terminals
    Gnugol does not detect when it has a different character set than UTF-8.
 (I am not particularly interested in anything other than html<->utf-8 conversion, frankly)
-** org mode
-*** gnugol.el is incomplete
-   In addition to browsing the output from 
+** TODO gnugol.el is incomplete
+   There are a lot of features from other emacs clients and modes I'd like to borrow. Notably I'd like search-into-pt to be more mode aware than just org-mode. Also want hooks...
 ** DONE Output needs to be sensitive to the level of the current outline
    --levels 0-5
-** Does not properly escape "[" characters when in a url or text snippet.
+** TODO Does not properly escape "[" characters when in a url or text snippet.
+   This one is downright annoying, especially when mailing list results are returned
 ** Limited search engine support
 *** DONE Google's basic engine is essentially complete
 *** DONE Dummy engine
-*** TODO Google json interface version 2
-*** TODO Bing
-*** TODO Wikipedia
+*** CNCL Google json interface version 2
+    Canceled: Only searches specific sites
+*** DONE Bing
+    CLOSED: [2010-12-21 Tue 14:50]
+    :LOGBOOK:
+    - State "DONE"       from "STARTED"    [2010-12-21 Tue 12:50]
+    - State "STARTED"    from "STARTED"    [2010-12-21 Tue 14:49]
+    CLOCK: [2010-12-21 Tue 12:49]--[2010-12-21 Tue 14:50] =>  2:01
+    :END:
+    :PROPERTIES:
+    :Effort:   2:00
+    :END:
+*** TODO Wikipedia/Mediawiki
+*** TODO Xapian
+*** Other engines?
 *** TODO DNS
 *** TODO Opensearch
 *** TODO RFCs
 *** TODO Citeseer
+*** TODO Yacl
 ** TODO outputs
 *** Custom printf-like string
+*** Check the difference between mediawiki and org formats
 *** Markdown
     Decide on output formatting
 *** CSV
