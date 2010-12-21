@@ -35,7 +35,6 @@
 * Use Cases
 ** Command Line
    The simplest way to use gnugol is on the command line. 
-
    [[shell:gnugol --text in the beginning was the command line]]
 ** Emacs 
    Emacs has an incredibly powerful outliner called [[http://www.orgmode.org][org-mode]] that uses plain text and a wiki-like format for various url forms. It does not grok html natively, instead using a variety of markdown-like mechanisms to make it possible to view your personal database of projects within emacs. Put lisp/gnugol.el into your .emacs.d directory and do a (require 'gnugol)
@@ -63,7 +62,7 @@
 
    It's a difficult context switch to make, from, in my case, green on black text, to the blazing black on white of most web sites. Enter gnugol!
 
-   gnugol --html carpal tunnel syndrome | elinks
+   gnugol -o html carpal tunnel syndrome | elinks
 
 I make things even simpler for myself by having a set of shell scripts to make my typing even less. In the above case I have a simple shell script, "gl" which looks like this:
 #+INCLUDE: "../src/scripts/gl" src sh
