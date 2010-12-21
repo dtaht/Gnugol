@@ -5,7 +5,7 @@ COMMON=
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
-OBJECTS=googlev1.o
+OBJECTS=googlev1.o googlev2.o
 CC=gcc
 STRIP=strip
 TESTDIR=../tests/
@@ -14,6 +14,9 @@ all: $(OBJECTS) $(PROGS)
 
 googlev1.o: googlev1.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev1.c -c
+
+googlev2.o: googlev2.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev2.c -c
 
 clean:
 	rm -f $(OBJECTS) $(PROGS) *~

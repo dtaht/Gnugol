@@ -1,7 +1,7 @@
 LIBS=-ljansson -lcurl
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
-COMMON=../common/handy.o ../common/utf8.o
+COMMON=../common/handy.o ../common/utf8.o ../common/format.o
 ENGINES=../engines/googlev1.o
 
 INC=../include

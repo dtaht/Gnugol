@@ -25,6 +25,16 @@
 ** Abstract out output mode processing from json parsing
    Make it easier to write multiple engines
 ** Clean up memory management
+*** STARTED make buffer more of an object
+    :LOGBOOK:
+    - State "STARTED"    from "STARTED"    [2010-12-21 Tue 08:10]
+    CLOCK: [2010-12-21 Tue 08:10]
+    - State "STARTED"    from "STARTED"    [2010-12-21 Tue 04:52]
+    CLOCK: [2010-12-21 Tue 04:52]--[2010-12-21 Tue 05:57] =>  1:05
+    :END:
+    :PROPERTIES:
+    :Effort:   1:00
+    :END:
 ** Shell mode
 *** UTF-8 
    Gnugol has currently a very limited selection of html escapes to utf-8 support, implemented via a silly lookup routine. It would be better to have it be complete, and hashed with gperf.

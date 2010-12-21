@@ -9,11 +9,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <getopt.h>
-
-#include "formats.h"
 #include "query.h"
+#include "formats.h"
 
-extern int plugin_googlev1(QueryOptions *q);
+extern int plugin_googlev1(QueryOptions_t *q);
 
 struct  output_types {
   int id;
@@ -119,14 +118,14 @@ static struct option long_options[] = {
   {"dummy", 0,0,'B'},
 };
 
-parse_config_file(QueryOptions *q) {
+parse_config_file(QueryOptions_t *q) {
 
 } 
 
 #define penabled(a) if(o->a) fprintf(fp," " # a " ");
 
 int 
-print_enabled_options(QueryOptions *o, FILE *fp) {
+print_enabled_options(QueryOptions_t *o, FILE *fp) {
   if(o->verbose) fprintf(fp,"Search Keywords: %s\n",o->keywords);
   fprintf(fp,"Results Requested: %d\n", o->nresults);
   fprintf(fp,"Starting position: %d\n",o->position);
@@ -162,8 +161,7 @@ print_enabled_options(QueryOptions *o, FILE *fp) {
 
 #define pifverbose(q,string) if(q->verbose) { printf("%s",val); }
 
-int process_options(int argc, char **argv, QueryData *q) {
-  QueryOptions *o = &q->options; 
+int process_options(int argc, char **argv, QueryOptions_t *o) {
   int option_index = 0;
   int i = 0;
   int querylen = 0;
@@ -226,14 +224,13 @@ int process_options(int argc, char **argv, QueryData *q) {
   for(i = optind; i < argc; i++) {
     if((querylen += strlen(argv[i]) > MAX_MTU - 80)) {
       fprintf(stderr,"Too many words in query, try something smaller\n");
-      free(q);
-      exit(-1);
+      return(1);
     }
     strcat(o->keywords,argv[i]);
     if(i+1 < argc) strcat(o->keywords,"%20");
   }
 
-  if(q->options.debug > 0) print_enabled_options(&q->options, stderr);
+  if(o->debug > 0) print_enabled_options(o, stderr);
   return(optind);
 }
 
@@ -242,23 +239,29 @@ main(int argc, char **argv) {
   int cnt = 0;
   char host[1024];
   int querylen = 0;
-  QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
-  
+  QueryOptions_t q;
+  gnugol_init_QueryOptions(&q);
   // Defaults
-  q->options.nresults = 4;
-  q->options.position = 0;
-  q->options.engine_name = "googlev1";
-  q->options.language = "en";
-  q->options.header = 1;
-  q->options.footer = 1;
-  q->options.format = FORMATDEFAULT; // NONE
 
-  process_options(argc,argv,q);
+  q.nresults = 4;
+  q.position = 0;
+  q.engine_name = "googlev1";
+  q.language = "en";
+  q.header = 1;
+  q.footer = 1;
+  q.format = FORMATDEFAULT; // NONE
+
+  process_options(argc,argv,&q);
   
-  if(!(q->options.urls | q->options.snippets | 
-       q->options.ads | q->options.titles)) { 
-    q->options.urls = 1; // Always default to fetching urls 
+  if(!(q.urls | q.snippets | q.ads | q.titles)) { 
+    q.urls = 1; // Always default to fetching urls 
   }
   
-  return(plugin_googlev1(&q->options));
+  if(plugin_googlev1(&q) == 0) {
+    printf("%s\n",q.out.s);
+  } else {
+    printf("Error %s\n",q.err.s);
+  }
+  gnugol_free_QueryOptions(&q);
+  return(0); 
 }

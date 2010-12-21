@@ -1,6 +1,14 @@
 #define MAX_MTU 1280
 #define MAX_ENTRIES 8
 
+struct gnugol_buffer_obj {
+  int size;
+  int len;
+  char *s;
+};
+
+typedef struct gnugol_buffer_obj buffer_obj_t;
+
 /* bitfields are underused these days - use 'em or nuke em */
 
 struct query_options {
@@ -51,16 +59,15 @@ struct query_options {
   char *output_language;
   char *server;
   char *client;
-  char *output_buf;
-  char *err_buf;
-
+  buffer_obj_t out;
+  buffer_obj_t err;
   char keywords[1024];
 };
 
-typedef struct query_options QueryOptions;
+typedef struct query_options QueryOptions_t;
 
 struct query_args {
-  QueryOptions options;        // 
+  QueryOptions_t options;        // 
   int entries;
   unsigned char qsha1[20]; // Query's Sha1 - text? prefer binary... later
   unsigned char asha1[20]; // Answer's Sha1

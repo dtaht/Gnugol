@@ -10,7 +10,7 @@ CC=gcc
 TESTDIR=../tests/
 CFLAGS+=-std=c99
 
-OBJECTS := parser.o handy.o utf8.o
+OBJECTS := parser.o handy.o utf8.o format.o
 
 all: $(PROGS) $(OBJECTS) 
 
@@ -49,3 +49,6 @@ utf8.o: utf8.c $(INC)/utf8.h
 
 multicast.o: multicast.c $(INC)/query.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c multicast.c
+
+format.o: format.c $(INC)/formats.h
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c format.c
