@@ -1,8 +1,5 @@
 #ifndef gnugol_default_formats
 #define gnugol_default_formats
-/*    format = q->text | q->xml << 1 | q->html << 2 | 
-      q->ssml << 3 | q->org << 4 | q->wiki << 5; */
-
 // <a href=url>title</a> content
 // url title content
 #define FORMATNONE (0)
@@ -35,6 +32,7 @@
 
 #define GNUGOL_OUTF(q ,...) do { q->out.len += snprintf(&(q->out.s[q->out.len]), q->out.size-q->out.len, __VA_ARGS__); } while (0)
 #define GNUGOL_OUTE(q ,...) do { q->err.len += snprintf(&(q->err.s[q->err.len]), q->err.size-q->err.len, __VA_ARGS__); } while (0)
+#define GNUGOL_OUTW(q ,...) do { q->wrn.len += snprintf(&(q->wrn.s[q->wrn.len]), q->wrn.size-q->wrn.len, __VA_ARGS__); } while (0)
 
 extern int gnugol_init_QueryOptions(QueryOptions_t *q);
 extern int gnugol_free_QueryOptions(QueryOptions_t *q);

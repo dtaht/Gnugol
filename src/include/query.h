@@ -43,11 +43,13 @@ struct query_options {
   int footer:1;
   int header:1;
 
+  int level;
   int debug;
   int nresults;
   int position;
   int safe; // 0, 1, 2
   int format;
+  int returned_results;
   char *header_str;
   char *footer_str;
   char *license_str;
@@ -61,6 +63,7 @@ struct query_options {
   char *client;
   buffer_obj_t out;
   buffer_obj_t err;
+  buffer_obj_t wrn;
   char keywords[1024];
 };
 

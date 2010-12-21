@@ -104,7 +104,7 @@
 	;; FIXME what we want to do is something like this but I'm getting it wrong
 	;; (if (search-forward (concat "[Search: " str "]")) () 
 	(save-excursion 
-	  (insert-string (concat "* [[gnugol: " str "][Search: " str "]]"))
+	  (insert-string (concat "* [[gnugol: " str "][Search: " str "]]\n"))
 	  (insert (shell-command-to-string (concat gnugol-cmd " " str )))
 	  (switch-to-buffer newbuffer)
 	  ))

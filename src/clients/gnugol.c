@@ -35,7 +35,17 @@ static struct output_types output_type[] = {
   { 0, NULL },
   };
 
-    
+
+/*
+FIXME: Make this a dynamic engine callback at runtime
+
+static struct engine_callbacks engine[] = {
+  { "dummy", engine_dummy },
+  { "google", engine_googlev1 },
+  { NULL },
+};
+
+*/
 
 int usage (char *err) {
   if(err) fprintf(stderr,"%s\n",err);
@@ -48,7 +58,7 @@ int usage (char *err) {
 	 "-e --engine    use an alternate engine\n"
 	 "-i --input [filename] input from a file\n"
 	 "-p --plugin    use an alternate plugin\n"
-	 "-l --lucky     autofetch the first result\n"
+	 "-L --lucky     autofetch the first result\n"
 #ifdef HAVE_GNUGOLD
 	 "-P --prime     prime the caches, routes, etc\n"
 	 "-R --register\n"
@@ -61,6 +71,7 @@ int usage (char *err) {
 	 "-B --dummy dummy input (useful for stress testing)\n"
 	 "-T --trust networks\n"
 #endif
+	 "-l --level X   result level\n"
 	 "-c --cache     serve only results from cache(s)\n"
 	 "-O --Offline   store up query for later\n"
 	 "-f --force     force a new query, even if cached\n"
@@ -84,9 +95,9 @@ int usage (char *err) {
 static struct option long_options[] = {
   {"reverse", 0, 0, 'r' }, 
   {"urls", 0, 0, 'u' },
-  {"links", 0, 0, 'l' },
   {"snippets", 0, 0,'s'},
   {"ads", 0,0,'a' },
+  {"level", 1, 0, 'l' },
   {"titles", 0,0, 't'},
   {"engine", 1,0, 'e'},
   {"register", 2,0, 'r'},
@@ -153,6 +164,7 @@ print_enabled_options(QueryOptions_t *o, FILE *fp) {
   penabled(lucky);
   penabled(safe);
   penabled(reg);
+  penabled(level);
   penabled(engine);
   penabled(mirror);
   penabled(plugin);
@@ -207,6 +219,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       break;
     case '5': o->offline = 1; break;
     case 'f': o->output = 1; break;
+    case 'l': o->level = atoi(optarg); break;
     case 'n': o->nresults = atoi(optarg); break; 
     case 'U': o->position = atoi(optarg); break; 
     case 'Z': o->secure = 1; break; // unimplemented
@@ -232,7 +245,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     strcat(o->keywords,argv[i]);
     if(i+1 < argc) strcat(o->keywords,"%20");
   }
-
+  // FIXME: if called with no args do the right thing
   if(o->debug > 0) print_enabled_options(o, stderr);
   return(optind);
 }
@@ -253,6 +266,7 @@ main(int argc, char **argv) {
   q.header = 1;
   q.footer = 1;
   q.format = FORMATDEFAULT; // NONE
+  q.level = -1;
 
   process_options(argc,argv,&q);
   
@@ -262,24 +276,22 @@ main(int argc, char **argv) {
 
   if(q.dummy) {
     if(engine_dummy(&q) == 0) {
-      printf("RESULTS: %s\n",q.out.s);
-      fprintf(stderr,"Error %s\n",q.err.s);
+      printf("%s",q.out.s);
     } else {
-      fprintf(stderr,"Error %s\n",q.err.s);
+      fprintf(stderr,"Error %s",q.err.s);
     }
     
   } else {
   
   if(engine_googlev1(&q) == 0) {
-    printf("RESULTS: %s\n",q.out.s);
-    fprintf(stderr,"Error %s\n",q.err.s);
+    printf("%s",q.out.s);
   } else {
-    fprintf(stderr,"Error %s\n",q.err.s);
+    fprintf(stderr,"%s\n",q.err.s);
   }
   }
 
-  printf("len = %d\n Result = %s\n",q.out.len, q.out.s);
-
+  if(q.debug)
+    printf("len = %d\n size = %d, Result = %s\n",q.out.len, q.out.size, q.out.s);
   gnugol_free_QueryOptions(&q);
   return(0); 
 }

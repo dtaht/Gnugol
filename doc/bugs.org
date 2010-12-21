@@ -22,13 +22,15 @@
    :Effort:   1:00
    :END:
    obsolete --org --wiki --etc in favor of -o wiki
-** Abstract out output mode processing from json parsing
+** DONE Abstract out output mode processing from json parsing
    Make it easier to write multiple engines
 ** Clean up memory management
-*** STARTED make buffer more of an object
+*** DONE make buffer more of an object
+    CLOSED: [2010-12-21 Tue 10:50]
     :LOGBOOK:
+    - State "DONE"       from "STARTED"    [2010-12-21 Tue 10:50]
     - State "STARTED"    from "STARTED"    [2010-12-21 Tue 08:10]
-    CLOCK: [2010-12-21 Tue 08:10]
+    CLOCK: [2010-12-21 Tue 08:10]--[2010-12-21 Tue 10:51] =>  2:41
     - State "STARTED"    from "STARTED"    [2010-12-21 Tue 04:52]
     CLOCK: [2010-12-21 Tue 04:52]--[2010-12-21 Tue 05:57] =>  1:05
     :END:
@@ -47,11 +49,13 @@
 ** org mode
 *** gnugol.el is incomplete
    In addition to browsing the output from 
-** Output needs to be sensitive to the level of the current outline
-   --level 3
+** DONE Output needs to be sensitive to the level of the current outline
+   --levels 0-5
 ** Does not properly escape "[" characters when in a url or text snippet.
 ** Limited search engine support
-*** Google's basic engine is essentially complete
+*** DONE Google's basic engine is essentially complete
+*** DONE Dummy engine
+*** TODO Google json interface version 2
 *** TODO Bing
 *** TODO Wikipedia
 *** TODO DNS
