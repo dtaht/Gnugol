@@ -66,6 +66,9 @@ struct query_options {
 
 typedef struct query_options QueryOptions_t;
 
+/* I have no idea any more what this was used for. I think it was
+   gnugold's internal format.
+
 struct query_args {
   QueryOptions_t options;        // 
   int entries;
@@ -97,6 +100,8 @@ struct query_args {
 
 typedef struct query_args QueryData;
 
+
 extern int query_main  (QueryData *answers, char *host);
 extern int answer_parse(QueryData *q);
 extern int build_query (QueryData *q);
+*/

@@ -12,7 +12,8 @@
 #include "query.h"
 #include "formats.h"
 
-extern int plugin_googlev1(QueryOptions_t *q);
+extern int engine_googlev1(QueryOptions_t *q);
+extern int engine_dummy(QueryOptions_t *q);
 
 struct  output_types {
   int id;
@@ -109,6 +110,7 @@ static struct option long_options[] = {
   {"nresults", 1,0, 'n'},
   {"position", 1,0, 'U'},
   {"verbose", 0,0, 'v'},   
+  {"dummy", 0,0, '9'},   
   {"debug", 1,0, 'd'},   
   {"defaults", 0,0, 'D'},   
   {"source", 0,0, 0},     
@@ -122,7 +124,7 @@ parse_config_file(QueryOptions_t *q) {
 
 } 
 
-#define penabled(a) if(o->a) fprintf(fp," " # a " ");
+#define penabled(a) if(o->a) fprintf(fp,"" # a " ");
 
 int 
 print_enabled_options(QueryOptions_t *o, FILE *fp) {
@@ -170,10 +172,10 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   if(argc == 1) usage("");
 
 #ifdef HAVE_GNUGOLD
-  // FIXME, not all opt defined
-#define QSTRING "7654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
+  // FIXME, not all opt defined, some extras
+#define QSTRING "97654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
 #else
-#define QSTRING "7654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
+#define QSTRING "97654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
 #endif  
   do {
     opt = getopt_long(argc, argv, 
@@ -212,6 +214,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     case 'd': o->debug = atoi(optarg); break;
     case 'F': o->dontfork = 1; break;
     case 'v': o->verbose = 1; break;
+    case '9': o->dummy = 1; break;
     case '6': o->ipv6 = 1; break;
     case '4': o->ipv4 = 1; break;
     case 'h': 
@@ -256,12 +259,27 @@ main(int argc, char **argv) {
   if(!(q.urls | q.snippets | q.ads | q.titles)) { 
     q.urls = 1; // Always default to fetching urls 
   }
-  
-  if(plugin_googlev1(&q) == 0) {
-    printf("%s\n",q.out.s);
+
+  if(q.dummy) {
+    if(engine_dummy(&q) == 0) {
+      printf("RESULTS: %s\n",q.out.s);
+      fprintf(stderr,"Error %s\n",q.err.s);
+    } else {
+      fprintf(stderr,"Error %s\n",q.err.s);
+    }
+    
   } else {
-    printf("Error %s\n",q.err.s);
+  
+  if(engine_googlev1(&q) == 0) {
+    printf("RESULTS: %s\n",q.out.s);
+    fprintf(stderr,"Error %s\n",q.err.s);
+  } else {
+    fprintf(stderr,"Error %s\n",q.err.s);
   }
+  }
+
+  printf("len = %d\n Result = %s\n",q.out.len, q.out.s);
+
   gnugol_free_QueryOptions(&q);
   return(0); 
 }

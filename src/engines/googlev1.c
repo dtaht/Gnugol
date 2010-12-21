@@ -115,7 +115,7 @@ static int getresult(QueryOptions_t *q, char *urltxt) {
 // FIXME, add url encode
 // FIXME UTF-8
 
-int plugin_googlev1(QueryOptions_t *q) { 
+int engine_googlev1(QueryOptions_t *q) { 
   char basequery[URL_SIZE];
   char qstring[URL_SIZE]; 
   setup(q,basequery);
