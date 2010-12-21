@@ -1,5 +1,5 @@
 /* This engine implements a gnugol -> google web api -> gnugol json translator plugin 
-   using the google web api v1 */
+   using the google web api v1, which was depricated Nov 1, 2010. */
 
 #include <stdio.h>
 #include <stdlib.h>

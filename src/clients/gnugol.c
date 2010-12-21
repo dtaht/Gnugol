@@ -12,6 +12,7 @@
 #include "query.h"
 #include "formats.h"
 
+// extern int engine_googlev2(QueryOptions_t *q);
 extern int engine_googlev1(QueryOptions_t *q);
 extern int engine_dummy(QueryOptions_t *q);
 
