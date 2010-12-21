@@ -15,43 +15,56 @@
 
 extern int plugin_googlev1(QueryOptions *q);
 
+struct  output_types {
+  int id;
+  char *desc;
+};
+
+static struct output_types output_type[] = {
+  { FORMATHTML, "html" },
+  { FORMATWIKI, "wiki" },
+  { FORMATXML,  "xml" },
+  { FORMATJSON, "json" },
+  { FORMATORG,  "org" },
+  { FORMATTERM, "text" },
+  { FORMATSSML, "ssml" },
+  { FORMATMDWN, "mdwn" },
+  { 0, NULL },
+  };
+
+    
+
 int usage (char *err) {
   if(err) fprintf(stderr,"%s\n",err);
   printf("gnugol [options] keywords\n");
-  printf("-r --reverse   unreverse the list. The default IS reversed already\n"
+  printf("-r --reverse   reverse the list. \n"
 	 "-u --urls "
 	 "-s --snippets "
 	 "-a --ads "
 	 "-t --titles\n"
 	 "-e --engine    use an alternate engine\n"
-	 "-R --register\n"
 	 "-i --input [filename] input from a file\n"
-	 "-P --prime     prime the caches, routes, etc\n"
 	 "-p --plugin    use an alternate plugin\n"
 	 "-l --lucky     autofetch the first result\n"
+#ifdef HAVE_GNUGOLD
+	 "-P --prime     prime the caches, routes, etc\n"
+	 "-R --register\n"
 	 "-m --multicast ask for results from local network\n"
 	 "-b --broadcast broadcast results to local network\n"
+	 "-6 --ipv6 listen on ipv6\n"
+	 "-4 --ipv4 listen on ipv4\n"
+	 "-F --dontfork don't fork off the server\n"
+	 "-S --Secure    use secure transport\n"
+	 "-B --dummy dummy input (useful for stress testing)\n"
+	 "-T --trust networks\n"
+#endif
 	 "-c --cache     serve only results from cache(s)\n"
-	 "-o --output    output to a file\n"
 	 "-O --Offline   store up query for later\n"
 	 "-f --force     force a new query, even if cached\n"
 	 "-n --nresults  number of results to fetch\n"
 	 "-p --position  start of results to fetch\n"
-	 "-S --Secure    use secure transport\n"
-	 "\nOutput Options:\n"
-	 "-H --html      output html\n"
-	 "-J --json      output json\n"
-	 "-X --xml       output gnugol XML\n"
-	 "-O --org       output org format\n"
-	 "-M --mdwn      output markdown format\n"
-	 "-W --wiki      output ikiwiki format\n"
-	 "-X --xml       output gnugol XML format\n"
-	 "-B --ssml      output SSML format\n"
+	 "-o html,json,xml,org,mdwn,iki,wiki,ssml\n"
 	 "-d --debug [level]    Debug output\n"
-	 "-B --dummy dummy input (useful for stress testing)\n"
-	 "-6 --ipv6 listen on ipv6\n"
-	 "-4 --ipv4 listen on ipv4\n"
-	 "-F --dontfork don't fork off the server\n"
 	 "--defaults     show the defaults\n"
 	 "--source       fetch the source code this was compiled with\n"
 	 "--help         this message\n"
@@ -75,35 +88,27 @@ static struct option long_options[] = {
   {"engine", 1,0, 'e'},
   {"register", 2,0, 'r'},
   {"input", 1,0, 'i'},
-  {"prime", 0,0, 'P'},     
   {"plugin", 1,0, 'g'},    
   {"lucky", 0,0, 'L'},     
+#ifdef HAVE_GNUGOLD
+  {"prime", 0,0, 'P'},     
   {"multicast", 2,0, 'm'}, 
   {"broadcast", 0,0, 'b'}, 
   {"cache", 0,0, 'c'},     
+  {"secure", 0,0, 'Z'},  
+  {"trust", 0,0, 'T'},  
+  {"ipv6", 0,0, '6'},   
+  {"ipv4", 0,0, '4'},   
+  {"dontfork", 0,0, 'F'},   
+#endif
   {"output", 1,0, 'o'},  
   {"Offline", 0,0, '5'}, 
   {"force", 0,0, 'f'},   
   {"nresults", 1,0, 'n'},
   {"position", 1,0, 'U'},
-  {"secure", 0,0, 'Z'},  
-  {"trust", 0,0, 'T'},  
-
-  {"html", 0,0, 'H'},    
-  {"xml", 0,0, 'X'},     
-  {"org", 0,0, 'O'},     
-  {"wiki", 0,0, 'W'},     
-  {"json", 0,0, 'J'},     
-  {"text", 0,0, '7'},     
-  {"ssml", 0,0, 'B'},     
-  {"mdwn", 0,0, 'M'},     
-
   {"verbose", 0,0, 'v'},   
   {"debug", 1,0, 'd'},   
   {"defaults", 0,0, 'D'},   
-  {"ipv6", 0,0, '6'},   
-  {"ipv4", 0,0, '4'},   
-  {"dontfork", 0,0, 'F'},   
   {"source", 0,0, 0},     
   {"safe", 0,0, 'S'},       
   {"help", 0,0, 'h'},       
@@ -131,31 +136,40 @@ print_enabled_options(QueryOptions *o, FILE *fp) {
   penabled(ads);
   penabled(misc);
   penabled(reverse);
+#ifdef HAVE_GNUGOLD
+  penabled(prime);
   penabled(broadcast);
   penabled(multicast);
+  penabled(ipv4);
+  penabled(ipv6);
+#endif
   penabled(force);
   penabled(cache);
-  penabled(json);
-  penabled(org);
-  penabled(wiki);
-  penabled(mdwn);
-  penabled(xml);
-  penabled(html);
-  penabled(ssml);
   penabled(offline);
   penabled(lucky);
   penabled(safe);
   penabled(reg);
-  penabled(prime);
   penabled(engine);
   penabled(mirror);
   penabled(plugin);
-  penabled(ipv4);
-  penabled(ipv6);
   penabled(dummy);
   penabled(debug);
   fprintf(fp,"\n");
 }
+/*
+
+Rid myself of these options
+
+-H --html      output html
+-J --json      output json
+-X --xml       output gnugol XML
+-O --org       output org format
+-M --mdwn      output markdown format
+-W --wiki      output ikiwiki format
+-X --xml       output gnugol XML format
+-B --ssml      output SSML format
+
+*/
 
 #define pifverbose(q,string) if(q->verbose) { printf("%s",val); }
 
@@ -167,10 +181,16 @@ int process_options(int argc, char **argv, QueryData *q) {
   int opt = 0;
   int count = 0;
   if(argc == 1) usage("");
-  
+
+#ifdef HAVE_GNUGOLD
+  // FIXME
+#define QSTRING "7654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
+#else
+#define QSTRING "7654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
+#endif  
   do {
     opt = getopt_long(argc, argv, 
-		      "7654C:rusate:Ri:PplmS:bcoOfdOZFTBWDd:vU:jn:p:SHX",
+		      QSTRING,
 		      long_options, &option_index);
     if(opt == -1) break;
 
@@ -190,22 +210,18 @@ int process_options(int argc, char **argv, QueryData *q) {
     case 'm': o->multicast = 1; break;
     case 'b': o->broadcast = 1; break;
     case 'c': o->cache = 1; break;
-    case 'o': o->output = 1; break;
+    case 'o': {
+      int i;
+      for(i = 0; output_type[i].desc != NULL; i++)
+	if(strcmp(output_type[i].desc,optarg) == 0) o->format = output_type[i].id; 
+    }
+      break;
     case '5': o->offline = 1; break;
-    case 'f': o->force = 1; break;
+    case 'f': o->output = 1; break;
     case 'n': o->nresults = atoi(optarg); break; 
     case 'U': o->position = atoi(optarg); break; 
     case 'Z': o->secure = 1; break; // unimplemented
     case 'S': o->safe = 1; atoi(optarg); break; 
-    case 'J': o->json = 1; break; 
-    case 'H': o->html = 1; break; 
-    case 'X': o->xml = 1; break;
-    case 'O': o->org = 1; break;
-    case 'W': o->wiki = 1; break;
-    case '7': o->text = 1; break;
-    case '8': o->text = 1; break;
-    case 'B': o->ssml = 1; break;
-    case 'M': o->mdwn = 1; break;
     case 'd': o->debug = atoi(optarg); break;
     case 'F': o->dontfork = 1; break;
     case 'v': o->verbose = 1; break;
@@ -229,20 +245,6 @@ int process_options(int argc, char **argv, QueryData *q) {
   }
 
   if(q->options.debug > 0) print_enabled_options(&q->options, stderr);
-  if(q->options.html + q->options.xml + q->options.json + q->options.mdwn +
-     q->options.org + q->options.text + q->options.wiki + q->options.ssml > 1) { 
-    usage("You can only select one of json, xml, org, mdwn, text, wiki, html, or ssml");
-  } 
-
-  if(q->options.html) q->options.format = FORMATHTML;
-  if(q->options.xml)  q->options.format = FORMATXML;
-  if(q->options.json) q->options.format = FORMATJSON; 
-  if(q->options.org)  q->options.format = FORMATORG;
-  if(q->options.text) q->options.format = FORMATTERM; 
-  if(q->options.wiki) q->options.format = FORMATWIKI;
-  if(q->options.ssml) q->options.format = FORMATSSML;
-  if(q->options.mdwn) q->options.format = FORMATMDWN;
-
   return(optind);
 }
 

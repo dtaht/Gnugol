@@ -11,6 +11,18 @@
 #+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
 #+STYLE:    <script type="text/javascript" src="org-info.js"> 
 * Gnugol Bugs
+** STARTED Command line parameters
+   :LOGBOOK:
+   - State "STARTED"    from "STARTED"    [2010-12-20 Mon 15:28]
+   CLOCK: [2010-12-20 Mon 15:28]
+   :END:
+   :PROPERTIES:
+   :Effort:   1:00
+   :END:
+   obsolete --org --wiki --etc in favor of -o wiki
+** Abstract out output mode processing from json parsing
+   Make it easier to write multiple engines
+** Clean up memory management
 ** Shell mode
 *** UTF-8 
    Gnugol has currently a very limited selection of html escapes to utf-8 support, implemented via a silly lookup routine. It would be better to have it be complete, and hashed with gperf.

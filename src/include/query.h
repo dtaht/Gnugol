@@ -15,14 +15,6 @@ struct query_options {
   int multicast:1;
   int force:1; 
   int secure:1;
-  int org:1;
-  int wiki:1;
-  int mdwn:1;
-  int xml:1;
-  int html:1;
-  int ssml:1;
-  int json:1;
-  int text:1;
   int offline:1;
   int page:1;
   int lucky:1;
@@ -42,6 +34,7 @@ struct query_options {
   int dummy:1;
   int footer:1;
   int header:1;
+
   int debug;
   int nresults;
   int position;
@@ -58,6 +51,9 @@ struct query_options {
   char *output_language;
   char *server;
   char *client;
+  char *output_buf;
+  char *err_buf;
+
   char keywords[1024];
 };
 

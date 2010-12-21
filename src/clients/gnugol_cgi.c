@@ -17,7 +17,7 @@ void Cookies();
 
 /* It will be simpler to just generate a cookie based on the set options */
 
-int Query(QueryData *q) { 
+int Query(QueryOptions *q) { 
   int i;
   int n = query_main(q,"::1");
   // int n = query_main(q,"2001:4f8:3:36:2e0:81ff:fe23:90d3");
@@ -71,6 +71,7 @@ int metadata(QueryData *q) {
   // Style sheets & Javascript
   return 0;
 }
+
 int titlepage(QueryData *q, char *title) {
   fprintf(cgiOut, "<html><head>\n");
   fprintf(cgiOut, "<title>%s</title>",title);
@@ -130,31 +131,6 @@ void HandleSubmit(QueryData *q)
 #define penabled(a,b)  q->options.b = (cgiFormCheckboxSingle(a) == cgiFormSuccess) ? 0:1
 
 int setup_options(QueryData *q) {
-  penabled("urls",urls);
-  penabled("titles",titles);
-  penabled("snippets",snippets);
-  penabled("ads",ads);
-  penabled("misc",misc);
-  penabled("reverse",reverse);
-  penabled("broadcast",broadcast);
-  penabled("multicast",multicast);
-  penabled("force",force);
-  penabled("cache",cache);
-  penabled("xml",xml);
-  penabled("html",html);
-  penabled("offline",offline);
-  penabled("lucky",lucky);
-  penabled("register",reg);
-  penabled("prime",prime);
-  penabled("engine",engine);
-  penabled("mirroring",mirror);
-  penabled("plugin",plugin);
-  penabled("blind",blind);
-  penabled("ipv4",ipv4);
-  penabled("ipv6",ipv6);
-  penabled("dummy",dummy);
-  penabled("debug",debug);
-  penabled("trust",trust);
 }
 
 int cgiMain() {
