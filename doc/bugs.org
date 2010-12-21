@@ -11,10 +11,12 @@
 #+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
 #+STYLE:    <script type="text/javascript" src="org-info.js"> 
 * Gnugol Bugs
-** STARTED Command line parameters
+** DONE Command line parameters
+   CLOSED: [2010-12-20 Mon 16:38]
    :LOGBOOK:
+   - State "DONE"       from "STARTED"    [2010-12-20 Mon 16:38]
    - State "STARTED"    from "STARTED"    [2010-12-20 Mon 15:28]
-   CLOCK: [2010-12-20 Mon 15:28]
+   CLOCK: [2010-12-20 Mon 15:28]--[2010-12-20 Mon 16:38] =>  1:10
    :END:
    :PROPERTIES:
    :Effort:   1:00

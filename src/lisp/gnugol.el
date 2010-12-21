@@ -4,7 +4,7 @@
 ;; Author:     Dave Taht
 ;; Maintainer: d AT @ taht.net
 ;; Created:    Dec-2008
-;; Version:    0.02
+;; Version:    0.03
 ;; Keywords:   extensions, web, search, google
 
 ;; This is an interface to the gnugol command line
@@ -17,7 +17,7 @@
 
 ;; FIXME: Convert all to defcustom and add support for args
 
-(defcustom gnugol-cmd "gnugol --org"
+(defcustom gnugol-cmd "gnugol -o org"
   "Shell command to invoke gnugol."
   :type 'string
   :group 'gnugol)

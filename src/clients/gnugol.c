@@ -20,6 +20,9 @@ struct  output_types {
   char *desc;
 };
 
+
+// FIXME: Verify differences between ikiwiki and media wiki format
+
 static struct output_types output_type[] = {
   { FORMATHTML, "html" },
   { FORMATWIKI, "wiki" },
@@ -156,20 +159,6 @@ print_enabled_options(QueryOptions *o, FILE *fp) {
   penabled(debug);
   fprintf(fp,"\n");
 }
-/*
-
-Rid myself of these options
-
--H --html      output html
--J --json      output json
--X --xml       output gnugol XML
--O --org       output org format
--M --mdwn      output markdown format
--W --wiki      output ikiwiki format
--X --xml       output gnugol XML format
--B --ssml      output SSML format
-
-*/
 
 #define pifverbose(q,string) if(q->verbose) { printf("%s",val); }
 
@@ -183,7 +172,7 @@ int process_options(int argc, char **argv, QueryData *q) {
   if(argc == 1) usage("");
 
 #ifdef HAVE_GNUGOLD
-  // FIXME
+  // FIXME, not all opt defined
 #define QSTRING "7654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
 #else
 #define QSTRING "7654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
@@ -262,13 +251,12 @@ main(int argc, char **argv) {
   q->options.language = "en";
   q->options.header = 1;
   q->options.footer = 1;
-  q->options.format = 0; // NONE
+  q->options.format = FORMATDEFAULT; // NONE
 
   process_options(argc,argv,q);
   
-  if(!(q->options.urls | q->options.prime |
-       q->options.snippets | q->options.ads |
-       q->options.titles)) { 
+  if(!(q->options.urls | q->options.snippets | 
+       q->options.ads | q->options.titles)) { 
     q->options.urls = 1; // Always default to fetching urls 
   }
   
