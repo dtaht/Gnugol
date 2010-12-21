@@ -5,7 +5,7 @@ COMMON=
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
-OBJECTS=googlev1.o dummy.o # googlev2.o
+OBJECTS=googlev1.o dummy.o bing.o # googlev2.o
 CC=gcc
 STRIP=strip
 TESTDIR=../tests/
@@ -17,6 +17,9 @@ googlev1.o: googlev1.c $(HEADERS)
 
 googlev2.o: googlev2.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev2.c -c
+
+bing.o: bing.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) bing.c -c
 
 dummy.o: dummy.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dummy.c -c

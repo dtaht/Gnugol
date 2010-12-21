@@ -13,6 +13,7 @@
 #include "formats.h"
 
 // extern int engine_googlev2(QueryOptions_t *q);
+extern int engine_bing(QueryOptions_t *q);
 extern int engine_googlev1(QueryOptions_t *q);
 extern int engine_dummy(QueryOptions_t *q);
 
@@ -284,7 +285,7 @@ main(int argc, char **argv) {
     
   } else {
   
-  if(engine_googlev1(&q) == 0) {
+  if(engine_bing(&q) == 0) {
     printf("%s",q.out.s);
   } else {
     fprintf(stderr,"%s\n",q.err.s);
