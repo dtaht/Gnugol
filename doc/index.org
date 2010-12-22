@@ -5,7 +5,7 @@
 #+LANGUAGE:  en
 #+TEXT:      Searching the Web in Plain Text
 #+DESCRIPTION: GNUGOL - an org-mode compatible search client
-#+OPTIONS:   H:1 num:nil todo:nil toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:nil tags:not-in-toc
+#+OPTIONS:   H:2 num:nil todo:nil toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:nil tags:not-in-toc
 #+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:org-info.js
 #+LINK_UP:
 #+LINK_HOME: 
@@ -21,7 +21,7 @@
 ** Gnugol is fast
    By eliminating all the extra stuff most search engines return for their results and returning the results in a simple format, you get just the answers you need for the tool you are using. As gnugol is written in C, startup time is vastly reduced verses something written in a higher level language, such as python.
 ** Gnugol is smart
-   The basics of most searching is keyword based. All search engines return standardized results in the form of the title of a page, a relevant snippet from your search, and a link to the page. (Almost) everything else is fluff. Why not get it in a form you can read in the tool of your choice, whether that be plain text, plain html, or plain org or wiki formats?
+   The basics of most searching is keyword based. All search engines return standardized results in the form of the title of a page, a relevant snippet from your search, and a link to the page. (Almost) everything else is fluff. Why not get it in a form you can read in the tool of your choice, whether that be plain text, basic html, org, mdwn, or wiki formats?
 ** Gnugol is small
    Presently the command line binary weighs in at less than 40k stripped - admittedly with a huge dependence on the curl library and a much smaller one on the jansson library. 
 ** Gnugol is simple
@@ -35,7 +35,6 @@
 * Use Cases
 ** Command Line
    The simplest way to use gnugol is on the command line. 
-
    [[shell:gnugol --text in the beginning was the command line]]
 ** Emacs 
    Emacs has an incredibly powerful outliner called [[http://www.orgmode.org][org-mode]] that uses plain text and a wiki-like format for various url forms. It does not grok html natively, instead using a variety of markdown-like mechanisms to make it possible to view your personal database of projects within emacs. Put lisp/gnugol.el into your .emacs.d directory and do a (require 'gnugol)
@@ -63,7 +62,7 @@
 
    It's a difficult context switch to make, from, in my case, green on black text, to the blazing black on white of most web sites. Enter gnugol!
 
-   gnugol --html carpal tunnel syndrome | elinks
+   gnugol -o html carpal tunnel syndrome | elinks
 
 I make things even simpler for myself by having a set of shell scripts to make my typing even less. In the above case I have a simple shell script, "gl" which looks like this:
 #+INCLUDE: "../src/scripts/gl" src sh

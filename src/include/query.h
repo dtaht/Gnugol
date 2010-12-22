@@ -1,6 +1,14 @@
 #define MAX_MTU 1280
 #define MAX_ENTRIES 8
 
+struct gnugol_buffer_obj {
+  int size;
+  int len;
+  char *s;
+};
+
+typedef struct gnugol_buffer_obj buffer_obj_t;
+
 /* bitfields are underused these days - use 'em or nuke em */
 
 struct query_options {
@@ -15,14 +23,6 @@ struct query_options {
   int multicast:1;
   int force:1; 
   int secure:1;
-  int org:1;
-  int wiki:1;
-  int mdwn:1;
-  int xml:1;
-  int html:1;
-  int ssml:1;
-  int json:1;
-  int text:1;
   int offline:1;
   int page:1;
   int lucky:1;
@@ -42,11 +42,14 @@ struct query_options {
   int dummy:1;
   int footer:1;
   int header:1;
+
+  int level;
   int debug;
   int nresults;
   int position;
   int safe; // 0, 1, 2
   int format;
+  int returned_results;
   char *header_str;
   char *footer_str;
   char *license_str;
@@ -58,13 +61,19 @@ struct query_options {
   char *output_language;
   char *server;
   char *client;
+  buffer_obj_t out;
+  buffer_obj_t err;
+  buffer_obj_t wrn;
   char keywords[1024];
 };
 
-typedef struct query_options QueryOptions;
+typedef struct query_options QueryOptions_t;
+
+/* I have no idea any more what this was used for. I think it was
+   gnugold's internal format.
 
 struct query_args {
-  QueryOptions options;        // 
+  QueryOptions_t options;        // 
   int entries;
   unsigned char qsha1[20]; // Query's Sha1 - text? prefer binary... later
   unsigned char asha1[20]; // Answer's Sha1
@@ -94,6 +103,8 @@ struct query_args {
 
 typedef struct query_args QueryData;
 
+
 extern int query_main  (QueryData *answers, char *host);
 extern int answer_parse(QueryData *q);
 extern int build_query (QueryData *q);
+*/

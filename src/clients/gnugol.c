@@ -9,49 +9,78 @@
 #include <string.h>
 #include <stdlib.h>
 #include <getopt.h>
-
-#include "formats.h"
 #include "query.h"
+#include "formats.h"
 
-extern int plugin_googlev1(QueryOptions *q);
+// extern int engine_googlev2(QueryOptions_t *q);
+extern int engine_bing(QueryOptions_t *q);
+extern int engine_googlev1(QueryOptions_t *q);
+extern int engine_dummy(QueryOptions_t *q);
+
+struct  output_types {
+  int id;
+  char *desc;
+};
+
+
+// FIXME: Verify differences between ikiwiki and media wiki format
+
+static struct output_types output_type[] = {
+  { FORMATHTML, "html" },
+  { FORMATWIKI, "wiki" },
+  { FORMATXML,  "xml" },
+  { FORMATJSON, "json" },
+  { FORMATORG,  "org" },
+  { FORMATTERM, "text" },
+  { FORMATSSML, "ssml" },
+  { FORMATMDWN, "mdwn" },
+  { 0, NULL },
+  };
+
+
+/*
+FIXME: Make this a dynamic engine callback at runtime
+
+static struct engine_callbacks engine[] = {
+  { "dummy", engine_dummy },
+  { "google", engine_googlev1 },
+  { NULL },
+};
+
+*/
 
 int usage (char *err) {
   if(err) fprintf(stderr,"%s\n",err);
   printf("gnugol [options] keywords\n");
-  printf("-r --reverse   unreverse the list. The default IS reversed already\n"
+  printf("-r --reverse   reverse the list. \n"
 	 "-u --urls "
 	 "-s --snippets "
 	 "-a --ads "
 	 "-t --titles\n"
 	 "-e --engine    use an alternate engine\n"
-	 "-R --register\n"
 	 "-i --input [filename] input from a file\n"
-	 "-P --prime     prime the caches, routes, etc\n"
 	 "-p --plugin    use an alternate plugin\n"
-	 "-l --lucky     autofetch the first result\n"
+	 "-L --lucky     autofetch the first result\n"
+#ifdef HAVE_GNUGOLD
+	 "-P --prime     prime the caches, routes, etc\n"
+	 "-R --register\n"
 	 "-m --multicast ask for results from local network\n"
 	 "-b --broadcast broadcast results to local network\n"
+	 "-6 --ipv6 listen on ipv6\n"
+	 "-4 --ipv4 listen on ipv4\n"
+	 "-F --dontfork don't fork off the server\n"
+	 "-S --Secure    use secure transport\n"
+	 "-B --dummy dummy input (useful for stress testing)\n"
+	 "-T --trust networks\n"
+#endif
+	 "-l --level X   result level\n"
 	 "-c --cache     serve only results from cache(s)\n"
-	 "-o --output    output to a file\n"
 	 "-O --Offline   store up query for later\n"
 	 "-f --force     force a new query, even if cached\n"
 	 "-n --nresults  number of results to fetch\n"
 	 "-p --position  start of results to fetch\n"
-	 "-S --Secure    use secure transport\n"
-	 "\nOutput Options:\n"
-	 "-H --html      output html\n"
-	 "-J --json      output json\n"
-	 "-X --xml       output gnugol XML\n"
-	 "-O --org       output org format\n"
-	 "-M --mdwn      output markdown format\n"
-	 "-W --wiki      output ikiwiki format\n"
-	 "-X --xml       output gnugol XML format\n"
-	 "-B --ssml      output SSML format\n"
+	 "-o html,json,xml,org,mdwn,iki,wiki,ssml\n"
 	 "-d --debug [level]    Debug output\n"
-	 "-B --dummy dummy input (useful for stress testing)\n"
-	 "-6 --ipv6 listen on ipv6\n"
-	 "-4 --ipv4 listen on ipv4\n"
-	 "-F --dontfork don't fork off the server\n"
 	 "--defaults     show the defaults\n"
 	 "--source       fetch the source code this was compiled with\n"
 	 "--help         this message\n"
@@ -68,41 +97,35 @@ int usage (char *err) {
 static struct option long_options[] = {
   {"reverse", 0, 0, 'r' }, 
   {"urls", 0, 0, 'u' },
-  {"links", 0, 0, 'l' },
   {"snippets", 0, 0,'s'},
   {"ads", 0,0,'a' },
+  {"level", 1, 0, 'l' },
   {"titles", 0,0, 't'},
   {"engine", 1,0, 'e'},
   {"register", 2,0, 'r'},
   {"input", 1,0, 'i'},
-  {"prime", 0,0, 'P'},     
   {"plugin", 1,0, 'g'},    
   {"lucky", 0,0, 'L'},     
+#ifdef HAVE_GNUGOLD
+  {"prime", 0,0, 'P'},     
   {"multicast", 2,0, 'm'}, 
   {"broadcast", 0,0, 'b'}, 
   {"cache", 0,0, 'c'},     
+  {"secure", 0,0, 'Z'},  
+  {"trust", 0,0, 'T'},  
+  {"ipv6", 0,0, '6'},   
+  {"ipv4", 0,0, '4'},   
+  {"dontfork", 0,0, 'F'},   
+#endif
   {"output", 1,0, 'o'},  
   {"Offline", 0,0, '5'}, 
   {"force", 0,0, 'f'},   
   {"nresults", 1,0, 'n'},
   {"position", 1,0, 'U'},
-  {"secure", 0,0, 'Z'},  
-  {"trust", 0,0, 'T'},  
-
-  {"html", 0,0, 'H'},    
-  {"xml", 0,0, 'X'},     
-  {"org", 0,0, 'O'},     
-  {"wiki", 0,0, 'W'},     
-  {"json", 0,0, 'J'},     
-  {"text", 0,0, '7'},     
-  {"ssml", 0,0, 'B'},     
-
   {"verbose", 0,0, 'v'},   
+  {"dummy", 0,0, '9'},   
   {"debug", 1,0, 'd'},   
   {"defaults", 0,0, 'D'},   
-  {"ipv6", 0,0, '6'},   
-  {"ipv4", 0,0, '4'},   
-  {"dontfork", 0,0, 'F'},   
   {"source", 0,0, 0},     
   {"safe", 0,0, 'S'},       
   {"help", 0,0, 'h'},       
@@ -110,14 +133,14 @@ static struct option long_options[] = {
   {"dummy", 0,0,'B'},
 };
 
-parse_config_file(QueryOptions *q) {
+parse_config_file(QueryOptions_t *q) {
 
 } 
 
-#define penabled(a) if(o->a) fprintf(fp," " # a " ");
+#define penabled(a) if(o->a) fprintf(fp,"" # a " ");
 
 int 
-print_enabled_options(QueryOptions *o, FILE *fp) {
+print_enabled_options(QueryOptions_t *o, FILE *fp) {
   if(o->verbose) fprintf(fp,"Search Keywords: %s\n",o->keywords);
   fprintf(fp,"Results Requested: %d\n", o->nresults);
   fprintf(fp,"Starting position: %d\n",o->position);
@@ -130,27 +153,23 @@ print_enabled_options(QueryOptions *o, FILE *fp) {
   penabled(ads);
   penabled(misc);
   penabled(reverse);
+#ifdef HAVE_GNUGOLD
+  penabled(prime);
   penabled(broadcast);
   penabled(multicast);
+  penabled(ipv4);
+  penabled(ipv6);
+#endif
   penabled(force);
   penabled(cache);
-  penabled(json);
-  penabled(org);
-  penabled(wiki);
-  penabled(mdwn);
-  penabled(xml);
-  penabled(html);
-  penabled(ssml);
   penabled(offline);
   penabled(lucky);
   penabled(safe);
   penabled(reg);
-  penabled(prime);
+  penabled(level);
   penabled(engine);
   penabled(mirror);
   penabled(plugin);
-  penabled(ipv4);
-  penabled(ipv6);
   penabled(dummy);
   penabled(debug);
   fprintf(fp,"\n");
@@ -158,18 +177,23 @@ print_enabled_options(QueryOptions *o, FILE *fp) {
 
 #define pifverbose(q,string) if(q->verbose) { printf("%s",val); }
 
-int process_options(int argc, char **argv, QueryData *q) {
-  QueryOptions *o = &q->options; 
+int process_options(int argc, char **argv, QueryOptions_t *o) {
   int option_index = 0;
   int i = 0;
   int querylen = 0;
   int opt = 0;
   int count = 0;
   if(argc == 1) usage("");
-  
+
+#ifdef HAVE_GNUGOLD
+  // FIXME, not all opt defined, some extras
+#define QSTRING "97654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
+#else
+#define QSTRING "97654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
+#endif  
   do {
     opt = getopt_long(argc, argv, 
-		      "7654C:rusate:Ri:PplmS:bcoOfdOZFTBWDd:vU:jn:p:SHX",
+		      QSTRING,
 		      long_options, &option_index);
     if(opt == -1) break;
 
@@ -189,24 +213,23 @@ int process_options(int argc, char **argv, QueryData *q) {
     case 'm': o->multicast = 1; break;
     case 'b': o->broadcast = 1; break;
     case 'c': o->cache = 1; break;
-    case 'o': o->output = 1; break;
+    case 'o': {
+      int i;
+      for(i = 0; output_type[i].desc != NULL; i++)
+	if(strcmp(output_type[i].desc,optarg) == 0) o->format = output_type[i].id; 
+    }
+      break;
     case '5': o->offline = 1; break;
-    case 'f': o->force = 1; break;
+    case 'f': o->output = 1; break;
+    case 'l': o->level = atoi(optarg); break;
     case 'n': o->nresults = atoi(optarg); break; 
     case 'U': o->position = atoi(optarg); break; 
     case 'Z': o->secure = 1; break; // unimplemented
     case 'S': o->safe = 1; atoi(optarg); break; 
-    case 'J': o->json = 1; break; 
-    case 'H': o->html = 1; break; 
-    case 'X': o->xml = 1; break;
-    case 'O': o->org = 1; break;
-    case 'W': o->wiki = 1; break;
-    case '7': o->text = 1; break;
-    case '8': o->text = 1; break;
-    case 'B': o->ssml = 1; break;
     case 'd': o->debug = atoi(optarg); break;
     case 'F': o->dontfork = 1; break;
     case 'v': o->verbose = 1; break;
+    case '9': o->dummy = 1; break;
     case '6': o->ipv6 = 1; break;
     case '4': o->ipv4 = 1; break;
     case 'h': 
@@ -219,27 +242,13 @@ int process_options(int argc, char **argv, QueryData *q) {
   for(i = optind; i < argc; i++) {
     if((querylen += strlen(argv[i]) > MAX_MTU - 80)) {
       fprintf(stderr,"Too many words in query, try something smaller\n");
-      free(q);
-      exit(-1);
+      return(1);
     }
     strcat(o->keywords,argv[i]);
     if(i+1 < argc) strcat(o->keywords,"%20");
   }
-
-  if(q->options.debug > 0) print_enabled_options(&q->options, stderr);
-  if(q->options.html + q->options.xml + q->options.json + 
-     q->options.org + q->options.text + q->options.wiki + q->options.ssml > 1) {
-    usage("You can only select one of json, xml, org, text, wiki, html, or ssml");
-  } 
-
-  if(q->options.html) q->options.format = FORMATHTML;
-  if(q->options.xml)  q->options.format = FORMATXML;
-  if(q->options.json) q->options.format = FORMATJSON; 
-  if(q->options.org)  q->options.format = FORMATORG;
-  if(q->options.text) q->options.format = FORMATTERM; 
-  if(q->options.wiki) q->options.format = FORMATWIKI;
-  if(q->options.ssml) q->options.format = FORMATSSML;
-
+  // FIXME: if called with no args do the right thing
+  if(o->debug > 0) print_enabled_options(o, stderr);
   return(optind);
 }
 
@@ -248,24 +257,43 @@ main(int argc, char **argv) {
   int cnt = 0;
   char host[1024];
   int querylen = 0;
-  QueryData *q = (QueryData *) calloc(sizeof(QueryData),1);
-  
+  QueryOptions_t q;
+  gnugol_init_QueryOptions(&q);
   // Defaults
-  q->options.nresults = 4;
-  q->options.position = 0;
-  q->options.engine_name = "google";
-  q->options.language = "en";
-  q->options.header = 1;
-  q->options.footer = 1;
-  q->options.format = 0; // NONE
 
-  process_options(argc,argv,q);
+  q.nresults = 4;
+  q.position = 0;
+  q.engine_name = "googlev1";
+  q.language = "en";
+  q.header = 1;
+  q.footer = 1;
+  q.format = FORMATDEFAULT; // NONE
+  q.level = -1;
+
+  process_options(argc,argv,&q);
   
-  if(!(q->options.urls | q->options.prime |
-       q->options.snippets | q->options.ads |
-       q->options.titles)) { 
-    q->options.urls = 1; // Always default to fetching urls 
+  if(!(q.urls | q.snippets | q.ads | q.titles)) { 
+    q.urls = 1; // Always default to fetching urls 
   }
+
+  if(q.dummy) {
+    if(engine_dummy(&q) == 0) {
+      printf("%s",q.out.s);
+    } else {
+      fprintf(stderr,"Error %s",q.err.s);
+    }
+    
+  } else {
   
-  return(plugin_googlev1(&q->options));
+  if(engine_bing(&q) == 0) {
+    printf("%s",q.out.s);
+  } else {
+    fprintf(stderr,"%s\n",q.err.s);
+  }
+  }
+
+  if(q.debug)
+    printf("len = %d\n size = %d, Result = %s\n",q.out.len, q.out.size, q.out.s);
+  gnugol_free_QueryOptions(&q);
+  return(0); 
 }

@@ -1,7 +1,6 @@
 extern char *jsonrequest(const char *url);
 extern int strip_html(int len, char *htmlstr);
 
-
 // Might want a different call here for utf-8
 
 #define jsv(a) json_string_value(a)

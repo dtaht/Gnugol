@@ -1,7 +1,5 @@
-/* This file implements a gnugol -> google web api -> gnugol json translator plugin 
-   using the google web api v1, deprecated Nov 1, 2010. */
-
-/* Reminder, use thread local storage eventually */
+/* This engine implements a gnugol -> google web api -> gnugol json translator plugin 
+   using the google web api v1, which was depricated Nov 1, 2010. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,17 +9,12 @@
 #include <string.h>
 #include <jansson.h>
 #include <curl/curl.h>
-#include "formats.h"
 #include "query.h"
 #include "utf8.h"
 #include "handy.h"
+#include "formats.h"
 
 #define TEMPLATE  "http://ajax.googleapis.com/ajax/services/search/web?v=1.0"
-#define BUFFER_SIZE  (64 * 1024)  /* 64 KB */
-#define URL_SIZE     (2048)
-#define PATH_MAX 1024
-
-#define STRIPHTML(a) strip_html(2048,a)
 
 /* See options at 
    http://code.google.com/apis/ajaxsearch/documentation/reference.html#_intro_fonje 
@@ -34,15 +27,16 @@
 
 */
 
-static struct search_opt {
+static struct {
   int start;
   int rsz; // number of results
   int safe;
   char language[16];
   char ip[8*5+1]; // Room for ipv6 requests
-};
+} search_opt;
 
-static int setup(QueryOptions *q, char *string) {
+
+static int setup(QueryOptions_t *q, char *string) {
   char path[PATH_MAX];
   char key[256];
   int fd;
@@ -65,22 +59,24 @@ static int setup(QueryOptions *q, char *string) {
   return size;
 }
 
-// for markdown get rid of <b>...</b>
-// turn <b>whatever</b> into *whatever*
 // turn quotes back into quotes and other utf-8 stuff
-// FIXME Error outs cause a memory leak from "root"
+// FIXME: Error outs cause a memory leak from "root"
+// use thread local storage? or malloc for the buffer
+// FIXME: do fuller error checking 
+//        Fuzz inputs!
+// Maybe back off the number of results when we overflow the buffer
 
-static int getresult(QueryOptions *q, char *urltxt) {
+static int getresult(QueryOptions_t *q, char *urltxt) {
     unsigned int i;
     char *text;
     char url[URL_SIZE];
     json_t *root,*responseData, *results;
     json_error_t error;
-    if(q->debug) fprintf(stderr,"trying url: %s", urltxt); 
+    if(q->debug) GNUGOL_OUTE(q,"trying url: %s", urltxt); 
 
     text = jsonrequest(urltxt);
     if(!text) {
-      fprintf(stderr,"url failed to work: %s", urltxt); 
+      GNUGOL_OUTE(q,"url failed to work: %s", urltxt); 
       return 1;
     }
 
@@ -89,107 +85,37 @@ static int getresult(QueryOptions *q, char *urltxt) {
 
     if(!root)
     {
-        fprintf(stderr, "error: on line %d: %s\n", error.line, error.text);
+        GNUGOL_OUTE(q,"error: on line %d: %s\n", error.line, error.text);
         return 1;
     }
     
     GETOBJ(root,responseData);
     GETARRAY(responseData,results);  
-    
-    if(q->header) {
-      char buffer[2048];
-      strncpy(buffer,q->keywords,2048);
-      STRIPHTML(buffer); // FIXME, need to convert % escapes to strings
-      switch(q->format) {
-	
-      case FORMATELINKS: 
-	fprintf(stdout, "<html><head><title>Search for: %s", buffer);
-	fprintf(stdout, "</title></head><body>");
-	break;
-	
-      case FORMATSSML: 
-       	fprintf(stdout, "Result for <emphasis level='moderate'> %s </emphasis>\n", buffer); // FIXME keywords
-	break;
-
-      default: break;
-      }
-    }
+    gnugol_header_out(q);
 
     for(i = 0; i < json_array_size(results); i++)
     {
       json_t *result, *url, *titleNoFormatting, *content;
       const char *message_text;
-
       GETARRAYIDX(results,result,i);
       GETSTRING(result,url);
       GETSTRING(result,titleNoFormatting);
       GETSTRING(result,content);
-      
-      switch (q->format) {
-	case FORMATWIKI: printf("[[%s|%s]] %s  \n",
-				jsv(titleNoFormatting), 
-				jsv(url), 
-				jsv(content));  break;
-	case FORMATSSML:  
-	  { 
-	    char tempstr[2048]; 
-	    strcpy(tempstr,jsv(content));
-	    STRIPHTML(tempstr);
-	    printf("%s <mark name='%d'>%s</mark>.", tempstr, i+1, jsv(url)); 
-	  }
-	    break;
-	case FORMATORG:  
-	  { 
-	    char tempstr[2048]; 
-	    strcpy(tempstr,jsv(titleNoFormatting));
-	    STRIPHTML(tempstr);
-	    printf("\n** [[%s][%s]]\n", jsv(url), tempstr);
-	    strcpy(tempstr,jsv(content));
-	    STRIPHTML(tempstr);
-	    printf("   %s", tempstr); 
-	  }
-	  break;
-	case FORMATTERM: 
-	  { 
-	    char tempstr[2048]; 
-	    strcpy(tempstr,jsv(content));
-	    STRIPHTML(tempstr);
-	    printf("%s %s %s\n", jsv(url), 
-		   jsv(titleNoFormatting), 
-		   tempstr); 
-	  }
-	  break;
-
-      case FORMATELINKS: printf("<p><a href=\"%s\">%s</a> %s</p>", 
-				jsv(url), 
-				jsv(titleNoFormatting), 
-				jsv(content)); break;
-	
-      default: printf("<a href=\"%s\">%s</a> %s\n", 
-		      jsv(url), jsv(titleNoFormatting), jsv(content)); 
-      }
+      gnugol_result_out(q,jsv(url),jsv(titleNoFormatting),jsv(content),NULL);
     }
 
-    if(q->footer) {
-      switch(q->format) {
-      case FORMATELINKS: fprintf(stdout, "</body></html>"); break;
-      case FORMATORG:    fprintf(stdout, "\n"); break;
-      case FORMATTERM:   fprintf(stdout, "\n"); break;
-      default: break;
-      }
-    }
+    gnugol_footer_out(q);
+
+    // FIXME: Go recursive if we overflowed the buffer
 
     json_decref(root);
     return 0;
 }
 
-/* So, basically, inside of the results array, we want the url, title, and content for each */
-
 // FIXME, add url encode
 // FIXME UTF-8
-// FIXME snprintf
 
-int plugin_googlev1(QueryOptions *q) { 
+int engine_googlev1(QueryOptions_t *q) { 
   char basequery[URL_SIZE];
   char qstring[URL_SIZE]; 
   setup(q,basequery);
