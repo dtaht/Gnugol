@@ -47,8 +47,14 @@
 ** Non-utf-8 terminals
    Gnugol does not detect when it has a different character set than UTF-8.
 (I am not particularly interested in anything other than html<->utf-8 conversion, frankly)
+** Add support for the footnote mode of markdown/org/textile
 ** TODO gnugol.el is incomplete
    There are a lot of features from other emacs clients and modes I'd like to borrow. Notably I'd like search-into-pt to be more mode aware than just org-mode. Also want hooks...
+*** minor mode for *gnugol* buffer
+    N = Next set of results query, P= previous, K to keep current result and discard the rest
+*** CNTRL-U
+*** Integrate 
+*** Context sensitive searching
 ** DONE Output needs to be sensitive to the level of the current outline
    --levels 0-5
 ** TODO Does not properly escape "[" characters when in a url or text snippet.
