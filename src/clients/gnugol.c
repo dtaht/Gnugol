@@ -4,6 +4,8 @@
 
 /* Command line client for gnugol */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -192,9 +194,9 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 
 #ifdef HAVE_GNUGOLD
   // FIXME, not all opt defined, some extras
-#define QSTRING "97654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
+#define QSTRING "97654C:rusate:Ri:PplmS:bco:fOZFTDd:vU:jn:p:S"
 #else
-#define QSTRING "97654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
+#define QSTRING "97654C:rusate:Ri:PplmS:bco:fOZFTDd:vU:jn:p:S"
 #endif  
   do {
     opt = getopt_long(argc, argv, 
@@ -226,12 +228,12 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       break;
     case '5': o->offline = 1; break;
     case 'f': o->output = 1; break;
-    case 'l': o->level = atoi(optarg); break;
-    case 'n': o->nresults = atoi(optarg); break; 
-    case 'U': o->position = atoi(optarg); break; 
+    case 'l': o->level = strtoul(optarg,NULL,10); break;
+    case 'n': o->nresults = strtoul(optarg,NULL,10); break; 
+    case 'U': o->position = strtoul(optarg,NULL,10); break; 
     case 'Z': o->secure = 1; break; // unimplemented
-    case 'S': o->safe = 1; atoi(optarg); break; 
-    case 'd': o->debug = atoi(optarg); break;
+    case 'S': o->safe = 1; strtoul(optarg,NULL,10); break; 
+    case 'd': o->debug = strtoul(optarg,NULL,10); break;
     case 'F': o->dontfork = 1; break;
     case 'v': o->verbose = 1; break;
     case '9': o->dummy = 1; break;
