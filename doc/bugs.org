@@ -1,0 +1,155 @@
+#+TITLE:     GNUGOL's Bugs
+#+AUTHOR:    Dave Täht
+#+EMAIL:     d at taht.net
+#+DATE:      <2008-08-25 Mo>
+#+LANGUAGE:  en
+#+TEXT:      All the bugs fit to print
+#+OPTIONS:   H:2 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:t tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:http://localhost/~d/gnugol/org-info.js
+#+LINK_UP: index.html
+#+LINK_HOME: index.html
+#+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
+#+STYLE:    <script type="text/javascript" src="org-info.js"> 
+* Gnugol Bugs
+** DONE Command line parameters
+   CLOSED: [2010-12-20 Mon 16:38]
+   :LOGBOOK:
+   - State "DONE"       from "STARTED"    [2010-12-20 Mon 16:38]
+   - State "STARTED"    from "STARTED"    [2010-12-20 Mon 15:28]
+   CLOCK: [2010-12-20 Mon 15:28]--[2010-12-20 Mon 16:38] =>  1:10
+   :END:
+   :PROPERTIES:
+   :Effort:   1:00
+   :END:
+   obsolete --org --wiki --etc in favor of -o wiki
+** DONE Abstract out output mode processing from json parsing
+   Make it easier to write multiple engines
+** Clean up memory management
+*** DONE make buffer more of an object
+    CLOSED: [2010-12-21 Tue 10:50]
+    :LOGBOOK:
+    - State "DONE"       from "STARTED"    [2010-12-21 Tue 10:50]
+    - State "STARTED"    from "STARTED"    [2010-12-21 Tue 08:10]
+    CLOCK: [2010-12-21 Tue 08:10]--[2010-12-21 Tue 10:51] =>  2:41
+    - State "STARTED"    from "STARTED"    [2010-12-21 Tue 04:52]
+    CLOCK: [2010-12-21 Tue 04:52]--[2010-12-21 Tue 05:57] =>  1:05
+    :END:
+    :PROPERTIES:
+    :Effort:   1:00
+    :END:
+*** Refactor
+** Shell mode
+*** UTF-8 
+   Gnugol has currently a very limited selection of html escapes to utf-8 support, implemented via a silly lookup routine. It would be better to have it be complete, and hashed with gperf.
+   There are many tools out there that try to do this (php and perl have examples), I just haven't got around to doing it myself.
+** Line/word breaking support
+   Coping with [[UTF-8]] is a difficult problem in C. What needs to happen is a fairly complex routine that does line breaking based on the value of the environment variable "COLUMNS" and the nearest UTF-8 word.
+** Non-utf-8 terminals
+   Gnugol does not detect when it has a different character set than UTF-8.
+(I am not particularly interested in anything other than html<->utf-8 conversion, frankly)
+** TODO gnugol.el is incomplete
+   There are a lot of features from other emacs clients and modes I'd like to borrow. Notably I'd like search-into-pt to be more mode aware than just org-mode. Also want hooks...
+** DONE Output needs to be sensitive to the level of the current outline
+   --levels 0-5
+** TODO Does not properly escape "[" characters when in a url or text snippet.
+   This one is downright annoying, especially when mailing list results are returned
+** Limited search engine support
+*** DONE Google's basic engine is essentially complete
+*** DONE Dummy engine
+*** CNCL Google json interface version 2
+    Canceled: Only searches specific sites
+*** DONE Bing
+    CLOSED: [2010-12-21 Tue 14:50]
+    :LOGBOOK:
+    - State "DONE"       from "STARTED"    [2010-12-21 Tue 12:50]
+    - State "STARTED"    from "STARTED"    [2010-12-21 Tue 14:49]
+    CLOCK: [2010-12-21 Tue 12:49]--[2010-12-21 Tue 14:50] =>  2:01
+    :END:
+    :PROPERTIES:
+    :Effort:   2:00
+    :END:
+*** TODO Wikipedia/Mediawiki
+*** TODO Xapian
+*** Other engines?
+*** TODO DNS
+*** TODO Opensearch
+*** TODO RFCs
+*** TODO Citeseer
+*** TODO Yacl
+** TODO outputs
+*** Custom printf-like string
+*** Check the difference between mediawiki and org formats
+*** Markdown
+    Decide on output formatting
+*** CSV
+*** XML
+    Need a standardized XML definition for gnugol's output. There must be one out there.
+*** SQL
+    SQL output would be nice
+   but has much potential for abuse.
+*** JSON
+    Be able to dump the raw json output
+*** TODO SSML 
+    SSML is totally untested at present
+**** Need a marking scheme for speech enabled search
+** SearchMarks
+   Unimplemented, prototyping in emacs
+* Gnugold Bugs
+** Complete rewrite in progress
+** The old UDP based protocol didn't work out
+** Misbehaving clients 
+** Evil/renegade clients 
+A renegade client could respond to local multicast queries with spam - links and offensive stuff unrelated to the query itself. 
+
+This is a violation of the gnugol protocol. I would like to be able to take violent or legal action against those that violate it. 
+
+There are not a lot of good answers to this problem.
+*** Rate-limit incoming requests?
+*** Report offending clients to a more central authority. 
+*** Migrate to a new multicast network address. 
+*** Require encryption/authentication on queries and responses.
+* Ggl bugs
+** Not even started yet!
+* WIP
+** Decisions
+*** Get the command line options under control
+**** for output switch to -o {format,format,format} (obsolete --wiki --org --etc)
+**** also have printf-like format options for snippets, ads, etc (obsolete -a -s -t)
+     [[http://sources.redhat.com/bugzilla/attachment.cgi?id=3874&action=view][Glibc has a standard for extending printf]] but does uclibc?
+
+*** Switch to a build system
+    - configure is ancient but we do want to cross compile. Configure takes longer than the actual compile!
+*** Enable Internationalization
+    - autodetect 
+*** Decide on a transport protocol
+    - sctp: main target
+    - udp:  makes sense for small queries
+    - tcp:  While well understood I really don't care
+*** Security infrastructure
+*** Engine infrastructure
+*** Cleanly distribute api across client/transport/server
+** IDEAS
+*** Interface for blind users
+*** Firefox plugin
+*** Transclusion
+* Roadmap
+  Get to plausible promise
+** Must: 
+*** Implement timeouts
+*** sha1 hashes
+*** Lookaside cache
+*** Compression
+*** Lookaside DNS
+** Should:
+*** Work on OLPC, fedora, ubuntu
+*** work on non-x86 architectures (nokia n810, blackfin)
+*** multicast on local networks
+*** Have a stable server/website to use
+*** deb package
+** WON'T:
+*** be clean code
+*** not core dump occasionally
+*** have firefox plugin
+*** work over ipv4 
+*** have windows port 
+

@@ -1,215 +1,146 @@
-;; gnugol.el various emacs interface methods for gnugol
+;; gnugol.el - Web search using the gnugol command line utility
+;; Copyright (C) 2010 Dave Täht
+;; License:    GNU Public License, version 3
+;; Author:     Dave Taht
+;; Maintainer: d AT @ taht.net
+;; Created:    Dec-2008
+;; Version:    0.03
+;; Keywords:   extensions, web, search, google
 
-;; Copyright (C) 2008 - 2010 Teklibre
+;; This is an interface to the gnugol command line
+;; web search utility, which can be obtained at:
+;; http://gnugol.taht.net
 
-;; Author: Michael D. Taht
-;; Last update: 
-;; Version: 0.3
-;; Keywords: search google wikipedia bing
-;; URL: http://the-edge.blogspot.com/
-;; Contributors:
+;; I find gnugol useful enough to stick on a function key
+;; in my keybindings.el file elsewhere.
+;; (define-key global-map [f6] 'gnugol)
 
-;; Say is a set of commands to speak the buffer, file, or region
-;; via the cepstral/swift speech synthesis engine(s)
+;; FIXME: Convert all to defcustom and add support for args
 
-;; This file is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
-;; any later version.
+(defcustom gnugol-cmd "gnugol -o org"
+  "Shell command to invoke gnugol."
+  :type 'string
+  :group 'gnugol)
 
-;; This file is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
+(defcustom gnugol-default-engine nil
+  "Default search engine backend for gnugol."
+  :type 'string
+  :group 'gnugol)
 
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth floor,
-;; Boston, MA 02110-1301, USA.
+(defcustom gnugol-default-nresults 4
+  "Default number of results for gnugol to return."
+  :type 'integer
+  :group 'gnugol)
 
-;; Installation
+(defcustom gnugol-default-base-output-format "org"
+  "Default output format for gnugol."
+  :type 'string
+  :group 'gnugol)
 
-;; (setq gnugol-voice "Amy") ;; Your voice
-;; (setq gnugol-level "8") ;; Your desired sound level
-;; 
+(defcustom gnugol-default-output-buffer "*gnugol*"
+  "Output buffer. Set this to ~/org/gnugol.org if you want to keep your history."
+  :type 'string
+  :group 'gnugol)
 
-;; (defun gnugol-start-server)
+(defcustom gnugol-search-maxlen 200
+  "Maximum string length of search term. This saves on sending accidentally large queries to the search engine."
+  :type 'integer
+  :group 'gnugol)
 
-;; (setq gnugol-default-voice nil)
+(defcustom gnugol-default-search-maxwords 4
+  "Maximum number of words to search for."
+  :type 'integer
+  :group 'gnugol)
 
-(defconst gnugol-cmd-version "2")
+(defcustom gnugol-default-output-mode-sensitive nil
+  "Be sensitive to the current buffer mode. Output results in that format."
+  :type 'boolean
+  :group 'gnugol)
 
-(defgroup say nil
-  "Gnugol"
-  :prefix "gnugol-"
-  :tag    "Gnugol"
-  :group  'utilities)
+(defcustom gnugol-default-timestamp-output nil
+  "Timestamp the output."
+  :type 'boolean
+  :group 'gnugol)
 
-(defcustom gnugol-activated-string t
-  "If non-nil, say is activated and version on load"
-  :group 'say
-  :type 'boolean)
+;; FIXME Haven't decided if doing a ring buffer would be useful
 
-(defcustom gnugol-default-voice nil
-  "Choose the voice to use, if nil, use the default. This is very cepstral-specific,
-   for example, I use Amy and Diane for announcements and nags, respectively. "
-  :group 'say
-  :type 'string)
+(defcustom gnugol-ring-max 16
+  "Maximum length of search ring before oldest elements are thrown away."
+  :type 'integer
+  :group 'gnugol)
 
-(defcustom gnugol-default-pipe "/dev/shm/SPEECH"
-  "We use a named pipe to the daemon. Why? Because we CAN"
-  :group 'say
-  :type 'string)
+;; FIXME figure out how to search the buffer-modes
 
-(defcustom gnugol-default-cmd "/opt/swift/bin/swift"
-  "Sometimes we need to access the speech command directly"
-  :group 'say
-  :type 'string)
+(defun gnugol-get-output-mode
+  "Get the gnugol output mode from the current buffer mode."
+  (if gnugol-default-output-mode-sensitive 
+    (	) 
+    ("org")))
 
-(defcustom gnugol-default-cmd-args-stdin "-f"
-  "Sometimes we need to access the speech command directly"
-  :group 'say
-  :type 'string)
+;; FIXME: gnugol should act more like "woman"
 
-(defcustom gnugol-default-cmd-args-to-file "-o"
-  "Sometimes we need to access the speech command directly"
-  :group 'say
-  :type 'string)
+;; FIXME: If there is a visible gnugol buffer change focus to that rather than the current
+;; FIXME: Add hooks for further washing the data
 
+;; FIXME: add next, prev, and refresh buttons 
+;        [[gnugol: :next :pos 4 str][more]] [[gnugol: prev][prev]] [[refresh]]
+;; FIXME: Document this shell shortcut into org
+;; FIXME: search forward in the buffer for an existing
+;;        set of keywords rather than call gnugol
+;;        (if (search-forward (concat "[[Search: " str )) () (gnugol-cmd str)))?
+;; FIXME: Sanitize the shell arguments to prevent abuse !! For example no CRs
+;;        regexp? Maybe the shell does it for me? What?
+;; FIXME: actually, going to the 4th char in on the title would work best
 
-(defun gnugol-version () "Say Version" 
+(defun gnugol (str)
+  "search the web via gnugol, bring up results in org buffer"
+  (interactive "sSearch: ")
+  (if (< (length str) gnugol-search-maxlen)
+      (let (newbuffer)
+	(setq newbuffer (get-buffer-create gnugol-default-output-buffer))
+	(set-buffer newbuffer)
+	(org-mode)
+	(goto-char (point-min))
+	;; FIXME what we want to do is something like this but I'm getting it wrong
+	;; (if (search-forward (concat "[Search: " str "]")) () 
+	(save-excursion 
+	  (insert-string (concat "* [[gnugol: " str "][Search: " str "]]\n"))
+	  (insert (shell-command-to-string (concat gnugol-cmd " " str )))
+	  (switch-to-buffer newbuffer)
+	  ))
+    ( (beep) (message "search string too long")))) 
+
+(defun gnugol-search-selection ()
+  "Do a gnugol search based on a region"
   (interactive)
- (say (concat "The version of say is " gnugol-cmd-version "."))
-)
+  (let (start end term url)
+    (if (or (not (fboundp 'region-exists-p)) (region-exists-p))
+        (progn
+          (setq start (region-beginning)
+                end   (region-end))
+          (if (> (- start end) gnugol-search-maxlen)
+              (setq term (buffer-substring start (+ start gnugol-search-maxlen)))
+            (setq term (buffer-substring start end)))
+          (gnugol term))
+      (beep)
+      (message "Region not active"))))
 
-(defun gnugol-with-voice (&optional arg voice)  "Say the argument with a specified voice" 
-  (interactive)
- (if (interactive-p) 
-     (progn
-       (setq arg (read-from-minibuffer "Say: " arg nil nil nil nil t))
-       (setq voice (read-from-minibuffer "Voice: " gnugol-default-voice nil nil nil nil t)))
-   )
- (if (and (not voice) (gnugol-default-voice)) (setq voice gnugol-default-voice))
- (if voice (setq arg (concat "<voice name=\"" voice "\">" arg "</voice>")))
 
- (save-excursion
-   (with-temp-buffer
-     (insert arg)
-     (shell-command-on-region nil nil "cat > /dev/shm/SPEECH" nil nil nil nil)
-;;     (message "Said %s" arg)
-     )))
+;; FIXME: NOTHING BELOW HERE ACTUALLY WORKS YET
+;; FIXME: For the into-pt stuff, be sensitive to the mode
+;;        If I'm in markdown format, return markdown
+;;        org, do org
+;;        html, do html. Etc.
+;;        C mode, put it in comments
+;;        etc
+;; FIXME: simplify navigation in org-mode buffer with minor mode
+;;        add n and p to move to the links? CNTRL-arrows are good enough 
+;;        
+;; FIXME: Add robust interface
+;; gnugol-thing-at-pt
+;; gnugol-into-pt
+;; gnugol-thing-at-pt-into-pt
 
-;; FIXME: I need to figure out how to dump an arg to the *say* buffer so
-;; shell escape strings are escaped properly... 
-;; And suppress the message
+;; add hooks for additional modes - 
 
-(defun say (&optional arg)  "Say the argument on the speech synthesizer" 
-  (interactive)
- (if (interactive-p) 
-     (progn
-       (setq arg (read-from-minibuffer "Say: " arg nil nil nil nil t))
-       ))
- (if gnugol-default-voice (progn 
-			 (setq voice gnugol-default-voice)
-			 (setq arg (concat "<voice name=\"" voice "\">" arg "</voice>"))))
- (save-excursion
-   (with-temp-buffer
-     (insert arg)
-     (shell-command-on-region nil nil "cat > /dev/shm/SPEECH" nil nil nil nil)
-     (message "Said %s" arg)
-     )))
-
-;; (defun gnugol-file (&optional arg)
-;;   "Say a file"
-;;   (shell-command (concat "~/bin/gnugol-file " arg)))
-
-;; Hmm, am I still interactive here?
-
-;; (defun gnugol-buffer2 ()  "Say the contents of the current buffer"
-;;   (interactive)
-;;   (save-excursion
-;;     (insert-string arg) 
-    
-;;   (say
-;;   (shell-command-on-region nil nil  "cat > /dev/shm/SPEECH" nil nil nil nil)
-;; )
-
-(defun gnugol-buffer ()  "Say the contents of the current buffer"
-  (interactive)
-  (save-excursion
-  (shell-command-on-region nil nil  "cat > /dev/shm/SPEECH" nil nil nil nil)
-  )
-)
-
-(defun gnugol-region ()  "Say the region between mark and point"
-  (interactive)
-  (save-excursion
-  (shell-command-on-region (window-point) (mark) "cat > /dev/shm/SPEECH" nil nil nil nil)
-  )
-)
-
-(defun gnugol-region-to-file (&optional filename mypoint mymark)  
-  "Say the region between mark and point"
-  (interactive)
-  (if (and (interactive-p) (not filename)) 
-      (setq filename (nil "Say to File: " nil nil nil nil nil t))
-    )
-  (if (not mypoint) (setq mypoint (window-point)))
-  (if (not mymark) (setq mymark (mark)))
-  (shell-command-on-region mypoint mymark "cat > /dev/shm/SPEECH" nil nil nil nil)
-  )
-
-(defun gnugol-buffer-to-file (filename) "Say buffer to file"
-  (interactive)
-  gnugol-region-to-file("/tmp/test.wav" 0 90) ;; fixme - get end of buffer
-)
-
-;; Convienent short function
-
-(defun rtb () "Read That Back"  (interactive) (gnugol-region))
-
-;; Fix these
-
-(defun gnugol-at-point () "Say sentence at point" )
-
-(defun gnugol-article () "Say the current article buffer, Skip the headers"
-(interactive)
-)
-
-(defun gnugol-org () 
-(interactive)
-"Convert the current org mode buffer into something saner,
- Put emphasis on the headings
- Change Dates to something sane
- Don't say the properties or tags"
-(say "Convert the current org mode buffer into something saner,
- Put emphasis on the headings
- Change Dates to something sane
- Don't say the properties or tags"
-))
-
-(global-set-key [(Scroll_Lock)] 'rtb)
-(global-set-key [(shift Scroll_Lock)] 'gnugol-buffer)
-
-(defun gnugol-version-aloud () "Say the version aloud"
-  (interactive)
-  (say (concat "Speech synthesis " gnugol-cmd-version " is activated."))
-)
-
-;;(if gnugol-activated-string (gnugol-version-aloud))
-
-(provide 'say)
-
-;;2. Changing Voices
-
- ;;     "This is the default voice. <voice name="David">This is David.</voice> This is the default again. <voice name="Callie">Callie here.</voice>" ;; 
-;; 6. Adding Emphasis to Speech
-
-;;      "This is <emphasis level='strong'>stronger</emphasis> than the rest."
-;;      "This is <emphasis level='moderate'>stronger</emphasis> than the rest."
-;;      "This is <emphasis level='none'>the same as</emphasis> than the rest." 
-
-;; 7. Inserting Recorded Audio Files
-
-;;      "Please leave your message after the tone <audio src='beep.wav' />"
-;;      "<audio src='non_existing_file.au'>File could not be played.</audio>" 
+(provide 'gnugol)

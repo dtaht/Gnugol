@@ -1,0 +1,6 @@
+#!/bin/sh
+#Simple shortcut for gnugol to bring up emacs
+TEMP=/tmp/gnugol.$$.org
+gnugol -o org "$*" >> $TEMP
+emacsclient $TEMP
+rm -f $TEMP

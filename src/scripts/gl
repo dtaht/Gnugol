@@ -1,0 +1,4 @@
+#!/bin/sh
+# Simple shortcut for gnugol to elinks
+
+gnugol -o html "$*" | elinks

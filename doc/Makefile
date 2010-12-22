@@ -2,7 +2,7 @@
 
 HTMLDIR=/var/www/gnugol
 IMAGEDIR=/var/www/gnugol/images
-HTML=FAQ.html gnugol.html
+HTML=*.html
 IMAGES=images/*.png
 
 all: 

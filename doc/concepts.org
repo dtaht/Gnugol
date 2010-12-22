@@ -1,0 +1,33 @@
+#+TITLE:     GNUGOL RELATED CONCEPTS
+#+AUTHOR:    Dave Täht
+#+EMAIL:     d at taht.net
+#+DATE:      <2010-12-21 Tue>
+#+LANGUAGE:  en
+#+TEXT:      Searching the Web in Plain Text
+#+DESCRIPTION: GNUGOL - an org-mode compatible search client
+#+OPTIONS:   H:2 num:nil todo:nil toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:org-info.js
+#+LINK_UP: index.html
+#+LINK_HOME: index.html
+#+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
+#+STYLE:    <script type="text/javascript" src="org-info.js"> 
+#+STARTUP: overview hideblocks
+* Gnugol Concepts
+** SearchMarks
+   Classic Web “bookmarks” store the "answer" to a question, but not the process that led to finding that answer. A user might put bookmarks into catagories, and share them via the web, but that involves an extra step.
+
+   Searchmarks retain the “keywords” -> answers component of the question you asked. By retaining the keywords you searched for you can remember the question you had, and the answer you got, instead of bookmarking and categorizing the input. If you consider the number of words in the English language, 
+
+   You are, of course, free to further categorize your Searchmarks. 
+** Simplicity
+   Most search engines output colorized or fontized html semantic output. This is useful, but also disquieting when you are otherwise working with plain text. In particular, most search engines default to their own color scheme, which may clash with the user's, or display irrelevant information as to what the person is searching for.
+** Minimal context switching
+   When “making the jump to webspace” you go from one focus (your writing, your coding) to another, and also have to switch applications to the browser. 
+
+   Gnugol lets you "drive" the browser from the command line, a program, or your text editor.
+** Speed
+   The less data you transfer and render, the faster your searching experience.
+* Gnugold Concepts
+** Persistent connections
+** Caching
+** P2P trust

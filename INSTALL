@@ -1,12 +1,10 @@
-You will need working IPv6, or a working IPv6 tunnel. I note that I'm not
-particularly impressed by a default 6in4 route running on the gateway, it
-seems to be much faster in general to get a static tunnel from one of the
-many tunnel brokers out there and use that on the gateway or client machine.
+* gnugol
+  The curl and jansson libraries are required.
 
-A whole lot of gateways don't pass protocol 41, either, though. That's
-part of the fun, I guess.
+* gnugold & ggl
 
-At present you need to install pygoogle. This requires a license key. 
+You will need working IPv6, or a working IPv6 tunnel. 
+This requires a license key. 
 
 You also need the boutell c cgilib library.
 

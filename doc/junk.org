@@ -1,0 +1,2 @@
+* Non-surprises
+  I wouldn't be surprised if search engine makers used a paralleled protocol to assemble their outputs. It's better that protocols like this exist on the edges of the internet, however that may affect others' business models remains to be seen. 

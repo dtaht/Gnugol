@@ -1,0 +1,21 @@
+* INTRO
+I write in org or markdown format and frequently reference the web while writing. 
+
+When I get a web search back via surfraw or a browser, it's in pure html. 
+
+The HTML from modern day search engines, contains redirects, and is both ugly and hard to reformat. 
+
+Enter gnugol, the command line, plain text web search client.
+
+Gnugol has multiple output formatters that give me the search results in the mode I'm writing in.
+
+An added benefit is that gnugol is VERY fast, as it's written in C.
+
+_Please_ see the documentation [[file:doc/index.org][index]] for more information about gnugol or visit the website [[http://gnugol.taht.net][gnugol.taht.net]].
+
+* Current Status
+The new Gnugol client is quite usable, as is the emacs interface. Try it!
+
+The gnugold code is undergoing a major rewrite to be generalized and support more json backends (notably Xapian), and clean up the plugin idea and so on, so I can go back to exploring the original idea which was using some other transport than tcp to carry this sort of query, over international links. 
+
+There are many vestiges of the old code currently in here. You may be eaten by a grue.
