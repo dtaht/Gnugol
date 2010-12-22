@@ -17,7 +17,10 @@
 #define FORMATXML (8) 
 #define FORMATMDWN (9) 
 #define FORMATCSV (10) 
-#define FORMATSQL (11) 
+#define FORMATSQL (11)
+#define FORMATRAW (12)
+#define FORMATTEXTILE (13)
+ 
 #define FORMATDEFAULT FORMATORG
 
 #define BUFFER_SIZE  (64 * 1024)  /* 64 KB */
@@ -35,6 +38,7 @@
 #define GNUGOL_OUTW(q ,...) do { q->wrn.len += snprintf(&(q->wrn.s[q->wrn.len]), q->wrn.size-q->wrn.len, __VA_ARGS__); } while (0)
 
 extern int gnugol_init_QueryOptions(QueryOptions_t *q);
+extern int gnugol_reset_QueryOptions(QueryOptions_t *q);
 extern int gnugol_free_QueryOptions(QueryOptions_t *q);
 extern int gnugol_header_out(QueryOptions_t *q);
 extern int gnugol_keywords_out(QueryOptions_t *q);

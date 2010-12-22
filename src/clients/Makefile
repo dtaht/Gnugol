@@ -7,12 +7,12 @@ ENGINES=../engines/googlev1.o  ../engines/dummy.o ../engines/bing.o # ../engines
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG:=-DDEBUG
-PROGS=gnugol # gnugol.cgi 
+PROGS=gnugol #gnugol_fcgi.cgi 
 HTMLDIR=/var/www/gnugol
 CGIDIR=/usr/lib/cgi-bin
 #BINDIR=$(HOME)/bin
 BINDIR=/usr/local/bin
-OBJECTS=gnugol.o # gnugol_cgi.o
+OBJECTS=gnugol.o #gnugol_fcgi.o
 CC=gcc
 STRIP=strip
 
@@ -25,6 +25,9 @@ gnugol.cgi: gnugol_cgi.c $(HEADERS) $(COMMON)
 
 gnugol: gnugol.c $(HEADERS) $(COMMON) $(PLUGINS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) gnugol.c $(COMMON) $(PLUGINS) $(ENGINES) $(LIBS) -o gnugol
+
+gnugol_fcgi.cgi: gnugol_fcgi.c $(HEADERS) $(COMMON) $(PLUGINS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) gnugol_fcgi.c $(COMMON) $(PLUGINS) $(ENGINES) $(LIBS) -lfcgi -o gnugol_fcgi.cgi
 
 #gnugold: gnugold.o 
 #	$(CC) gnugold.o -o gnugold ${LIBS}

@@ -33,7 +33,11 @@ static struct output_types output_type[] = {
   { FORMATORG,  "org" },
   { FORMATTERM, "text" },
   { FORMATSSML, "ssml" },
+  { FORMATTEXTILE, "textile" },
+  { FORMATRAW,  "raw" },
   { FORMATMDWN, "mdwn" },
+  { FORMATMDWN, "md" },
+  { FORMATMDWN, "markdown" },
   { 0, NULL },
   };
 

@@ -23,6 +23,22 @@ int gnugol_init_QueryOptions(QueryOptions_t *q) {
   return(0);
 }
 
+int gnugol_reset_QueryOptions(QueryOptions_t *q) {
+  if(q != NULL) {
+    buffer_obj_t terr = q->err;
+    buffer_obj_t twrn = q->wrn;
+    buffer_obj_t tout = q->out;
+    memset(q,0,sizeof(QueryOptions_t));
+    q->err = terr;
+    q->wrn = twrn;
+    q->out = tout;
+    q->err.len = q->out.len = q->wrn.len = 0;
+ } else {
+    return(1);
+  }
+  return(0);
+}
+
 int gnugol_free_QueryOptions(QueryOptions_t *q) {
   if(q != NULL) {
     if(q->err.s != NULL) { free(q->err.s); q->err.len = q->err.size = 0; }
@@ -39,7 +55,7 @@ int gnugol_header_out(QueryOptions_t *q) {
       strncpy(buffer,q->keywords,SNIPPETSIZE);
       STRIPHTML(buffer); // FIXME, need to convert % escapes to strings
       switch(q->format) {
-	
+      case FORMATHTML:
       case FORMATELINKS: 
 	GNUGOL_OUTF(q, "<html><head><title>Search for: %s", buffer);
 	GNUGOL_OUTF(q, "</title></head><body>");
@@ -58,6 +74,7 @@ int gnugol_header_out(QueryOptions_t *q) {
 int gnugol_footer_out(QueryOptions_t *q) {
   if(q->footer) {
     switch(q->format) {
+    case FORMATHTML:
     case FORMATELINKS: GNUGOL_OUTF(q,"</body></html>"); break;
     case FORMATORG:
     case FORMATMDWN:
@@ -110,14 +127,25 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
       }
     }
     break;
+  case FORMATTEXTILE:  
+    { 
+      strcpy(tempstr,title);
+      STRIPHTML(tempstr);
+      GNUGOL_OUTF(q,"\"%s\":%s\n", tempstr, url);
+      strcpy(tempstr,snippet);
+      STRIPHTML(tempstr);
+      GNUGOL_OUTF(q,"   %s\n", tempstr); 
+    }
+    break;
+
   case FORMATMDWN:  
     { 
       strcpy(tempstr,title);
       STRIPHTML(tempstr);
-      GNUGOL_OUTF(q,"[%s](%s)\n", url, tempstr);
+      GNUGOL_OUTF(q,"[%s](%s)\n", tempstr, url);
       strcpy(tempstr,snippet);
-     STRIPHTML(tempstr);
-     GNUGOL_OUTF(q,"   %s", tempstr); 
+      STRIPHTML(tempstr);
+      GNUGOL_OUTF(q,"   %s\n", tempstr); 
     }
     break;
   case FORMATTERM: 
@@ -127,7 +155,7 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
       GNUGOL_OUTF(q,"%s %s %s\n", url,title,tempstr); 
     }
     break;
-    
+  case FORMATHTML:
   case FORMATELINKS: 
     GNUGOL_OUTF(q,"<p><a href=\"%s\">%s</a> %s</p>", url, title, snippet); 
     break;
