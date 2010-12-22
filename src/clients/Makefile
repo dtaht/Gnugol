@@ -15,6 +15,7 @@ BINDIR=/usr/local/bin
 OBJECTS=gnugol.o #gnugol_fcgi.o
 CC=gcc
 STRIP=strip
+CFLAGS+=-g
 
 #OBJECTS := connect_client.o listen_server.o parser.o 
 

@@ -83,8 +83,8 @@ int usage (char *err) {
 	 "-f --force     force a new query, even if cached\n"
 	 "-n --nresults  number of results to fetch\n"
 	 "-p --position  start of results to fetch\n"
-	 "-o html,json,xml,org,mdwn,iki,wiki,ssml\n"
-	 "-d --debug [level]    Debug output\n"
+	 "-o --output [html|json|xml|org|mdwn|wiki|wiki|ssml|textile]\n"
+	 "-d --debug  [level]    Debug output\n"
 	 "--defaults     show the defaults\n"
 	 "--source       fetch the source code this was compiled with\n"
 	 "--help         this message\n"
@@ -135,6 +135,7 @@ static struct option long_options[] = {
   {"help", 0,0, 'h'},       
   {"config", 0,0,'C'},
   {"dummy", 0,0,'B'},
+  {0,0,0,0},
 };
 
 parse_config_file(QueryOptions_t *q) {
@@ -208,7 +209,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     case 'a': o->ads = 1; break;
     case 't': o->titles = 1; break;
     case 'T': o->trust = 1; break;
-    case 'e': o->engine = 1; o->engine_name = optarg; break; // FIXME strcpy engine type
+    case 'e': o->engine = 1; o->engine_name = optarg; break; 
     case 'R': o->reg = 1; break;
     case 'i': o->input = 1; o->input_file = optarg; break; // FIXME
     case 'P': o->prime = 1; break;
