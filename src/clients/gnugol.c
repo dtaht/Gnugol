@@ -290,7 +290,7 @@ main(int argc, char **argv) {
     
   } else {
   
-  if(engine_bing(&q) == 0) {
+  if(engine_googlev1(&q) == 0) {
     printf("%s",q.out.s);
   } else {
     fprintf(stderr,"%s\n",q.err.s);
