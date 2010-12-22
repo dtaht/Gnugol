@@ -6,6 +6,8 @@ HTMLDIR=/var/www/gnugol
 CGIDIR=/usr/lib/cgi-bin
 BINDIR=$(HOME)/bin
 
+.PHONY: install
+
 all: 
 	make -C src all
 	make -C doc all
