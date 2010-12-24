@@ -264,8 +264,12 @@ main(int argc, char **argv) {
   gnugol_init_QueryOptions(&q);
   gnugol_default_QueryOptions(&q);
   process_options(argc,argv,&q);
-  gnugol_engine g = gnugol_get_engine(q);
+
+  /*  gnugol_engine g = gnugol_get_engine(q);
   int result = (*g)(&q);
+  */
+
+  int result = engine_googlev1(&q);
 
   if(q.returned_results > 0) {     
       printf("%s",q.out.s);
