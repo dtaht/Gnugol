@@ -15,6 +15,8 @@
 #include "formats.h"
 
 #define TEMPLATE  "http://ajax.googleapis.com/ajax/services/search/web?v=1.0"
+#define LICENSE_URL "I don't know if you can even get one anymore."
+#define TOU "http://code.google.com/apis/websearch/terms.html"
 
 /* See options at 
    http://code.google.com/apis/ajaxsearch/documentation/reference.html#_intro_fonje 
@@ -48,14 +50,13 @@ static int setup(QueryOptions_t *q, char *string) {
     key[size] = '\0';
   }
   if(q->nresults > 8) q->nresults = 8; // google enforces a maximum result of 8
-
+  if(q->debug) GNUGOL_OUTW(q,"KEYWORDS = %s\n", q->keywords);
   if(size > 0) { 
-    snprintf(string,URL_SIZE-1,"%s&key=%s&rsz=%d&start=%d&q=",TEMPLATE,key,q->nresults,q->position); 
+    size = snprintf(string,URL_SIZE-1,"%s&key=%s&rsz=%d&start=%d&q=%s",TEMPLATE,key,q->nresults,q->position,q->keywords); 
   } else {
-    snprintf(string,URL_SIZE-1,"%s&%d&%d&q=",TEMPLATE, q->nresults,q->position);
+    GNUGOL_OUTE(q,"A license key to search google is required. You can get one from: %s",LICENSE_URL);
+    return(-1);
   }
-  if(q->debug) printf("KEYWORDS = %s\n", q->keywords);
-  strcat(string,q->keywords); // FIXME: convert to urlencoding
   return size;
 }
 
@@ -65,6 +66,9 @@ static int setup(QueryOptions_t *q, char *string) {
 // FIXME: do fuller error checking 
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
+// This engine takes advantage (abuses!) the CPP pasting tokens
+// with a couple macros to make the interface to json a 1 to 1 relationship 
+// The code is delightfully short this way.
 
 static int getresult(QueryOptions_t *q, char *urltxt) {
     unsigned int i;

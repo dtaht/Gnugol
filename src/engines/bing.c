@@ -15,10 +15,8 @@
 #include "formats.h"
 
 #define TEMPLATE "http://api.bing.net/json.aspx?AppId=%s&Version=2.2&Market=%s&Query=%s&Sources=web&Web.Count=%d&JsonType=raw"
-
-/* Terms of USE: http://www.bing.com/developers/tou.aspx 
-   You can get a license key from: http://www.bing.com/developers/createapp.aspx
- */
+#define LICENSE_URL "http://www.bing.com/developers/createapp.aspx"
+#define TOU "http://www.bing.com/developers/tou.aspx"
 
 static int setup(QueryOptions_t *q, char *string) {
   char path[PATH_MAX];
@@ -35,17 +33,14 @@ static int setup(QueryOptions_t *q, char *string) {
   }
   if(q->nresults > 10) q->nresults = 10; // bing enforces a maximum result of 10, I think
 
-  strcpy(uukeywords,q->keywords); // FIXME: convert to urlencoding
   if(size > 0) { 
-    snprintf(string,URL_SIZE-1,TEMPLATE,key,"en-US",uukeywords,q->nresults); 
+    strcpy(uukeywords,q->keywords); // FIXME: convert to urlencoding
+    size = snprintf(string,URL_SIZE-1,TEMPLATE,key,"en-US",uukeywords,q->nresults); 
   } else {
-    fprintf(stderr, "need a bing key\n");
+    GNUGOL_OUTE(q,"For bing, you need a license key from: %s\n",LICENSE_URL);
+    return(-1);
   }
-  if(q->debug) 
-    {
-      fprintf(stderr,"KEYWORDS = %s\n", q->keywords);
-      fprintf(stderr,"Search URL: %s", string);
-    }
+  if(q->debug) GNUGOL_OUTW(q,"%s\n%s\n", q->keywords, string);
   return size;
 }
 
@@ -55,6 +50,9 @@ static int setup(QueryOptions_t *q, char *string) {
 // FIXME: do fuller error checking 
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
+// This engine takes advantage (abuses!) the CPP pasting tokens
+// with a couple macros to make the interface to json a 1 to 1 relationship 
+// The code is delightfully short this way.
 
 static int getresult(QueryOptions_t *q, char *urltxt) {
     unsigned int i;
