@@ -13,17 +13,12 @@
 #include <getopt.h>
 #include "query.h"
 #include "formats.h"
-
-// extern int engine_googlev2(QueryOptions_t *q);
-extern int engine_bing(QueryOptions_t *q);
-extern int engine_googlev1(QueryOptions_t *q);
-extern int engine_dummy(QueryOptions_t *q);
+#include "gnugol_engines.h"
 
 struct  output_types {
   int id;
   char *desc;
 };
-
 
 // FIXME: Verify differences between ikiwiki and media wiki format
 
@@ -43,17 +38,6 @@ static struct output_types output_type[] = {
   { 0, NULL },
   };
 
-
-/*
-FIXME: Make this a dynamic engine callback at runtime
-
-static struct engine_callbacks engine[] = {
-  { "dummy", engine_dummy },
-  { "google", engine_googlev1 },
-  { NULL },
-};
-
-*/
 
 int usage (char *err) {
   if(err) fprintf(stderr,"%s\n",err);
@@ -108,7 +92,7 @@ static struct option long_options[] = {
   {"level", 1, 0, 'l' },
   {"titles", 0,0, 't'},
   {"engine", 1,0, 'e'},
-  {"register", 2,0, 'r'},
+  {"register", 2,0, 'R'},
   {"input", 1,0, 'i'},
   {"plugin", 1,0, 'g'},    
   {"lucky", 0,0, 'L'},     
@@ -140,7 +124,7 @@ static struct option long_options[] = {
   {0,0,0,0},
 };
 
-parse_config_file(QueryOptions_t *q) {
+gnugol_parse_config_file(QueryOptions_t *q) {
 
 } 
 
@@ -252,55 +236,48 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       return(1);
     }
     strcat(o->keywords,argv[i]);
-    if(i+1 < argc) strcat(o->keywords,"%20");
+    if(i+1 < argc) strcat(o->keywords,"%20"); // FIXME find urlencode lib
   }
   // FIXME: if called with no args do the right thing
   if(o->debug > 0) print_enabled_options(o, stderr);
+  if(!(o->urls | o->snippets | o->ads | o->titles)) { 
+    o->urls = 1; // Always default to fetching urls 
+  }
   return(optind);
 }
 
+static void gnugol_default_QueryOptions(QueryOptions_t *q) {
+  q->nresults = 4;
+  q->position = 0;
+  q->engine_name = "google";
+  q->language = "en";
+  q->header = 1;
+  q->footer = 1;
+  q->format = FORMATDEFAULT; // NONE
+  q->level = -1;
+}
+
+// gnugol_search(q) 
+
 main(int argc, char **argv) {
-  int i = 0;
-  int cnt = 0;
-  char host[1024];
-  int querylen = 0;
   QueryOptions_t q;
   gnugol_init_QueryOptions(&q);
-  // Defaults
-
-  q.nresults = 4;
-  q.position = 0;
-  q.engine_name = "googlev1";
-  q.language = "en";
-  q.header = 1;
-  q.footer = 1;
-  q.format = FORMATDEFAULT; // NONE
-  q.level = -1;
-
+  gnugol_default_QueryOptions(&q);
   process_options(argc,argv,&q);
-  
-  if(!(q.urls | q.snippets | q.ads | q.titles)) { 
-    q.urls = 1; // Always default to fetching urls 
-  }
+  gnugol_engine g = gnugol_get_engine(q);
+  int result = (*g)(&q);
 
-  if(q.dummy) {
-    if(engine_dummy(&q) == 0) {
+  if(q.returned_results > 0) {     
       printf("%s",q.out.s);
-    } else {
-      fprintf(stderr,"Error %s",q.err.s);
     }
-    
-  } else {
-  
-  if(engine_googlev1(&q) == 0) {
-    printf("%s",q.out.s);
-  } else {
-    fprintf(stderr,"%s\n",q.err.s);
-  }
+
+  if(result < 0) {
+    fprintf(stderr,"Errors: %s\nWarnings:\n",q.err.s,q.wrn.s);
   }
 
   if(q.debug)
     printf("len = %d\n size = %d, Result = %s\n",q.out.len, q.out.size, q.out.s);
+
   gnugol_free_QueryOptions(&q);
   return(0); 
 }

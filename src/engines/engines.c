@@ -25,11 +25,11 @@ static struct engines e[] = {
   { NULL, no_engine }
 };
 
-gnugol_engine * gnugol_get_engine(char *str) {
+gnugol_engine gnugol_get_engine(QueryOptions_t *q) {
   for (int i = 0; e[i].id != NULL; i++) {
-    if(strcmp(e[i].id,str) == 0) return e[i].e;
+    if(strcmp(e[i].id,q->engine_name) == 0) return e[i].e;
   }
-  return no_engine;
+  return &no_engine;
 }
 
 /*
