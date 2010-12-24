@@ -269,13 +269,14 @@ main(int argc, char **argv) {
   int result = (*g)(&q);
   */
 
+  //  int result = engine_wikipedia(&q);
   int result = engine_googlev1(&q);
 
   if(q.returned_results > 0) {     
       printf("%s",q.out.s);
     }
 
-  if(result < 0) {
+  if(result < 0 || q.debug) {
     fprintf(stderr,"Errors: %s\nWarnings:\n",q.err.s,q.wrn.s);
   }
 

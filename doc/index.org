@@ -35,11 +35,11 @@
 * Use Cases
 ** Command Line
    The simplest way to use gnugol is on the command line. 
-   [[shell:gnugol --text in the beginning was the command line]]
+   [[shell:gnugol -o text in the beginning was the command line]]
 ** Emacs 
    Emacs has an incredibly powerful outliner called [[http://www.orgmode.org][org-mode]] that uses plain text and a wiki-like format for various url forms. It does not grok html natively, instead using a variety of markdown-like mechanisms to make it possible to view your personal database of projects within emacs. Put lisp/gnugol.el into your .emacs.d directory and do a (require 'gnugol)
 
-[[shell:gnugol --org in the beginning was the command line]] 
+   [[shell:gnugol -o org in the beginning was the command line]] 
 *** Search: in the beginning was the command line
 **** [[http://www.cryptonomicon.com/beginning.html][In the Beginning was the Command Line - CRYPTONOMICON]]
      A history of operating systems, by Neal Stephenson, the author of such novels as Snow Crash, The Diamond Age and Zodiac.
@@ -84,6 +84,6 @@ One of these days I'll get around to something more elaborate.
 ** [[file:bugs.org][Bugs]]
 ** [[file:gnugold.org][Gnugold query router]]
 * Tests
-** [[file:search.html][Test CGI search]]
+** [[file:search.html][Test CGI search]] (non-functional at present)
 * Where to get it?
 Gnugol is being maintained in a repository on [[https://github.com/dtaht/Gnugol][github]]. 

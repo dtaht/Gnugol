@@ -69,7 +69,7 @@ static int getresult(QueryOptions_t *q, char *urltxt) {
     unsigned int i;
     char *text;
     char url[URL_SIZE];
-    json_t *root,*responseData, *results;
+    json_t *root,*query, *pages, *page, *result;
     json_error_t error;
     if(q->debug) GNUGOL_OUTW(q,"trying url: %s", urltxt); 
 
@@ -88,19 +88,21 @@ static int getresult(QueryOptions_t *q, char *urltxt) {
         return 1;
     }
     
-    GETOBJ(root,responseData);
-    GETARRAY(responseData,results);  
+    GETOBJ(root,query);
+    GETOBJ(query,pages);
+    GETSTRING(page,query);  // the next object is GETSTR?
+    GETOBJ(result,page);
+
     gnugol_header_out(q);
 
-    for(i = 0; i < json_array_size(results); i++)
+    //    for(i = 0; i < json_array_size(results); i++)
     {
-      json_t *result, *url, *titleNoFormatting, *content;
+      json_t *fullurl, *title;
       const char *message_text;
-      GETARRAYIDX(results,result,i);
-      GETSTRING(result,url);
-      GETSTRING(result,titleNoFormatting);
-      GETSTRING(result,content);
-      gnugol_result_out(q,jsv(url),jsv(titleNoFormatting),jsv(content),NULL);
+      GETSTRING(result,fullurl);
+      GETSTRING(result,title);
+      // GETSTRING(result,content);
+      gnugol_result_out(q,jsv(fullurl),jsv(title),"Wikipedia Entry",NULL);
     }
 
     gnugol_footer_out(q);

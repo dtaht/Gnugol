@@ -24,6 +24,9 @@
    obsolete --org --wiki --etc in favor of -o wiki
 ** DONE Abstract out output mode processing from json parsing
    Make it easier to write multiple engines
+** TODO Add an editable flag
+   add an option to try to encourage gnugol to return a ptr to an editable page
+   The example here would be mediawiki/wikipedia. 
 ** Clean up memory management
 *** DONE make buffer more of an object
     CLOSED: [2010-12-21 Tue 10:50]
@@ -75,6 +78,18 @@
     :Effort:   2:00
     :END:
 *** TODO Wikipedia/Mediawiki
+    :LOGBOOK:
+    - State "STARTED"    from "STARTED"    [2010-12-24 Fri 10:05]
+    CLOCK: [2010-12-24 Fri 10:05]--[2010-12-24 Fri 13:09] =>  3:04
+    :END:
+    :PROPERTIES:
+    :Effort:   4:00
+    :END:
+    In progress. This job is a little tougher as:
+**** searching titles is limited to exact case matches. 
+**** Disambiguation pages appear to be nonobvious from the json output
+**** There are no "snippets" 
+**** Full pages tend to be returned
 *** TODO Xapian
 *** Other engines?
 *** TODO DNS
