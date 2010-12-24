@@ -5,7 +5,7 @@ COMMON=
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
-OBJECTS=googlev1.o dummy.o bing.o wikipedia.o # googlev2.o
+OBJECTS=googlev1.o dummy.o bing.o wikipedia.o engines.o # googlev2.o
 CC=gcc
 STRIP=strip
 TESTDIR=../tests/
@@ -26,6 +26,9 @@ wikipedia.o: wikipedia.c $(HEADERS)
 
 dummy.o: dummy.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dummy.c -c
+
+engines.o: engines.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) engines.c -c
 
 clean:
 	rm -f $(OBJECTS) $(PROGS) *~
