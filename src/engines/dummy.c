@@ -13,12 +13,13 @@
 #include "utf8.h"
 #include "handy.h"
 #include "formats.h"
+#include "gnugol_engines.h"
 
 #ifndef __GNUC__
 #define __attribute__(x)
 #endif
 
-int setup(QueryOptions_t *q __attribute__((unused)))
+int GNUGOL_DECLARE_ENGINE(setup,dummy) (QueryOptions_t *q __attribute__((unused)))
 {
   return 0;
 }
@@ -30,7 +31,7 @@ int setup(QueryOptions_t *q __attribute__((unused)))
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 
-int getresult(QueryOptions_t *q) {
+int GNUGOL_DECLARE_ENGINE(search,dummy) (QueryOptions_t *q) {
   if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr); 
   if(q->debug) GNUGOL_OUTW(q,"trying keywords: %s", q->keywords); 
     gnugol_header_out(q);

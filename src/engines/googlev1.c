@@ -13,6 +13,7 @@
 #include "utf8.h"
 #include "handy.h"
 #include "formats.h"
+#include "gnugol_engines.h"
 
 #ifndef __GNUC__
 #  define __attribute__(x)
@@ -43,7 +44,7 @@ static struct {
 } search_opt;
 #endif
 
-int setup(QueryOptions_t *q) {
+int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
   char string[2048];
   char path[PATH_MAX];
   char key[256];
@@ -79,7 +80,7 @@ int setup(QueryOptions_t *q) {
 // with a couple macros to make the interface to json a 1 to 1 relationship 
 // The code is delightfully short this way.
 
-int getresult(QueryOptions_t *q) {
+int GNUGOL_DECLARE_ENGINE(search,google) (QueryOptions_t *q) {
     char *urltxt = q->querystr;
     unsigned int i;
     char *text;

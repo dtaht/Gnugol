@@ -13,6 +13,7 @@
 #include "utf8.h"
 #include "handy.h"
 #include "formats.h"
+#include "gnugol_engines.h"
 
 #ifndef __GNUC__
 #  define __attribute__(x)
@@ -22,7 +23,7 @@
 #define LICENSE_URL "http://www.bing.com/developers/createapp.aspx"
 #define TOU "http://www.bing.com/developers/tou.aspx"
 
-int setup(QueryOptions_t *q) {
+int GNUGOL_DECLARE_ENGINE(setup,bing) (QueryOptions_t *q) {
   char string[2048];
   char path[PATH_MAX];
   char key[256];
@@ -60,7 +61,7 @@ int setup(QueryOptions_t *q) {
 // with a couple macros to make the interface to json a 1 to 1 relationship 
 // The code is delightfully short this way.
 
-int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl __attribute__ ((unused))) {
+int GNUGOL_DECLARE_ENGINE(search,bing) (QueryOptions_t *q, char *urltxt,size_t lenurl __attribute__ ((unused))) {
     unsigned int i;
     char *text;
     json_t *root,*Web, *SearchResponse, *Results;

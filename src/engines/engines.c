@@ -30,9 +30,17 @@ static void *gnugol_try_openlib(QueryOptions_t *q) {
   return lib;
 }
 
+// The external namespace is of the format
+// gnugol_engine_type_engine
+// FIXME: There is a major security hole. We really want to 
+// sanitize our inputs, otherwise ANY shared library could be
+// run
+
+#define ENGINE_FORMAT "gnugol_engine_%s_%s"
 int gnugol_query_engine(QueryOptions_t *q)
 {
   void *lib;
+  char funcname[255];
   int (*setup)(QueryOptions_t *);
   int (*results)(QueryOptions_t *);
   int  rc;
@@ -48,7 +56,8 @@ int gnugol_query_engine(QueryOptions_t *q)
     GNUGOL_OUTE(q,"%s: failed to acquire shared lib\n",q->engine_name);
     return(-1);
   }
-  setup = dlsym(lib,"setup");	/* known warning here, POSIX allows this */
+  sprintf(funcname,ENGINE_FORMAT,"setup",q->engine_name);
+  setup = dlsym(lib,funcname);	/* known warning here, POSIX allows this */
 
   if(q->debug)
     GNUGOL_OUTW(q,"%s: getting setup function \n",q->engine_name);
@@ -62,8 +71,8 @@ int gnugol_query_engine(QueryOptions_t *q)
   
   if(q->debug)
     GNUGOL_OUTW(q,"%s: got setup function \n",q->engine_name);
-
-  results = dlsym(lib,"getresult");	/* known warning here, POSIX allows this */
+  sprintf(funcname,ENGINE_FORMAT,"search",q->engine_name);
+  results = dlsym(lib,funcname);	/* known warning here, POSIX allows this */
   if (results == NULL)
   {
     GNUGOL_OUTE(q,"%s(3): %s\n",q->engine_name,dlerror());

@@ -54,7 +54,7 @@ static struct {
 } search_opt;
 
 
-int setup(QueryOptions_t *q) {
+int GNUGOL_DECLARE_ENGINE(setup,googlev2) (QueryOptions_t *q) {
   char path[PATH_MAX];
   char key[256];
   int fd;
@@ -114,7 +114,7 @@ GET https://www.googleapis.com/customsearch/v1?key=INSERT-YOUR-KEY&cx=0175766625
   } 
 */
 
-int getresult(QueryOptions_t *q) {
+int GNUGOL_DECLARE_ENGINE(search,googlev2) (QueryOptions_t *q) {
     char *urltxt = q->querystr;
     unsigned int i;
     char *text;
