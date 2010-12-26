@@ -60,8 +60,13 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
 
   if(q->nresults > 8) q->nresults = 8; // google enforces a maximum result of 8
   if(q->debug) GNUGOL_OUTW(q,"KEYWORDS = %s\n", q->keywords);
-  size = snprintf(string,URL_SIZE,"%s&key=%s&rsz=%d&start=%d&q=%s",TEMPLATE,key,q->nresults,q->position,q->keywords); 
-  
+
+  if (size == 0)
+    size = snprintf(string,URL_SIZE,"%s&%d&%d&q=%s",TEMPLATE, q->nresults,q->position,q->keywords);
+  else
+    size = snprintf(string,URL_SIZE,"%s&key=%s&rsz=%d&start=%d&q=%s",
+		     TEMPLATE,key,q->nresults,q->position,q->keywords); 
+
   if (size > sizeof(q->querystr))
   {
     GNUGOL_OUTE(q,"Size of URL exceeds space set aside for it");

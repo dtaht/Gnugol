@@ -115,7 +115,6 @@ int gnugol_read_key(
   char    *home;
   int      fd;
   ssize_t  size;
-  int      err;
   
   assert(key     != NULL);
   assert(pksize  != NULL);
@@ -129,24 +128,35 @@ int gnugol_read_key(
   snprintf(path,sizeof(path),"%s/%s",home,keyfile);
   fd = open(path,O_RDONLY);
   if (fd == -1)
-    return errno;
+  {
+    *pksize = 0;
+    return 0;
+  }
   
   size = read(fd,key,*pksize);
-  err  = errno;
   close(fd);
   
   if (size == -1)
-    return err;
+  { 
+    *pksize = 0;
+    return 0;
+  }
   
   if (size == 0)
-    return ENODATA;
+  {
+    *pksize = 0;
+    return 0;
+  }
   
   while((size > 0) && ((key[size - 1] == ' ') || (key[size - 1] == '\n')))
     size--;
   
   if (size == 0)
-    return ENODATA;
-    
+  {
+    *pksize = 0;
+    return 0;
+  }
+  
   key[size] = '\0';
   
   *pksize = size;
