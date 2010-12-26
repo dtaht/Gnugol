@@ -24,28 +24,28 @@
 #define TOU "http://www.bing.com/developers/tou.aspx"
 
 int GNUGOL_DECLARE_ENGINE(setup,bing) (QueryOptions_t *q) {
-  char string[2048];
-  char path[PATH_MAX];
-  char key[256];
-  int fd;
-  int size = 0;
-  char uukeywords[512];
+  char   string[URL_SIZE];
+  char   key[256];
+  size_t size = 0;
+  char   uukeywords[512];
 
-  snprintf(path,PATH_MAX,"%s/%s",getenv("HOME"), ".bingkey");
-  if((fd = open(path,O_RDONLY))) {
-    size = read(fd, key, 256);
-    while(size > 0 && (key[size-1] == ' ' || key[size-1] == '\n')) size--;
-    key[size] = '\0';
-  }
-  if(q->nresults > 10) q->nresults = 10; // bing enforces a maximum result of 10, I think
-
-  if(size > 0) { 
-    strcpy(uukeywords,q->keywords); // FIXME: convert to urlencoding
-    size = snprintf(string,URL_SIZE-1,TEMPLATE,key,"en-US",uukeywords,q->nresults); 
-  } else {
+  size = sizeof(key);
+  if (gnugol_read_key(key,&size,".bindkey") != 0)
+  {
     GNUGOL_OUTE(q,"For bing, you need a license key from: %s\n",LICENSE_URL);
     return(-1);
   }
+    
+  if(q->nresults > 10) q->nresults = 10; // bing enforces a maximum result of 10, I think
+
+  if (strlen(q->keywords) >= sizeof(uukeywords))
+  {
+    GNUGOL_OUTE(q,"Keywords exceed size of space set aside");
+    return -1;
+  }
+  
+  strcpy(uukeywords,q->keywords); // FIXME: convert to urlencoding
+  size = snprintf(string,URL_SIZE,TEMPLATE,key,"en-US",uukeywords,q->nresults);
   strcpy(q->querystr,string);
   if(q->debug) GNUGOL_OUTW(q,"%s\n%s\n", q->keywords, string);
   return size;
