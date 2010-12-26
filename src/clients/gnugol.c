@@ -330,9 +330,10 @@ static int query_engine(QueryOptions_t *q)
     GNUGOL_OUTW(q,"%s: shared libs are live\n",q->engine_name);
   
   memset(basequery,0,sizeof(basequery));
-  
+
+  // FIXME: THE cause of this failure is that setup doesn't take these ARGS!
   rc = (*setup)(q,basequery,sizeof(basequery));
-  if (rc != 0)
+  if (rc < 1)
   { 
     GNUGOL_OUTW(q,"%s: Went boom on setup\n",q->engine_name);
     dlclose(lib);
