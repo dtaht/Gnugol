@@ -48,7 +48,7 @@ and <http://www.mediawiki.org/wiki/API:Parsing_wikitext>.
 
 */
 
-static int setup(QueryOptions_t *q, char *string) {
+int setup(QueryOptions_t *q, char *string,size_t lenstr) {
   char path[PATH_MAX];
   char key[256];
   int fd;
@@ -65,7 +65,7 @@ static int setup(QueryOptions_t *q, char *string) {
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 
-static int getresult(QueryOptions_t *q, char *urltxt) {
+int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl) {
     unsigned int i;
     char *text;
     char url[URL_SIZE];
@@ -111,16 +111,5 @@ static int getresult(QueryOptions_t *q, char *urltxt) {
 
     json_decref(root);
     return 0;
-}
-
-// FIXME, add url encode
-// FIXME UTF-8
-
-int engine_wikipedia(QueryOptions_t *q) { 
-  char basequery[URL_SIZE];
-  char qstring[URL_SIZE]; 
-  setup(q,basequery);
-  getresult(q,basequery);
-  return 0;
 }
 

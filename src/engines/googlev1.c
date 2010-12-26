@@ -38,7 +38,7 @@ static struct {
 } search_opt;
 
 
-static int setup(QueryOptions_t *q, char *string) {
+int setup(QueryOptions_t *q, char *string,size_t lenstr) {
   char path[PATH_MAX];
   char key[256];
   int fd;
@@ -70,7 +70,7 @@ static int setup(QueryOptions_t *q, char *string) {
 // with a couple macros to make the interface to json a 1 to 1 relationship 
 // The code is delightfully short this way.
 
-static int getresult(QueryOptions_t *q, char *urltxt) {
+int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl) {
     unsigned int i;
     char *text;
     char url[URL_SIZE];
@@ -116,13 +116,3 @@ static int getresult(QueryOptions_t *q, char *urltxt) {
     return 0;
 }
 
-// FIXME, add url encode
-// FIXME UTF-8
-
-int engine_googlev1(QueryOptions_t *q) { 
-  char basequery[URL_SIZE];
-  char qstring[URL_SIZE]; 
-  setup(q,basequery);
-  getresult(q,basequery);
-  return 0;
-}

@@ -5,30 +5,34 @@ COMMON=
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
-OBJECTS=googlev1.o dummy.o bing.o wikipedia.o engines.o # googlev2.o
+OBJECTS=googlev1.so dummy.so bing.so wikipedia.so engines.so dns.so # googlev2.so
 CC=gcc
+CFLAGS += -fPIC -shared
 STRIP=strip
 TESTDIR=../tests/
 CFLAGS+=-std=c99
 all: $(OBJECTS) $(PROGS)
 
-googlev1.o: googlev1.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev1.c -c
+googlev1.so: googlev1.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev1.c -o google.so
 
-googlev2.o: googlev2.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev2.c -c
+googlev2.so: googlev2.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev2.c -o $@
 
-bing.o: bing.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) bing.c -c
+bing.so: bing.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) bing.c -o $@
 
-wikipedia.o: wikipedia.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) wikipedia.c -c
+wikipedia.so: wikipedia.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) wikipedia.c -o $@
 
-dummy.o: dummy.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dummy.c -c
+dummy.so: dummy.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dummy.c -o $@
 
-engines.o: engines.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) engines.c -c
+engines.so: engines.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) engines.c -o $@
+
+dns.so : dns.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dns.c -o $@
 
 clean:
 	rm -f $(OBJECTS) $(PROGS) *~

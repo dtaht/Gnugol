@@ -1,8 +1,9 @@
-LIBS=-ljansson -lcurl
+LIBS=-ljansson -lcurl -ldl
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
 COMMON=../common/handy.o ../common/utf8.o ../common/format.o
-ENGINES=../engines/googlev1.o  ../engines/dummy.o ../engines/bing.o ../engines/wikipedia.o ../engines/engines.o # ../engines/googlev2.o
+#ENGINES=../engines/googlev1.o  ../engines/dummy.o ../engines/bing.o ../engines/wikipedia.o ../engines/engines.o # ../engines/googlev2.o
+ENGINES=
 
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
@@ -14,6 +15,7 @@ CGIDIR=/usr/lib/cgi-bin
 BINDIR=/usr/local/bin
 OBJECTS=gnugol.o #gnugol_fcgi.o
 CC=gcc
+CFLAGS += -rdynamic
 STRIP=strip
 CFLAGS+=-g
 

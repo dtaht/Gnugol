@@ -54,7 +54,7 @@ static struct {
 } search_opt;
 
 
-static int setup(QueryOptions_t *q, char *string) {
+int setup(QueryOptions_t *q, char *string,size_t lenstr) {
   char path[PATH_MAX];
   char key[256];
   int fd;
@@ -114,7 +114,7 @@ GET https://www.googleapis.com/customsearch/v1?key=INSERT-YOUR-KEY&cx=0175766625
   } 
 */
 
-static int getresult(QueryOptions_t *q, char *urltxt) {
+int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl) {
     unsigned int i;
     char *text;
     char url[URL_SIZE];
@@ -160,13 +160,3 @@ static int getresult(QueryOptions_t *q, char *urltxt) {
     return 0;
 }
 
-// FIXME, add url encode
-// FIXME UTF-8
-
-int engine_googlev2(QueryOptions_t *q) { 
-  char basequery[URL_SIZE];
-  char qstring[URL_SIZE]; 
-  setup(q,basequery);
-  getresult(q,basequery);
-  return 0;
-}

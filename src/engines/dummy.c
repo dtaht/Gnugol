@@ -23,7 +23,7 @@ static struct {
 } search_opt;
 
 
-static int setup(QueryOptions_t *q, char *string) {
+int setup(QueryOptions_t *q, char *string,size_t lenstr) {
   return 0;
 }
 
@@ -34,7 +34,7 @@ static int setup(QueryOptions_t *q, char *string) {
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 
-static int getresult(QueryOptions_t *q, char *urltxt) {
+int results(QueryOptions_t *q, char *urltxt,size_t urlsize) {
     unsigned int i;
     char *text;
     char url[URL_SIZE];
@@ -50,15 +50,4 @@ static int getresult(QueryOptions_t *q, char *urltxt) {
     // FIXME: Go recursive if we overflowed the buffer
 
     return 0;
-}
-
-// FIXME, add url encode
-// FIXME UTF-8
-
-int engine_dummy(QueryOptions_t *q) { 
-  char basequery[URL_SIZE];
-  char qstring[URL_SIZE]; 
-  setup(q,basequery);
-  getresult(q,basequery);
-  return 0;
 }

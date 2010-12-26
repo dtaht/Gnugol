@@ -11,6 +11,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <syslog.h>
+#include <dlfcn.h>
 #include "query.h"
 #include "formats.h"
 #include "gnugol_engines.h"
@@ -257,6 +259,58 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
   q->level = -1;
 }
 
+static int query_engine(QueryOptions_t *q)
+{
+  void *lib;
+  int (*setup)(QueryOptions_t *,char *,size_t);
+  int (*results)(QueryOptions_t *,char *,size_t);
+  char libname[FILENAME_MAX];
+  char basequery[URL_SIZE];
+  char qstring  [URL_SIZE];
+  int  rc;
+  
+  syslog(LOG_DEBUG,"Engine selected: %s",q->engine_name);
+  
+  snprintf(libname,FILENAME_MAX,"../engines/%s.so",q->engine_name);
+  lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
+  if (lib == NULL)
+  {
+    syslog(LOG_ERR,"%s(1): %s",q->engine_name,dlerror());
+    return -1;
+  }
+  
+  setup = dlsym(lib,"setup");
+  if (setup == NULL)
+  {
+    syslog(LOG_ERR,"%s(2): %s",q->engine_name,dlerror());
+    dlclose(lib);
+    return -1;
+  }
+  
+  results = dlsym(lib,"results");
+  if (setup == NULL)
+  {
+    syslog(LOG_ERR,"%s(3): %s",q->engine_name,dlerror());
+    dlclose(lib);
+    return -1;
+  }
+  
+  memset(basequery,0,sizeof(basequery));
+  
+  rc = (*setup)(q,basequery,sizeof(basequery));
+  if (rc != 0)
+  { 
+    dlclose(lib);
+    return rc;
+  }
+  
+  rc = (*results)(q,basequery,sizeof(basequery));
+  
+  dlclose(lib);
+  return rc;
+}
+
+
 // gnugol_search(q) 
 
 main(int argc, char **argv) {
@@ -270,7 +324,7 @@ main(int argc, char **argv) {
   */
 
   //  int result = engine_wikipedia(&q);
-  int result = engine_googlev1(&q);
+  int result = query_engine(&q);
 
   if(q.returned_results > 0) {     
       printf("%s",q.out.s);
