@@ -115,17 +115,16 @@ GET https://www.googleapis.com/customsearch/v1?key=INSERT-YOUR-KEY&cx=0175766625
 */
 
 int GNUGOL_DECLARE_ENGINE(search,googlev2) (QueryOptions_t *q) {
-    char *urltxt = q->querystr;
     unsigned int i;
     char *text;
     char url[URL_SIZE];
     json_t *root, *items, *handleResponse;
     json_error_t error;
-    if(q->debug) GNUGOL_OUTW(q,"trying url: %s", urltxt); 
+    if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr); 
 
-    text = jsonrequest(urltxt);
+    text = jsonrequest(q->querystr);
     if(!text) {
-      GNUGOL_OUTE(q,"url failed to work: %s", urltxt); 
+      GNUGOL_OUTE(q,"url failed to work: %s", q->querystr); 
       return 1;
     }
 

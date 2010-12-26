@@ -50,7 +50,7 @@ int gnugol_query_engine(QueryOptions_t *q)
   lib = gnugol_try_openlib(q);
 
   if(q->debug)
-    GNUGOL_OUTW(q,"%s: trying to aquire shared lib\n",q->engine_name);
+    GNUGOL_OUTW(q,"%s: trying to acquire shared lib\n",q->engine_name);
 
   if(lib == NULL) { 
     GNUGOL_OUTE(q,"%s: failed to acquire shared lib\n",q->engine_name);

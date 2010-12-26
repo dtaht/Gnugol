@@ -81,19 +81,15 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
 // The code is delightfully short this way.
 
 int GNUGOL_DECLARE_ENGINE(search,google) (QueryOptions_t *q) {
-    char *urltxt = q->querystr;
     unsigned int i;
     char *text;
     json_t *root,*responseData, *results;
     json_error_t error;
-    fprintf(stderr, "successfully got into results routine\n");
-    return(-1);
+    if(q->debug) GNUGOL_OUTW(q,"%s: trying url: %s\n", q->engine_name, q->querystr); 
 
-    if(q->debug) GNUGOL_OUTE(q,"trying url: %s", urltxt); 
-
-    text = jsonrequest(urltxt);
+    text = jsonrequest(q->querystr);
     if(!text) {
-      GNUGOL_OUTE(q,"url failed to work: %s", urltxt); 
+      GNUGOL_OUTE(q,"url failed to work: %s", q->querystr); 
       return 1;
     }
 

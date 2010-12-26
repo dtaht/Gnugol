@@ -70,15 +70,14 @@ int GNUGOL_DECLARE_ENGINE(setup,wikipedia) (QueryOptions_t *q) {
 // Maybe back off the number of results when we overflow the buffer
 
 int GNUGOL_DECLARE_ENGINE(search,wikipedia) (QueryOptions_t *q) {
-    char *urltxt = q->querystr;
     char *text;
     json_t *root,*query, *pages, *page, *result;
     json_error_t error;
-    if(q->debug) GNUGOL_OUTW(q,"trying url: %s", urltxt); 
+    if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr); 
 
-    text = jsonrequest(urltxt);
+    text = jsonrequest(q->querystr);
     if(!text) {
-      GNUGOL_OUTE(q,"url failed to work: %s", urltxt); 
+      GNUGOL_OUTE(q,"url failed to work: %s", q->querystr); 
       return 1;
     }
 

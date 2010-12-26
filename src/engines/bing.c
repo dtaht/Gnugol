@@ -61,18 +61,21 @@ int GNUGOL_DECLARE_ENGINE(setup,bing) (QueryOptions_t *q) {
 // with a couple macros to make the interface to json a 1 to 1 relationship 
 // The code is delightfully short this way.
 
-int GNUGOL_DECLARE_ENGINE(search,bing) (QueryOptions_t *q, char *urltxt,size_t lenurl __attribute__ ((unused))) {
+int GNUGOL_DECLARE_ENGINE(search,bing) (QueryOptions_t *q) {
     unsigned int i;
     char *text;
     json_t *root,*Web, *SearchResponse, *Results;
     json_error_t error;
-    if(q->debug) GNUGOL_OUTE(q,"trying url: %s", urltxt); 
 
-    text = jsonrequest(urltxt);
+    if(q->debug) GNUGOL_OUTW(q,"%s: trying url: %s\n", q->engine_name, q->querystr); 
+
+    text = jsonrequest(q->querystr);
     if(!text) {
-      GNUGOL_OUTE(q,"url failed to work: %s", urltxt); 
+      GNUGOL_OUTE(q,"url failed to work: %s\n", q->querystr); 
       return 1;
     }
+
+    if(q->debug) GNUGOL_OUTW(q,"%s: get url request succeeded: %s\n", q->engine_name, q->querystr); 
 
     root = json_loads(text, &error);
     free(text);
@@ -82,6 +85,8 @@ int GNUGOL_DECLARE_ENGINE(search,bing) (QueryOptions_t *q, char *urltxt,size_t l
         GNUGOL_OUTE(q,"error: on line %d: %s\n", error.line, error.text);
         return 1;
     }
+
+    if(q->debug) GNUGOL_OUTW(q,"%s: got json url request!: %s\n", q->engine_name, q->querystr); 
     
     GETOBJ(root,SearchResponse);
     GETOBJ(SearchResponse,Web);
