@@ -5,7 +5,7 @@ COMMON=
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
-OBJECTS=googlev1.so dummy.so bing.so wikipedia.so engines.so dns.so # googlev2.so
+OBJECTS=google.so dummy.so bing.so wikipedia.so engines.so dns.so # googlev2.so
 CC=gcc
 CFLAGS += -fPIC -shared
 STRIP=strip
@@ -13,7 +13,7 @@ TESTDIR=../tests/
 CFLAGS+=-std=c99
 all: $(OBJECTS) $(PROGS)
 
-googlev1.so: googlev1.c $(HEADERS)
+google.so: googlev1.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev1.c -o google.so
 
 googlev2.so: googlev2.c $(HEADERS)
