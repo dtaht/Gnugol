@@ -7,6 +7,7 @@ INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
 OBJECTS=google.so dummy.so bing.so wikipedia.so engines.so dns.so # googlev2.so
 CC=gcc
+CFLAGS += -Wall -Wextra -pedantic 
 CFLAGS += -fPIC -shared
 STRIP=strip
 TESTDIR=../tests/

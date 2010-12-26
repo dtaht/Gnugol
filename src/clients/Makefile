@@ -15,7 +15,7 @@ CGIDIR=/usr/lib/cgi-bin
 BINDIR=/usr/local/bin
 OBJECTS=gnugol.o #gnugol_fcgi.o
 CC=gcc
-CFLAGS += -rdynamic
+CFLAGS += -rdynamic -std=c99 -Wall -Wextra -pedantic
 STRIP=strip
 CFLAGS+=-g
 

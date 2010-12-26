@@ -14,6 +14,10 @@
 #include "handy.h"
 #include "formats.h"
 
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
+
 #define TEMPLATE  "http://ajax.googleapis.com/ajax/services/search/web?v=1.0"
 #define LICENSE_URL "I don't know if you can even get one anymore."
 #define TOU "http://code.google.com/apis/websearch/terms.html"
@@ -29,6 +33,7 @@
 
 */
 
+#if 0
 static struct {
   int start;
   int rsz; // number of results
@@ -36,15 +41,15 @@ static struct {
   char language[16];
   char ip[8*5+1]; // Room for ipv6 requests
 } search_opt;
+#endif
 
-
-int setup(QueryOptions_t *q, char *string,size_t lenstr) {
+int setup(QueryOptions_t *q, char *string,size_t lenstr __attribute__((unused))) {
   char path[PATH_MAX];
   char key[256];
   int fd;
   int size = 0;
   snprintf(path,PATH_MAX,"%s/%s",getenv("HOME"), ".googlekey");
-  if(fd = open(path,O_RDONLY)) {
+  if((fd = open(path,O_RDONLY))) {
     size = read(fd, key, 256);
     while(size > 0 && (key[size-1] == ' ' || key[size-1] == '\n')) size--;
     key[size] = '\0';
@@ -70,10 +75,9 @@ int setup(QueryOptions_t *q, char *string,size_t lenstr) {
 // with a couple macros to make the interface to json a 1 to 1 relationship 
 // The code is delightfully short this way.
 
-int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl) {
+int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl __attribute__ ((unused))) {
     unsigned int i;
     char *text;
-    char url[URL_SIZE];
     json_t *root,*responseData, *results;
     json_error_t error;
     if(q->debug) GNUGOL_OUTE(q,"trying url: %s", urltxt); 
@@ -100,7 +104,6 @@ int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl) {
     for(i = 0; i < json_array_size(results); i++)
     {
       json_t *result, *url, *titleNoFormatting, *content;
-      const char *message_text;
       GETARRAYIDX(results,result,i);
       GETSTRING(result,url);
       GETSTRING(result,titleNoFormatting);

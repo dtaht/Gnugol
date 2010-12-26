@@ -9,6 +9,10 @@
 #include "utf8.h"
 #include "handy.h"
 
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
+
 // FIXME: Be more paranoid
 
 int gnugol_init_QueryOptions(QueryOptions_t *q) {
@@ -82,16 +86,17 @@ int gnugol_footer_out(QueryOptions_t *q) {
     default: break;
     }
   }
+  return 0;
 }
 
-int gnugol_keywords_out(QueryOptions_t *q) {
+int gnugol_keywords_out(QueryOptions_t *q __attribute__((unused))) {
   return(0);
 }
 
 static char *levels[] = { "", "*","**","***","****","*****", NULL };
 static char padding[] = "          ";
 
-int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet, const char *ad) {
+int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet, const char *ad __attribute__((unused))) {
   char tempstr[SNIPPETSIZE]; 
   q->returned_results++;
   switch (q->format) {

@@ -14,16 +14,16 @@
 #include "handy.h"
 #include "formats.h"
 
-static struct {
-  int start;
-  int rsz; // number of results
-  int safe;
-  char language[16];
-  char ip[8*5+1]; // Room for ipv6 requests
-} search_opt;
+#ifndef __GNUC__
+#define __attribute__(x)
+#endif
 
-
-int setup(QueryOptions_t *q, char *string,size_t lenstr) {
+int setup(
+	QueryOptions_t *q 	__attribute__((unused)), 
+	char           *string	__attribute__((unused)),
+	size_t          lenstr	__attribute__((unused))
+) 
+{
   return 0;
 }
 
@@ -34,10 +34,7 @@ int setup(QueryOptions_t *q, char *string,size_t lenstr) {
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 
-int results(QueryOptions_t *q, char *urltxt,size_t urlsize) {
-    unsigned int i;
-    char *text;
-    char url[URL_SIZE];
+int results(QueryOptions_t *q, char *urltxt,size_t urlsize __attribute__((unused))) {
     if(q->debug) GNUGOL_OUTE(q,"trying url: %s", urltxt); 
     gnugol_header_out(q);
     gnugol_result_out(q,"http://gnugol.taht.net","Gnugol - Command line Search","This is a dummy query",NULL);

@@ -8,6 +8,7 @@ CGIDIR=/usr/lib/cgi-bin
 BINDIR=$(HOME)/bin
 CC=gcc
 TESTDIR=../tests/
+CFLAGS += -Wall -Wextra -pedantic
 CFLAGS+=-std=c99
 
 OBJECTS := handy.o utf8.o format.o

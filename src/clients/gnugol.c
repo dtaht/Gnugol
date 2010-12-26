@@ -17,6 +17,10 @@
 #include "formats.h"
 #include "gnugol_engines.h"
 
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
+
 struct  output_types {
   int id;
   char *desc;
@@ -126,8 +130,8 @@ static struct option long_options[] = {
   {0,0,0,0},
 };
 
-gnugol_parse_config_file(QueryOptions_t *q) {
-
+int gnugol_parse_config_file(QueryOptions_t *q __attribute__((unused))) {
+  return 0;
 } 
 
 #define penabled(a) if(o->a) fprintf(fp,"" # a " ");
@@ -166,6 +170,7 @@ print_enabled_options(QueryOptions_t *o, FILE *fp) {
   penabled(dummy);
   penabled(debug);
   fprintf(fp,"\n");
+  return 0;
 }
 
 #define pifverbose(q,string) if(q->verbose) { printf("%s",val); }
@@ -175,7 +180,6 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   int i = 0;
   int querylen = 0;
   int opt = 0;
-  int count = 0;
   if(argc == 1) usage("");
 
 #ifdef HAVE_GNUGOLD
@@ -266,7 +270,6 @@ static int query_engine(QueryOptions_t *q)
   int (*results)(QueryOptions_t *,char *,size_t);
   char libname[FILENAME_MAX];
   char basequery[URL_SIZE];
-  char qstring  [URL_SIZE];
   int  rc;
   
   syslog(LOG_DEBUG,"Engine selected: %s",q->engine_name);
@@ -279,7 +282,7 @@ static int query_engine(QueryOptions_t *q)
     return -1;
   }
   
-  setup = dlsym(lib,"setup");
+  setup = dlsym(lib,"setup");	/* known warning here, POSIX allows this */
   if (setup == NULL)
   {
     syslog(LOG_ERR,"%s(2): %s",q->engine_name,dlerror());
@@ -287,7 +290,7 @@ static int query_engine(QueryOptions_t *q)
     return -1;
   }
   
-  results = dlsym(lib,"results");
+  results = dlsym(lib,"results");	/* known warning here, POSIX allows this */
   if (setup == NULL)
   {
     syslog(LOG_ERR,"%s(3): %s",q->engine_name,dlerror());
@@ -313,7 +316,7 @@ static int query_engine(QueryOptions_t *q)
 
 // gnugol_search(q) 
 
-main(int argc, char **argv) {
+int main(int argc, char **argv) {
   QueryOptions_t q;
   gnugol_init_QueryOptions(&q);
   gnugol_default_QueryOptions(&q);

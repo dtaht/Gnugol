@@ -4,12 +4,24 @@
 #include <errno.h>
 #include "query.h"
 
-int setup(QueryOptions_t *q,char *string,size_t lenstr)
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
+
+int setup(
+	QueryOptions_t *q	__attribute__((unused)),
+	char           *string	__attribute__((unused)),
+	size_t          lenstr	__attribute__((unused))
+)
 {
   return EOPNOTSUPP;
 }
 
-int results(QueryOptions_t *q,char *urltxt,size_t lenurl)
+int results(
+	QueryOptions_t *q	__attribute__((unused)),
+	char           *urltxt	__attribute__((unused)),
+	size_t          lenurl	__attribute__((unused))
+)
 {
   return EOPNOTSUPP;
 }

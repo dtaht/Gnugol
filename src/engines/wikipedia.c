@@ -14,6 +14,10 @@
 #include "handy.h"
 #include "formats.h"
 
+#ifndef __GNUC__
+#  define __attribute__ ((unused))
+#endif
+
 #define TEMPLATE  "http://en.wikipedia.org/w/api.php?action=query&prop=info&inprop=url&format=json&titles="
 
 /* Via Mark Hershberger
@@ -48,10 +52,7 @@ and <http://www.mediawiki.org/wiki/API:Parsing_wikitext>.
 
 */
 
-int setup(QueryOptions_t *q, char *string,size_t lenstr) {
-  char path[PATH_MAX];
-  char key[256];
-  int fd;
+int setup(QueryOptions_t *q, char *string,size_t lenstr __attribute__((unused))) {
   int size = 0;
   if(q->nresults > 10) q->nresults = 10; // wikipedia enforces a maximum result of ?
   // FIXME: Not clear to me yet how to limit the result size
@@ -65,10 +66,8 @@ int setup(QueryOptions_t *q, char *string,size_t lenstr) {
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 
-int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl) {
-    unsigned int i;
+int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl __attribute__ ((unused))) {
     char *text;
-    char url[URL_SIZE];
     json_t *root,*query, *pages, *page, *result;
     json_error_t error;
     if(q->debug) GNUGOL_OUTW(q,"trying url: %s", urltxt); 
@@ -98,7 +97,6 @@ int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl) {
     //    for(i = 0; i < json_array_size(results); i++)
     {
       json_t *fullurl, *title;
-      const char *message_text;
       GETSTRING(result,fullurl);
       GETSTRING(result,title);
       // GETSTRING(result,content);

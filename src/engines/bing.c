@@ -14,11 +14,15 @@
 #include "handy.h"
 #include "formats.h"
 
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
+
 #define TEMPLATE "http://api.bing.net/json.aspx?AppId=%s&Version=2.2&Market=%s&Query=%s&Sources=web&Web.Count=%d&JsonType=raw"
 #define LICENSE_URL "http://www.bing.com/developers/createapp.aspx"
 #define TOU "http://www.bing.com/developers/tou.aspx"
 
-int setup(QueryOptions_t *q, char *string,size_t lenstr) {
+int setup(QueryOptions_t *q, char *string,size_t lenstr __attribute__((unused))) {
   char path[PATH_MAX];
   char key[256];
   int fd;
@@ -26,7 +30,7 @@ int setup(QueryOptions_t *q, char *string,size_t lenstr) {
   char uukeywords[512];
 
   snprintf(path,PATH_MAX,"%s/%s",getenv("HOME"), ".bingkey");
-  if(fd = open(path,O_RDONLY)) {
+  if((fd = open(path,O_RDONLY))) {
     size = read(fd, key, 256);
     while(size > 0 && (key[size-1] == ' ' || key[size-1] == '\n')) size--;
     key[size] = '\0';
@@ -54,10 +58,9 @@ int setup(QueryOptions_t *q, char *string,size_t lenstr) {
 // with a couple macros to make the interface to json a 1 to 1 relationship 
 // The code is delightfully short this way.
 
-int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl) {
+int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl __attribute__ ((unused))) {
     unsigned int i;
     char *text;
-    char url[URL_SIZE];
     json_t *root,*Web, *SearchResponse, *Results;
     json_error_t error;
     if(q->debug) GNUGOL_OUTE(q,"trying url: %s", urltxt); 
@@ -85,7 +88,6 @@ int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl) {
     for(i = 0; i < json_array_size(Results); i++)
     {
       json_t *result, *Url, *Title, *Description;
-      const char *message_text;
       GETARRAYIDX(Results,result,i);
       GETSTRING(result,Url);
       GETSTRING(result,Title);
