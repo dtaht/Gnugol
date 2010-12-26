@@ -263,25 +263,39 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
   q->level = -1;
 }
 
+static void *gnugol_try_openlib(QueryOptions_t *q) {
+  void *lib;
+  char libname[FILENAME_MAX];
+  
+  snprintf(libname,FILENAME_MAX, GNUGOL_SHAREDLIBDIR "/%s.so",q->engine_name);
+  lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
+  
+  if (lib == NULL) {
+    GNUGOL_OUTW(q,"%s(1): Not in default location, error: %s",q->engine_name,dlerror());
+    snprintf(libname,FILENAME_MAX,"../engines/%s.so",q->engine_name);
+    lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
+  }
+
+  if (lib == NULL)
+  {
+    GNUGOL_OUTE(q,"%s(1): %s",q->engine_name,dlerror());
+    return NULL;
+  }
+  return lib;
+}
+
 static int query_engine(QueryOptions_t *q)
 {
   void *lib;
   int (*setup)(QueryOptions_t *,char *,size_t);
   int (*results)(QueryOptions_t *,char *,size_t);
-  char libname[FILENAME_MAX];
   char basequery[URL_SIZE];
   int  rc;
   
-  syslog(LOG_DEBUG,"Engine selected: %s",q->engine_name);
-  
-  snprintf(libname,FILENAME_MAX,"../engines/%s.so",q->engine_name);
-  lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
-  if (lib == NULL)
-  {
-    syslog(LOG_ERR,"%s(1): %s",q->engine_name,dlerror());
-    return -1;
-  }
-  
+  GNUGOL_OUTW(q,"Engine selected: %s",q->engine_name);
+  lib = gnugol_try_openlib(q);
+  if(lib == NULL) return(-1);
+ 
   setup = dlsym(lib,"setup");	/* known warning here, POSIX allows this */
   if (setup == NULL)
   {
@@ -334,7 +348,7 @@ int main(int argc, char **argv) {
     }
 
   if(result < 0 || q.debug) {
-    fprintf(stderr,"Errors: %s\nWarnings:\n",q.err.s,q.wrn.s);
+    fprintf(stderr,"Errors: %s\nWarnings:%s\n",q.err.s,q.wrn.s);
   }
 
   if(q.debug)

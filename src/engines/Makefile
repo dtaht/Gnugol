@@ -1,6 +1,7 @@
 LIBS=../common/fit_results.o
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
+SHAREDLIBDIR=/var/lib/gnugol
 COMMON=
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
@@ -35,5 +36,8 @@ engines.so: engines.c $(HEADERS)
 dns.so : dns.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dns.c -o $@
 
+install: $(OBJECTS)
+	@mkdir -p $(SHAREDLIBDIR)	
+	cp $(OBJECTS) $(SHAREDLIBDIR)
 clean:
 	rm -f $(OBJECTS) $(PROGS) *~

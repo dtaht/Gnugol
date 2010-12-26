@@ -8,14 +8,14 @@ all:
 
 install: 
 	make -C common all
-	make -C engines all
+	make -C engines install
 	make -C clients install
 	make -C server install
 	make -C scripts install
 
 install-stripped: 
 	make -C common all
-	make -C engines all
+	make -C engines install
 	make -C clients install-stripped
 	make -C server install
 	make -C scripts install
