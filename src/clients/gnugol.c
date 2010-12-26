@@ -374,7 +374,7 @@ int main(int argc, char **argv) {
   if(q.debug > 10) {
     fprintf(stderr,"out len = %d\n size = %d, Contents = %s\n",q.out.len, q.out.size, q.out.s);
     fprintf(stderr,"wrn len = %d\n size = %d, Contents = %s\n",q.wrn.len, q.wrn.size, q.wrn.s);
-    fprintf(stderr,"err len = %d\n size = %d, Contents = %s\n",q.err.len, q.err.size, q.err.s);
+    fprintf(stderr,"err len = %d\n size = %d, Contents  = %s\n",q.err.len, q.err.size, q.err.s);
   }
   gnugol_free_QueryOptions(&q);
   return(0); 

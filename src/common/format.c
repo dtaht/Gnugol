@@ -20,7 +20,7 @@ int gnugol_init_QueryOptions(QueryOptions_t *q) {
     memset(q,0,sizeof(QueryOptions_t));
     if((q->err.s = (char *) malloc(4096)) != NULL) q->err.size = 4096;
     if((q->out.s = (char *) malloc(1024*64)) != NULL) q->out.size = (1024*64);  
-    if((q->wrn.s = (char *) malloc(4096)) != NULL) q->out.size = (4096);  
+    if((q->wrn.s = (char *) malloc(4096)) != NULL) q->wrn.size = (4096);  
   } else {
     return(1);
   }
