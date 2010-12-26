@@ -30,8 +30,9 @@ int setup(QueryOptions_t *q __attribute__((unused)))
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 
-int results(QueryOptions_t *q) {
+int getresult(QueryOptions_t *q) {
   if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr); 
+  if(q->debug) GNUGOL_OUTW(q,"trying keywords: %s", q->keywords); 
     gnugol_header_out(q);
     gnugol_result_out(q,"http://gnugol.taht.net","Gnugol - Command line Search","This is a dummy query",NULL);
     gnugol_result_out(q,"http://www.google.com","“Google Rocks” ","google is the source of many good things.",NULL);

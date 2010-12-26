@@ -85,6 +85,9 @@ int getresult(QueryOptions_t *q) {
     char *text;
     json_t *root,*responseData, *results;
     json_error_t error;
+    fprintf(stderr, "successfully got into results routine\n");
+    return(-1);
+
     if(q->debug) GNUGOL_OUTE(q,"trying url: %s", urltxt); 
 
     text = jsonrequest(urltxt);

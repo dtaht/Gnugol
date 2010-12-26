@@ -317,8 +317,8 @@ static int query_engine(QueryOptions_t *q)
   if(q->debug)
     GNUGOL_OUTW(q,"%s: got setup function \n",q->engine_name);
 
-  results = dlsym(lib,"results");	/* known warning here, POSIX allows this */
-  if (setup == NULL)
+  results = dlsym(lib,"getresult");	/* known warning here, POSIX allows this */
+  if (results == NULL)
   {
     GNUGOL_OUTE(q,"%s(3): %s\n",q->engine_name,dlerror());
     dlclose(lib);
