@@ -52,11 +52,19 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
   int size = 0;
   if(q->debug > 9) GNUGOL_OUTW(q,"Entering Setup\n");
   snprintf(path,PATH_MAX,"%s/%s",getenv("HOME"), ".googlekey");
-  if((fd = open(path,O_RDONLY))) {
-    size = read(fd, key, 256);
-    while(size > 0 && (key[size-1] == ' ' || key[size-1] == '\n')) size--;
-    key[size] = '\0';
+  fd = open(path,O_RDONLY);
+  if (fd == -1)
+  {
+    GNUGOL_OUTE(q,"A license key to search google is required. You can get one from: %s",LICENSE_URL);
+    return -1;
   }
+    
+  size = read(fd, key, 256);
+  while(size > 0 && (key[size-1] == ' ' || key[size-1] == '\n')) size--;
+  key[size] = '\0';
+  
+  close(fd);
+  
   if(q->nresults > 8) q->nresults = 8; // google enforces a maximum result of 8
   if(q->debug) GNUGOL_OUTW(q,"KEYWORDS = %s\n", q->keywords);
   if(size > 0) { 
