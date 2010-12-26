@@ -45,37 +45,32 @@ static struct {
 #endif
 
 int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
-  char string[URL_SIZE];
-  char path[FILENAME_MAX];
-  char key[256];
-  int fd;
-  int size = 0;
+  char   string[URL_SIZE];
+  char   key   [256];
+  size_t size;
+  
   if(q->debug > 9) GNUGOL_OUTW(q,"Entering Setup\n");
-  snprintf(path,PATH_MAX,"%s/%s",getenv("HOME"), ".googlekey");
-  fd = open(path,O_RDONLY);
-  if (fd == -1)
+
+  size = sizeof(key);
+  if (gnugol_read_key(key,&size,".googlekey") != 0)
   {
     GNUGOL_OUTE(q,"A license key to search google is required. You can get one from: %s",LICENSE_URL);
     return -1;
   }
-    
-  size = read(fd, key, 256);
-  while(size > 0 && (key[size-1] == ' ' || key[size-1] == '\n')) size--;
-  key[size] = '\0';
-  
-  close(fd);
-  
+
   if(q->nresults > 8) q->nresults = 8; // google enforces a maximum result of 8
   if(q->debug) GNUGOL_OUTW(q,"KEYWORDS = %s\n", q->keywords);
-  if(size > 0) { 
-    size = snprintf(string,URL_SIZE,"%s&key=%s&rsz=%d&start=%d&q=%s",TEMPLATE,key,q->nresults,q->position,q->keywords); 
-  } else {
-    GNUGOL_OUTE(q,"A license key to search google is required. You can get one from: %s",LICENSE_URL);
-    return(-1);
+  size = snprintf(string,URL_SIZE,"%s&key=%s&rsz=%d&start=%d&q=%s",TEMPLATE,key,q->nresults,q->position,q->keywords); 
+  
+  if (size > sizeof(q->querystr))
+  {
+    GNUGOL_OUTE(q,"Size of URL exceeds space set aside for it");
+    return -1;
   }
+  
   strcpy(q->querystr,string);
   if(q->debug > 9) GNUGOL_OUTW(q,"Exiting Setup\n");
-  return size;
+  return (int)size;
 }
 
 // turn quotes back into quotes and other utf-8 stuff

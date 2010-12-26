@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <assert.h>
 #include <dlfcn.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "query.h"
 #include "formats.h"
 #include "gnugol_engines.h"
@@ -99,6 +105,53 @@ int gnugol_query_engine(QueryOptions_t *q)
   return rc;
 }
 
+int gnugol_read_key(
+	char       *const key,
+	size_t     *const pksize,
+	const char *const keyfile
+)
+{
+  char     path[FILENAME_MAX];
+  char    *home;
+  int      fd;
+  ssize_t  size;
+  int      err;
+  
+  assert(key     != NULL);
+  assert(pksize  != NULL);
+  assert(*pksize >  0);
+  assert(keyfile != NULL);
+  
+  home = getenv("HOME");
+  if (home == NULL) 
+    home = "";
+  
+  snprintf(path,sizeof(path),"%s/%s",home,keyfile);
+  fd = open(path,O_RDONLY);
+  if (fd == -1)
+    return errno;
+  
+  size = read(fd,key,*pksize);
+  err  = errno;
+  close(fd);
+  
+  if (size == -1)
+    return err;
+  
+  if (size == 0)
+    return ENODATA;
+  
+  while((size > 0) && ((key[size - 1] == ' ') || (key[size - 1] == '\n')))
+    size--;
+  
+  if (size == 0)
+    return ENODATA;
+    
+  key[size] = '\0';
+  
+  *pksize = size;
+  return 0;
+}
 
 // This was my first attempt and it appears to be wrong
 

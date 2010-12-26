@@ -13,5 +13,6 @@ extern gnugol_engine get_engine(QueryOptions_t *q);
 
 extern int gnugol_query_engine(QueryOptions_t *q);
 
+extern int gnugol_read_key(char *const,size_t *const,const char *const);
 
 #endif
