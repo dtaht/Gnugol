@@ -68,7 +68,7 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
   if(q->nresults > 8) q->nresults = 8; // google enforces a maximum result of 8
   if(q->debug) GNUGOL_OUTW(q,"KEYWORDS = %s\n", q->keywords);
   if(size > 0) { 
-    size = snprintf(string,URL_SIZE-1,"%s&key=%s&rsz=%d&start=%d&q=%s",TEMPLATE,key,q->nresults,q->position,q->keywords); 
+    size = snprintf(string,URL_SIZE,"%s&key=%s&rsz=%d&start=%d&q=%s",TEMPLATE,key,q->nresults,q->position,q->keywords); 
   } else {
     GNUGOL_OUTE(q,"A license key to search google is required. You can get one from: %s",LICENSE_URL);
     return(-1);
