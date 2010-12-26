@@ -55,7 +55,7 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
   if (gnugol_read_key(key,&size,".googlekey") != 0)
   {
     GNUGOL_OUTE(q,"A license key to search google is required. You can get one from: %s",LICENSE_URL);
-    return -1;
+    size = 0;
   }
 
   if(q->nresults > 8) q->nresults = 8; // google enforces a maximum result of 8
