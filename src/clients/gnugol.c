@@ -11,8 +11,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <getopt.h>
-#include <syslog.h>
-#include <dlfcn.h>
 #include "query.h"
 #include "formats.h"
 #include "gnugol_engines.h"
@@ -263,87 +261,6 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
   q->level = -1;
 }
 
-static void *gnugol_try_openlib(QueryOptions_t *q) {
-  void *lib;
-  char libname[FILENAME_MAX];
-  
-  snprintf(libname,FILENAME_MAX, GNUGOL_SHAREDLIBDIR "/%s.so",q->engine_name);
-  lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
-  
-  if (lib == NULL) {
-    GNUGOL_OUTW(q,"%s(1): Not in default location, error: %s\n",q->engine_name,dlerror());
-    snprintf(libname,FILENAME_MAX,"../engines/%s.so",q->engine_name);
-    lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
-  }
-
-  if (lib == NULL)
-  {
-    GNUGOL_OUTE(q,"%s(1): %s\n",q->engine_name,dlerror());
-    return NULL;
-  }
-  return lib;
-}
-
-static int query_engine(QueryOptions_t *q)
-{
-  void *lib;
-  int (*setup)(QueryOptions_t *);
-  int (*results)(QueryOptions_t *);
-  int  rc;
-  if(q->debug)
-    GNUGOL_OUTW(q,"Engine selected: %s\n",q->engine_name);
-
-  lib = gnugol_try_openlib(q);
-
-  if(q->debug)
-    GNUGOL_OUTW(q,"%s: trying to aquire shared lib\n",q->engine_name);
-
-  if(lib == NULL) { 
-    GNUGOL_OUTE(q,"%s: failed to acquire shared lib\n",q->engine_name);
-    return(-1);
-  }
-  setup = dlsym(lib,"setup");	/* known warning here, POSIX allows this */
-
-  if(q->debug)
-    GNUGOL_OUTW(q,"%s: getting setup function \n",q->engine_name);
-
-  if (setup == NULL)
-  {
-    GNUGOL_OUTE(q,"%s(2): %s\n",q->engine_name,dlerror());
-    dlclose(lib);
-    return -1;
-  }
-  
-  if(q->debug)
-    GNUGOL_OUTW(q,"%s: got setup function \n",q->engine_name);
-
-  results = dlsym(lib,"getresult");	/* known warning here, POSIX allows this */
-  if (results == NULL)
-  {
-    GNUGOL_OUTE(q,"%s(3): %s\n",q->engine_name,dlerror());
-    dlclose(lib);
-    return -1;
-  }
-
-  if(q->debug)
-    GNUGOL_OUTW(q,"%s: shared libs are live\n",q->engine_name);
-  
-  // FIXME: THE cause of this failure is that setup doesn't take these ARGS!
-  rc = (*setup)(q);
-  if (rc < 0)
-  { 
-    GNUGOL_OUTW(q,"%s: Went boom on setup\n",q->engine_name);
-    dlclose(lib);
-    return rc;
-  }
-  if(q->debug)
-    GNUGOL_OUTW(q,"%s: trying query\n",q->engine_name);
-  
-  rc = (*results)(q);
-  
-  dlclose(lib);
-  return rc;
-}
 
 
 // gnugol_search(q) 
@@ -359,7 +276,7 @@ int main(int argc, char **argv) {
   */
 
   //  int result = engine_wikipedia(&q);
-  int result = query_engine(&q);
+  int result = gnugol_query_engine(&q);
 
   if(q.returned_results > 0) {     
       printf("%s",q.out.s);

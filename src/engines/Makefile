@@ -6,13 +6,13 @@ COMMON=
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
-OBJECTS=google.so dummy.so bing.so wikipedia.so engines.so dns.so # googlev2.so
+OBJECTS=google.so dummy.so bing.so wikipedia.so dns.so engines.o # googlev2.so
 CC=gcc
-CFLAGS += -Wall -Wextra -pedantic 
+CFLAGS += -Wall -Wextra -pedantic -std=c99
+SFLAGS := $(CFLAGS)
 CFLAGS += -fPIC -shared
 STRIP=strip
 TESTDIR=../tests/
-CFLAGS+=-std=c99
 all: $(OBJECTS) $(PROGS)
 
 google.so: googlev1.c $(HEADERS)
@@ -30,8 +30,8 @@ wikipedia.so: wikipedia.c $(HEADERS)
 dummy.so: dummy.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dummy.c -o $@
 
-engines.so: engines.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) engines.c -o $@
+engines.o: engines.c $(HEADERS)
+	$(CC) $(SFLAGS) $(INCLUDES) $(DEBUG) engines.c -c -o $@
 
 dns.so : dns.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dns.c -o $@
