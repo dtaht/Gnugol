@@ -31,11 +31,11 @@
 
 #define STRIPHTML(a) strip_html(SNIPPETSIZE,a)
 
-// Shorthand macros to get buffer management right
+// TROUBLESOME Shorthand macros to get buffer management right
 
-#define GNUGOL_OUTF(q ,...) do { q->out.len += snprintf(&(q->out.s[q->out.len]), q->out.size-q->out.len, __VA_ARGS__); } while (0)
-#define GNUGOL_OUTE(q ,...) do { q->err.len += snprintf(&(q->err.s[q->err.len]), q->err.size-q->err.len, __VA_ARGS__); } while (0)
-#define GNUGOL_OUTW(q ,...) do { q->wrn.len += snprintf(&(q->wrn.s[q->wrn.len]), q->wrn.size-q->wrn.len, __VA_ARGS__); } while (0)
+#define GNUGOL_OUTF(QUERYOBJARG ,...) do { QUERYOBJARG->out.len += snprintf(&(QUERYOBJARG->out.s[QUERYOBJARG->out.len]), QUERYOBJARG->out.size-QUERYOBJARG->out.len, __VA_ARGS__); } while (0)
+#define GNUGOL_OUTE(QUERYOBJARG ,...) do { QUERYOBJARG->err.len += snprintf(&(QUERYOBJARG->err.s[QUERYOBJARG->err.len]), QUERYOBJARG->err.size-QUERYOBJARG->err.len, __VA_ARGS__); } while (0)
+#define GNUGOL_OUTW(QUERYOBJARG ,...) do { QUERYOBJARG->wrn.len += snprintf(&(QUERYOBJARG->wrn.s[QUERYOBJARG->wrn.len]), QUERYOBJARG->wrn.size-QUERYOBJARG->wrn.len, __VA_ARGS__); } while (0)
 
 extern int gnugol_init_QueryOptions(QueryOptions_t *q);
 extern int gnugol_reset_QueryOptions(QueryOptions_t *q);

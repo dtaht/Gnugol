@@ -271,14 +271,14 @@ static void *gnugol_try_openlib(QueryOptions_t *q) {
   lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
   
   if (lib == NULL) {
-    GNUGOL_OUTW(q,"%s(1): Not in default location, error: %s",q->engine_name,dlerror());
+    GNUGOL_OUTW(q,"%s(1): Not in default location, error: %s\n",q->engine_name,dlerror());
     snprintf(libname,FILENAME_MAX,"../engines/%s.so",q->engine_name);
     lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
   }
 
   if (lib == NULL)
   {
-    GNUGOL_OUTE(q,"%s(1): %s",q->engine_name,dlerror());
+    GNUGOL_OUTE(q,"%s(1): %s\n",q->engine_name,dlerror());
     return NULL;
   }
   return lib;
@@ -291,35 +291,55 @@ static int query_engine(QueryOptions_t *q)
   int (*results)(QueryOptions_t *,char *,size_t);
   char basequery[URL_SIZE];
   int  rc;
-  
-  GNUGOL_OUTW(q,"Engine selected: %s",q->engine_name);
+  if(q->debug)
+    GNUGOL_OUTW(q,"Engine selected: %s\n",q->engine_name);
+
   lib = gnugol_try_openlib(q);
-  if(lib == NULL) return(-1);
- 
+
+  if(q->debug)
+    GNUGOL_OUTW(q,"%s: trying to aquire shared lib\n",q->engine_name);
+
+  if(lib == NULL) { 
+    GNUGOL_OUTE(q,"%s: failed to acquire shared lib\n",q->engine_name);
+    return(-1);
+  }
   setup = dlsym(lib,"setup");	/* known warning here, POSIX allows this */
+
+  if(q->debug)
+    GNUGOL_OUTW(q,"%s: getting setup function \n",q->engine_name);
+
   if (setup == NULL)
   {
-    syslog(LOG_ERR,"%s(2): %s",q->engine_name,dlerror());
+    GNUGOL_OUTE(q,"%s(2): %s\n",q->engine_name,dlerror());
     dlclose(lib);
     return -1;
   }
   
+  if(q->debug)
+    GNUGOL_OUTW(q,"%s: got setup function \n",q->engine_name);
+
   results = dlsym(lib,"results");	/* known warning here, POSIX allows this */
   if (setup == NULL)
   {
-    syslog(LOG_ERR,"%s(3): %s",q->engine_name,dlerror());
+    GNUGOL_OUTE(q,"%s(3): %s\n",q->engine_name,dlerror());
     dlclose(lib);
     return -1;
   }
+
+  if(q->debug)
+    GNUGOL_OUTW(q,"%s: shared libs are live\n",q->engine_name);
   
   memset(basequery,0,sizeof(basequery));
   
   rc = (*setup)(q,basequery,sizeof(basequery));
   if (rc != 0)
   { 
+    GNUGOL_OUTW(q,"%s: Went boom on setup\n",q->engine_name);
     dlclose(lib);
     return rc;
   }
+  if(q->debug)
+    GNUGOL_OUTW(q,"%s: trying query\n",q->engine_name);
   
   rc = (*results)(q,basequery,sizeof(basequery));
   
@@ -351,9 +371,11 @@ int main(int argc, char **argv) {
     fprintf(stderr,"Errors: %s\nWarnings:%s\n",q.err.s,q.wrn.s);
   }
 
-  if(q.debug)
-    printf("len = %d\n size = %d, Result = %s\n",q.out.len, q.out.size, q.out.s);
-
+  if(q.debug > 10) {
+    fprintf(stderr,"out len = %d\n size = %d, Contents = %s\n",q.out.len, q.out.size, q.out.s);
+    fprintf(stderr,"wrn len = %d\n size = %d, Contents = %s\n",q.wrn.len, q.wrn.size, q.wrn.s);
+    fprintf(stderr,"err len = %d\n size = %d, Contents = %s\n",q.err.len, q.err.size, q.err.s);
+  }
   gnugol_free_QueryOptions(&q);
   return(0); 
 }
