@@ -64,7 +64,6 @@ int usage (char *err) {
 	 "-4 --ipv4 listen on ipv4\n"
 	 "-F --dontfork don't fork off the server\n"
 	 "-S --Secure    use secure transport\n"
-	 "-B --dummy dummy input (useful for stress testing)\n"
 	 "-T --trust networks\n"
 #endif
 	 "-l --level X   result level\n"
@@ -117,14 +116,12 @@ static struct option long_options[] = {
   {"nresults", 1,0, 'n'},
   {"position", 1,0, 'U'},
   {"verbose", 0,0, 'v'},   
-  {"dummy", 0,0, '9'},   
   {"debug", 1,0, 'd'},   
   {"defaults", 0,0, 'D'},   
   {"source", 0,0, 0},     
   {"safe", 0,0, 'S'},       
   {"help", 0,0, 'h'},       
   {"config", 0,0,'C'},
-  {"dummy", 0,0,'B'},
   {0,0,0,0},
 };
 
@@ -165,7 +162,6 @@ print_enabled_options(QueryOptions_t *o, FILE *fp) {
   penabled(engine);
   penabled(mirror);
   penabled(plugin);
-  penabled(dummy);
   penabled(debug);
   fprintf(fp,"\n");
   return 0;
@@ -182,9 +178,9 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 
 #ifdef HAVE_GNUGOLD
   // FIXME, not all opt defined, some extras
-#define QSTRING "97654C:rusate:Ri:PplmS:bco:fOZFTDd:vU:jn:p:S"
+#define QSTRING "7654C:rusate:Ri:PplmS:bco:fOZFTDd:vU:jn:p:S"
 #else
-#define QSTRING "97654C:rusate:Ri:PplmS:bco:fOZFTDd:vU:jn:p:S"
+#define QSTRING "7654C:rusate:Ri:PplmS:bco:fOZFTDd:vU:jn:p:S"
 #endif  
   do {
     opt = getopt_long(argc, argv, 
@@ -224,7 +220,6 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     case 'd': o->debug = strtoul(optarg,NULL,10); break;
     case 'F': o->dontfork = 1; break;
     case 'v': o->verbose = 1; break;
-    case '9': o->dummy = 1; break;
     case '6': o->ipv6 = 1; break;
     case '4': o->ipv4 = 1; break;
     case 'h': 
@@ -275,7 +270,6 @@ int main(int argc, char **argv) {
   int result = (*g)(&q);
   */
 
-  //  int result = engine_wikipedia(&q);
   int result = gnugol_query_engine(&q);
 
   if(q.returned_results > 0) {     

@@ -39,7 +39,6 @@ struct query_options {
   int ipv6:1;
   int trust:1;
   int dontfork:1;
-  int dummy:1;
   int footer:1;
   int header:1;
 
