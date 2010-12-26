@@ -64,6 +64,7 @@ struct query_options {
   buffer_obj_t out;
   buffer_obj_t err;
   buffer_obj_t wrn;
+  char querystr[2048];
   char keywords[1024];
 };
 

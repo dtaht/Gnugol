@@ -43,7 +43,8 @@ static struct {
 } search_opt;
 #endif
 
-int setup(QueryOptions_t *q, char *string, size_t lenstr __attribute__((unused))) {
+int setup(QueryOptions_t *q) {
+  char string[2048];
   char path[PATH_MAX];
   char key[256];
   int fd;
@@ -63,6 +64,7 @@ int setup(QueryOptions_t *q, char *string, size_t lenstr __attribute__((unused))
     GNUGOL_OUTE(q,"A license key to search google is required. You can get one from: %s",LICENSE_URL);
     return(-1);
   }
+  strcpy(q->querystr,string);
   if(q->debug > 9) GNUGOL_OUTW(q,"Exiting Setup\n");
   return size;
 }
@@ -77,7 +79,8 @@ int setup(QueryOptions_t *q, char *string, size_t lenstr __attribute__((unused))
 // with a couple macros to make the interface to json a 1 to 1 relationship 
 // The code is delightfully short this way.
 
-int getresult(QueryOptions_t *q, char *urltxt, size_t lenurl __attribute__ ((unused))) {
+int getresult(QueryOptions_t *q) {
+    char *urltxt = q->querystr;
     unsigned int i;
     char *text;
     json_t *root,*responseData, *results;

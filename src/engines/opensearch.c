@@ -4,12 +4,12 @@
 #include <errno.h>
 #include "query.h"
 
-int setup(QueryOptions_t *q,char *string,size_t lenstr)
+int setup(QueryOptions_t *q)
 {
   return EOPNOTSUPP;
 }
 
-int results(QueryOptions_t *q,char *urltxt,size_t lenurl)
+int results(QueryOptions_t *q)
 {
   return EOPNOTSUPP;
 }

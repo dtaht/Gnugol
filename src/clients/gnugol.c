@@ -287,9 +287,8 @@ static void *gnugol_try_openlib(QueryOptions_t *q) {
 static int query_engine(QueryOptions_t *q)
 {
   void *lib;
-  int (*setup)(QueryOptions_t *,char *,size_t);
-  int (*results)(QueryOptions_t *,char *,size_t);
-  char basequery[URL_SIZE];
+  int (*setup)(QueryOptions_t *);
+  int (*results)(QueryOptions_t *);
   int  rc;
   if(q->debug)
     GNUGOL_OUTW(q,"Engine selected: %s\n",q->engine_name);
@@ -329,11 +328,9 @@ static int query_engine(QueryOptions_t *q)
   if(q->debug)
     GNUGOL_OUTW(q,"%s: shared libs are live\n",q->engine_name);
   
-  memset(basequery,0,sizeof(basequery));
-
   // FIXME: THE cause of this failure is that setup doesn't take these ARGS!
-  rc = (*setup)(q,basequery,sizeof(basequery));
-  if (rc < 1)
+  rc = (*setup)(q);
+  if (rc < 0)
   { 
     GNUGOL_OUTW(q,"%s: Went boom on setup\n",q->engine_name);
     dlclose(lib);
@@ -342,7 +339,7 @@ static int query_engine(QueryOptions_t *q)
   if(q->debug)
     GNUGOL_OUTW(q,"%s: trying query\n",q->engine_name);
   
-  rc = (*results)(q,basequery,sizeof(basequery));
+  rc = (*results)(q);
   
   dlclose(lib);
   return rc;

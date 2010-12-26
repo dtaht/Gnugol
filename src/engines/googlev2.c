@@ -54,7 +54,7 @@ static struct {
 } search_opt;
 
 
-int setup(QueryOptions_t *q, char *string,size_t lenstr) {
+int setup(QueryOptions_t *q) {
   char path[PATH_MAX];
   char key[256];
   int fd;
@@ -114,13 +114,14 @@ GET https://www.googleapis.com/customsearch/v1?key=INSERT-YOUR-KEY&cx=0175766625
   } 
 */
 
-int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl) {
+int getresult(QueryOptions_t *q) {
+    char *urltxt = q->querystr;
     unsigned int i;
     char *text;
     char url[URL_SIZE];
     json_t *root, *items, *handleResponse;
     json_error_t error;
-    if(q->debug) GNUGOL_OUTE(q,"trying url: %s", urltxt); 
+    if(q->debug) GNUGOL_OUTW(q,"trying url: %s", urltxt); 
 
     text = jsonrequest(urltxt);
     if(!text) {

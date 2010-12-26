@@ -22,7 +22,8 @@
 #define LICENSE_URL "http://www.bing.com/developers/createapp.aspx"
 #define TOU "http://www.bing.com/developers/tou.aspx"
 
-int setup(QueryOptions_t *q, char *string,size_t lenstr __attribute__((unused))) {
+int setup(QueryOptions_t *q) {
+  char string[2048];
   char path[PATH_MAX];
   char key[256];
   int fd;
@@ -44,6 +45,7 @@ int setup(QueryOptions_t *q, char *string,size_t lenstr __attribute__((unused)))
     GNUGOL_OUTE(q,"For bing, you need a license key from: %s\n",LICENSE_URL);
     return(-1);
   }
+  strcpy(q->querystr,string);
   if(q->debug) GNUGOL_OUTW(q,"%s\n%s\n", q->keywords, string);
   return size;
 }

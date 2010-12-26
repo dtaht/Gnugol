@@ -52,12 +52,14 @@ and <http://www.mediawiki.org/wiki/API:Parsing_wikitext>.
 
 */
 
-int setup(QueryOptions_t *q, char *string,size_t lenstr __attribute__((unused))) {
+int setup(QueryOptions_t *q) {
+  char string[URL_SIZE];
   int size = 0;
   if(q->nresults > 10) q->nresults = 10; // wikipedia enforces a maximum result of ?
   // FIXME: Not clear to me yet how to limit the result size
   size = snprintf(string,URL_SIZE-1,"%s%s",TEMPLATE,q->keywords); // FIXME urlencode
   if(q->debug) GNUGOL_OUTW(q,"KEYWORDS = %s\n", q->keywords);
+  strcpy(q->querystr,string);
   return size;
 }
 
@@ -66,7 +68,8 @@ int setup(QueryOptions_t *q, char *string,size_t lenstr __attribute__((unused)))
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 
-int getresult(QueryOptions_t *q, char *urltxt,size_t lenurl __attribute__ ((unused))) {
+int getresult(QueryOptions_t *q) {
+    char *urltxt = q->querystr;
     char *text;
     json_t *root,*query, *pages, *page, *result;
     json_error_t error;
