@@ -45,7 +45,7 @@ static struct {
 #endif
 
 int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
-  char string[2048];
+  char string[URL_SIZE];
   char path[FILENAME_MAX];
   char key[256];
   int fd;
