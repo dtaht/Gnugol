@@ -8,6 +8,7 @@ INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
 OBJECTS=google.so dummy.so bing.so wikipedia.so dns.so engines.o # googlev2.so
 CC=gcc
+CFLAGS += -g
 CFLAGS += -Wall -Wextra -pedantic -std=c99
 SFLAGS := $(CFLAGS)
 CFLAGS += -fPIC -shared
