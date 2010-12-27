@@ -96,6 +96,9 @@ int gnugol_keywords_out(QueryOptions_t *q __attribute__((unused))) {
 static char *levels[] = { "", "*","**","***","****","*****", NULL };
 static char padding[] = "          ";
 
+// FIXME: 4! possible combinations of output options here 
+// snippets/urls/titles/ads
+
 int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet, const char *ad __attribute__((unused))) {
   char tempstr[SNIPPETSIZE]; 
   q->returned_results++;
