@@ -25,7 +25,6 @@ struct query_options {
   int secure:1;
   int offline:1;
   int page:1;
-  int lucky:1;
   int prime:1;
   int cache:1;
   int engine:1;
@@ -42,7 +41,7 @@ struct query_options {
   int footer:1;
   int header:1;
 
-  int level;
+  int indent;
   int debug;
   int nresults;
   int position;
@@ -56,7 +55,7 @@ struct query_options {
   char *output_file;
   char *input_file;
   char *plugin_file;
-  char *language;
+  char *input_language;
   char *output_language;
   char *server;
   char *client;

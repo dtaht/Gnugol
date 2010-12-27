@@ -115,9 +115,9 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
     break;
   case FORMATORG:  
     { 
-      int level = q->level;
-      if(q->level > 5) level = 5;
-      if(q->level < 0) level = 2;
+      int level = q->indent;
+      if(level > 5) level = 5;
+      if(level < 0) level = 2;
 
       strcpy(tempstr,title);
       STRIPHTML(tempstr);

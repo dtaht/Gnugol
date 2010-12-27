@@ -48,11 +48,13 @@ int usage (char *err) {
   if(err) fprintf(stderr,"%s\n",err);
   printf("gnugol [options] keywords to search for\n");
   printf(
-	 "-n --nresults  number of results to fetch\n"
-	 "-p --position  start of results to fetch\n"
-	 "-o --output    [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
-	 "-e --engine    [bing|google|wikipedia|dummy]\n"
-	 "-l --level     X   result formatting level\n"
+	 "-n --nresults      number of results to fetch\n"
+	 "-p --position      start of results to fetch\n"
+	 "-o --output        [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
+	 "-e --engine        [bing|google|wikipedia|dummy]\n"
+	 "-l --language-in   [language]\n"
+	 "-L --language-out  [language]\n"
+	 "-I --indent    X   result indentation level\n"
 	 "-H --header    0|1 disable/enable output header\n"
 	 "-F --footer    0|1 disable/enable output footer\n"
 	 "-d --debug     X   debug output level\n"
@@ -75,7 +77,7 @@ int usage (char *err) {
 	 "-t --titles 0|1\n"
 	 "-u --urls 0|1 "
 	 "-s --snippets 0|1\n"
-	 "-r --reverse   reverse the list. \n"
+	 "-r --reverse   reverse the list\n"
 	 "-i --input     [filename] input from a file\n"
 	 "-c --cache     serve only results from cache(s)\n"
 	 "-O --Offline   store up query for later\n"
@@ -99,12 +101,12 @@ static struct option long_options[] = {
   {"snippets", 1, 0,'s'},
   {"ads", 1,0,'a' },
   {"titles", 1,0, 't'},
-  {"level", 1, 0, 'l' },
+  {"language-in", 1, 0, 'l' },
   {"engine", 1,0, 'e'},
   {"register", 2,0, 'R'},
   {"input", 1,0, 'i'},
   {"plugin", 1,0, 'g'},    
-  {"lucky", 0,0, 'L'},     
+  {"language-out", 0,0, 'L'},     
 #ifdef HAVE_GNUGOLD
   {"prime", 0,0, 'P'},     
   {"multicast", 2,0, 'm'}, 
@@ -162,10 +164,9 @@ print_enabled_options(QueryOptions_t *o, FILE *fp) {
   penabled(force);
   penabled(cache);
   penabled(offline);
-  penabled(lucky);
   penabled(safe);
   penabled(reg);
-  penabled(level);
+  penabled(indent);
   penabled(engine);
   penabled(mirror);
   penabled(plugin);
@@ -185,9 +186,9 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 
 #ifdef HAVE_GNUGOLD
   // FIXME, not all opt defined, some extras
-#define QSTRING "7654C:ru:s:a:t:e:Ri:PlmS:bco:fOZTDd:vU:jn:p:SH:F:"
+#define QSTRING "7654C:ru:s:a:t:e:Ri:Pl:L:mS:bco:fOZTDd:vU:jn:p:SH:F:"
 #else
-#define QSTRING "7654C:ru:s:a:t:e:Ri:PlmS:bco:fOZTDd:vU:jn:p:SH:F:"
+#define QSTRING "7654C:ru:s:a:t:e:Ri:Pl:L:mS:bco:fOZTDd:vU:jn:p:SH:F:"
 #endif  
 // useful a -- by itself ends options parsing
 
@@ -210,7 +211,8 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     case 'R': o->reg = 1; break;
     case 'i': o->input = 1; o->input_file = optarg; break; // FIXME
     case 'P': o->plugin = 1; break;
-    case 'L': o->lucky = 1; break;
+    case 'l': o->input_language = optarg; break;
+    case 'L': o->output_language = optarg; break;
     case 'm': o->multicast = 1; break;
     case 'b': o->broadcast = 1; break;
     case 'c': o->cache = 1; break;
@@ -222,7 +224,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       break;
     case '5': o->offline = 1; break;
     case 'f': o->output = 1; break; // FIXME
-    case 'l': o->level = strtoul(optarg,NULL,10); break;
+    case 'I': o->indent = strtoul(optarg,NULL,10); break;
     case 'n': o->nresults = strtoul(optarg,NULL,10); break; 
     case 'Z': o->secure = 1; break; // unimplemented
     case 'S': o->safe = 1; strtoul(optarg,NULL,10); break; 
@@ -260,11 +262,11 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
   q->snippets = 1;
   q->titles = 1;
   q->engine_name = "google";
-  q->language = "en";
+  q->input_language = "en";
   q->header = 1;
   q->footer = 1;
   q->format = FORMATDEFAULT; // NONE
-  q->level = -1;
+  q->indent = -1;
 }
 
 int main(int argc, char **argv) {
