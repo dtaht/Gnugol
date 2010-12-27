@@ -47,13 +47,15 @@ int usage (char *err) {
   if(err) fprintf(stderr,"%s\n",err);
   printf("gnugol [options] keywords\n");
   printf("-r --reverse   reverse the list. \n"
-	 "-u --urls "
-	 "-s --snippets "
-	 "-a --ads "
-	 "-t --titles\n"
+	 "-u --urls 0|1 "
+	 "-s --snippets 0|1 "
+	 "-a --ads 0|1 "
+	 "-t --titles 0|1\n"
+	 "-n --nresults  number of results to fetch\n"
+	 "-p --position  start of results to fetch\n"
+	 "-o --output [html|json|xml|org|mdwn|wiki|wiki|ssml|textile]\n"
 	 "-e --engine    use an alternate engine\n"
 	 "-i --input [filename] input from a file\n"
-	 "-p --plugin    use an alternate plugin\n"
 	 "-L --lucky     autofetch the first result\n"
 #ifdef HAVE_GNUGOLD
 	 "-P --prime     prime the caches, routes, etc\n"
@@ -70,9 +72,6 @@ int usage (char *err) {
 	 "-c --cache     serve only results from cache(s)\n"
 	 "-O --Offline   store up query for later\n"
 	 "-f --force     force a new query, even if cached\n"
-	 "-n --nresults  number of results to fetch\n"
-	 "-p --position  start of results to fetch\n"
-	 "-o --output [html|json|xml|org|mdwn|wiki|wiki|ssml|textile]\n"
 	 "-d --debug  [level]    Debug output\n"
 	 "--defaults     show the defaults\n"
 	 "--source       fetch the source code this was compiled with\n"
@@ -89,11 +88,11 @@ int usage (char *err) {
 
 static struct option long_options[] = {
   {"reverse", 0, 0, 'r' }, 
-  {"urls", 0, 0, 'u' },
-  {"snippets", 0, 0,'s'},
-  {"ads", 0,0,'a' },
+  {"urls", 1, 0, 'u' },
+  {"snippets", 1, 0,'s'},
+  {"ads", 1,0,'a' },
+  {"titles", 1,0, 't'},
   {"level", 1, 0, 'l' },
-  {"titles", 0,0, 't'},
   {"engine", 1,0, 'e'},
   {"register", 2,0, 'R'},
   {"input", 1,0, 'i'},
@@ -108,13 +107,14 @@ static struct option long_options[] = {
   {"trust", 0,0, 'T'},  
   {"ipv6", 0,0, '6'},   
   {"ipv4", 0,0, '4'},   
-  {"dontfork", 0,0, 'F'},   
 #endif
+  {"footer", 1,0, 'F'},   
+  {"header", 1,0, 'H'},   
   {"output", 1,0, 'o'},  
   {"Offline", 0,0, '5'}, 
   {"force", 0,0, 'f'},   
   {"nresults", 1,0, 'n'},
-  {"position", 1,0, 'U'},
+  {"position", 1,0, 'p'},
   {"verbose", 0,0, 'v'},   
   {"debug", 1,0, 'd'},   
   {"defaults", 0,0, 'D'},   
@@ -178,9 +178,9 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 
 #ifdef HAVE_GNUGOLD
   // FIXME, not all opt defined, some extras
-#define QSTRING "7654C:rusate:Ri:PplmS:bco:fOZFTDd:vU:jn:p:S"
+#define QSTRING "7654C:ru:s:a:t:e:Ri:PlmS:bco:fOZFTDd:vU:jn:p:SH:F:"
 #else
-#define QSTRING "7654C:rusate:Ri:PplmS:bco:fOZFTDd:vU:jn:p:S"
+#define QSTRING "7654C:ru:s:a:t:e:Ri:PlmS:bco:fOZFTDd:vU:jn:p:SH:F:"
 #endif  
   do {
     opt = getopt_long(argc, argv, 
@@ -190,16 +190,18 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 
     switch (opt) { 
     case 'r': o->reverse = 1; break;  
-    case 'u': o->urls = 1; break;
-    case 's': o->snippets = 1; break;
-    case 'a': o->ads = 1; break;
-    case 't': o->titles = 1; break;
+    case 'u': o->urls = strtoul(optarg,NULL,10); break;
+    case 's': o->snippets = strtoul(optarg,NULL,10); break;
+    case 'a': o->ads = strtoul(optarg,NULL,10); break;
+    case 't': o->titles = strtoul(optarg,NULL,10); break;
+    case 'H': o->header = strtoul(optarg,NULL,10); break;
+    case 'F': o->footer = strtoul(optarg,NULL,10); break;
+    case 'p': o->position = strtoul(optarg,NULL,10); break;
     case 'T': o->trust = 1; break;
     case 'e': o->engine = 1; o->engine_name = optarg; break; 
     case 'R': o->reg = 1; break;
     case 'i': o->input = 1; o->input_file = optarg; break; // FIXME
-    case 'P': o->prime = 1; break;
-    case 'p': o->plugin = 1; break;
+    case 'P': o->plugin = 1; break;
     case 'L': o->lucky = 1; break;
     case 'm': o->multicast = 1; break;
     case 'b': o->broadcast = 1; break;
@@ -211,14 +213,12 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     }
       break;
     case '5': o->offline = 1; break;
-    case 'f': o->output = 1; break;
+    case 'f': o->output = 1; break; // FIXME
     case 'l': o->level = strtoul(optarg,NULL,10); break;
     case 'n': o->nresults = strtoul(optarg,NULL,10); break; 
-    case 'U': o->position = strtoul(optarg,NULL,10); break; 
     case 'Z': o->secure = 1; break; // unimplemented
     case 'S': o->safe = 1; strtoul(optarg,NULL,10); break; 
     case 'd': o->debug = strtoul(optarg,NULL,10); break;
-    case 'F': o->dontfork = 1; break;
     case 'v': o->verbose = 1; break;
     case '6': o->ipv6 = 1; break;
     case '4': o->ipv4 = 1; break;
@@ -248,6 +248,9 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 static void gnugol_default_QueryOptions(QueryOptions_t *q) {
   q->nresults = 4;
   q->position = 0;
+  q->urls = 1;
+  q->snippets = 1;
+  q->titles = 1;
   q->engine_name = "google";
   q->language = "en";
   q->header = 1;
@@ -256,19 +259,11 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
   q->level = -1;
 }
 
-
-
-// gnugol_search(q) 
-
 int main(int argc, char **argv) {
   QueryOptions_t q;
   gnugol_init_QueryOptions(&q);
   gnugol_default_QueryOptions(&q);
   process_options(argc,argv,&q);
-
-  /*  gnugol_engine g = gnugol_get_engine(q);
-  int result = (*g)(&q);
-  */
 
   int result = gnugol_query_engine(&q);
 
