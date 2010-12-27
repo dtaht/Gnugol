@@ -32,6 +32,7 @@ static struct output_types output_type[] = {
   { FORMATXML,  "xml" },
   { FORMATJSON, "json" },
   { FORMATORG,  "org" },
+  { FORMATTERM, "term" },
   { FORMATTERM, "text" },
   { FORMATSSML, "ssml" },
   { FORMATTEXTILE, "textile" },
@@ -45,18 +46,12 @@ static struct output_types output_type[] = {
 
 int usage (char *err) {
   if(err) fprintf(stderr,"%s\n",err);
-  printf("gnugol [options] keywords\n");
-  printf("-r --reverse   reverse the list. \n"
-	 "-u --urls 0|1 "
-	 "-s --snippets 0|1 "
-	 "-a --ads 0|1 "
-	 "-t --titles 0|1\n"
+  printf("gnugol [options] keywords to search for\n");
+  printf(
 	 "-n --nresults  number of results to fetch\n"
 	 "-p --position  start of results to fetch\n"
-	 "-o --output [html|json|xml|org|mdwn|wiki|wiki|ssml|textile]\n"
-	 "-e --engine    use an alternate engine\n"
-	 "-i --input [filename] input from a file\n"
-	 "-L --lucky     autofetch the first result\n"
+	 "-o --output    [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
+	 "-e --engine    [bing|google|wikipedia|dummy]\n"
 #ifdef HAVE_GNUGOLD
 	 "-P --prime     prime the caches, routes, etc\n"
 	 "-R --register\n"
@@ -68,18 +63,26 @@ int usage (char *err) {
 	 "-S --Secure    use secure transport\n"
 	 "-T --trust networks\n"
 #endif
-	 "-l --level X   result level\n"
+	 "-l --level     X   result formatting level\n"
+	 "-H --header    0|1 disable/enable output header\n"
+	 "-F --footer    0|1 disable/enable output footer\n"
+	 "-d --debug     X   debug output level\n"
+	 "--help             this message\n"
+#ifdef WHENIHAVETIMETOADDTHESE
+	 "-a --ads 0|1 "
+	 "-t --titles 0|1\n"
+	 "-r --reverse   reverse the list. \n"
+	 "-i --input     [filename] input from a file\n"
 	 "-c --cache     serve only results from cache(s)\n"
 	 "-O --Offline   store up query for later\n"
 	 "-f --force     force a new query, even if cached\n"
-	 "-d --debug  [level]    Debug output\n"
 	 "--defaults     show the defaults\n"
 	 "--source       fetch the source code this was compiled with\n"
-	 "--help         this message\n"
 	 "--config "
-	 "--verbose "
 	 "--copyright "
-	 "--license\n");
+	 "--license\n"
+#endif
+	 "--verbose          provide more verbose results\n");
   exit(-1);
 }
 
@@ -178,15 +181,15 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 
 #ifdef HAVE_GNUGOLD
   // FIXME, not all opt defined, some extras
-#define QSTRING "7654C:ru:s:a:t:e:Ri:PlmS:bco:fOZFTDd:vU:jn:p:SH:F:"
+#define QSTRING "7654C:ru:s:a:t:e:Ri:PlmS:bco:fOZTDd:vU:jn:p:SH:F:"
 #else
-#define QSTRING "7654C:ru:s:a:t:e:Ri:PlmS:bco:fOZFTDd:vU:jn:p:SH:F:"
+#define QSTRING "7654C:ru:s:a:t:e:Ri:PlmS:bco:fOZTDd:vU:jn:p:SH:F:"
 #endif  
   do {
     opt = getopt_long(argc, argv, 
 		      QSTRING,
 		      long_options, &option_index);
-    if(opt == -1) break;
+    if(opt == -1) break; // Hmm need -- to end options parsing??
 
     switch (opt) { 
     case 'r': o->reverse = 1; break;  
