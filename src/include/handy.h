@@ -26,7 +26,7 @@ extern int strip_html(int len, char *htmlstr);
 
 #define GETARRAYIDX(obj,newobj,idx) do { newobj = json_array_get(obj, idx); \
     if(!json_is_object(newobj)) {				       \
-      fprintf(stderr, "error: " #newobj " is not an object\n", idx + 1);       \
+      fprintf(stderr, "error: " #newobj " is not an object\n");       \
 	json_decref(root); \
         return 1;    } } while(1==0)
 

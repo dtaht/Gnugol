@@ -10,6 +10,10 @@
 #include "utf8.h"
 #include "handy.h"
 
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
+
 #define BUFFER_SIZE (64*1024)
 
 // Convert html entities into an equivalent UTF-8 code
@@ -189,13 +193,15 @@ int strip_html(int len, char *htmlstr) {
   return j;
 }
 
-long long dnslookup(char *name) {
+long long dnslookup(char *name __attribute__((unused))) {
+  return 0;
 }
 
 
 /* Return the offset of the first newline in text or the length of
    text if there's no newline */
 
+static int newline_offset(const char *) __attribute__ ((unused));
 static int newline_offset(const char *text)
 {
     const char *newline = strchr(text, '\n');

@@ -9,6 +9,10 @@
 #include "utf8.h"
 #include "handy.h"
 
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
+
 // FIXME: Be more paranoid
 
 int gnugol_init_QueryOptions(QueryOptions_t *q) {
@@ -16,8 +20,24 @@ int gnugol_init_QueryOptions(QueryOptions_t *q) {
     memset(q,0,sizeof(QueryOptions_t));
     if((q->err.s = (char *) malloc(4096)) != NULL) q->err.size = 4096;
     if((q->out.s = (char *) malloc(1024*64)) != NULL) q->out.size = (1024*64);  
-    if((q->wrn.s = (char *) malloc(4096)) != NULL) q->out.size = (4096);  
+    if((q->wrn.s = (char *) malloc(4096)) != NULL) q->wrn.size = (4096);  
   } else {
+    return(1);
+  }
+  return(0);
+}
+
+int gnugol_reset_QueryOptions(QueryOptions_t *q) {
+  if(q != NULL) {
+    buffer_obj_t terr = q->err;
+    buffer_obj_t twrn = q->wrn;
+    buffer_obj_t tout = q->out;
+    memset(q,0,sizeof(QueryOptions_t));
+    q->err = terr;
+    q->wrn = twrn;
+    q->out = tout;
+    q->err.len = q->out.len = q->wrn.len = 0;
+ } else {
     return(1);
   }
   return(0);
@@ -39,7 +59,7 @@ int gnugol_header_out(QueryOptions_t *q) {
       strncpy(buffer,q->keywords,SNIPPETSIZE);
       STRIPHTML(buffer); // FIXME, need to convert % escapes to strings
       switch(q->format) {
-	
+      case FORMATHTML:
       case FORMATELINKS: 
 	GNUGOL_OUTF(q, "<html><head><title>Search for: %s", buffer);
 	GNUGOL_OUTF(q, "</title></head><body>");
@@ -58,6 +78,7 @@ int gnugol_header_out(QueryOptions_t *q) {
 int gnugol_footer_out(QueryOptions_t *q) {
   if(q->footer) {
     switch(q->format) {
+    case FORMATHTML:
     case FORMATELINKS: GNUGOL_OUTF(q,"</body></html>"); break;
     case FORMATORG:
     case FORMATMDWN:
@@ -65,16 +86,17 @@ int gnugol_footer_out(QueryOptions_t *q) {
     default: break;
     }
   }
+  return 0;
 }
 
-int gnugol_keywords_out(QueryOptions_t *q) {
+int gnugol_keywords_out(QueryOptions_t *q __attribute__((unused))) {
   return(0);
 }
 
 static char *levels[] = { "", "*","**","***","****","*****", NULL };
 static char padding[] = "          ";
 
-int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet, const char *ad) {
+int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet, const char *ad __attribute__((unused))) {
   char tempstr[SNIPPETSIZE]; 
   q->returned_results++;
   switch (q->format) {
@@ -110,14 +132,25 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
       }
     }
     break;
+  case FORMATTEXTILE:  
+    { 
+      strcpy(tempstr,title);
+      STRIPHTML(tempstr);
+      GNUGOL_OUTF(q,"\"%s\":%s\n", tempstr, url);
+      strcpy(tempstr,snippet);
+      STRIPHTML(tempstr);
+      GNUGOL_OUTF(q,"   %s\n", tempstr); 
+    }
+    break;
+
   case FORMATMDWN:  
     { 
       strcpy(tempstr,title);
       STRIPHTML(tempstr);
-      GNUGOL_OUTF(q,"[%s](%s)\n", url, tempstr);
+      GNUGOL_OUTF(q,"[%s](%s)\n", tempstr, url);
       strcpy(tempstr,snippet);
-     STRIPHTML(tempstr);
-     GNUGOL_OUTF(q,"   %s", tempstr); 
+      STRIPHTML(tempstr);
+      GNUGOL_OUTF(q,"   %s\n", tempstr); 
     }
     break;
   case FORMATTERM: 
@@ -127,7 +160,7 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
       GNUGOL_OUTF(q,"%s %s %s\n", url,title,tempstr); 
     }
     break;
-    
+  case FORMATHTML:
   case FORMATELINKS: 
     GNUGOL_OUTF(q,"<p><a href=\"%s\">%s</a> %s</p>", url, title, snippet); 
     break;

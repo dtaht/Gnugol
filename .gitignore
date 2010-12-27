@@ -19,6 +19,7 @@
 *.symtypes
 *.order
 *.cgi
+*~
 
 #
 # Top-level generic files

@@ -13,8 +13,15 @@
 #include "utf8.h"
 #include "handy.h"
 #include "formats.h"
+#include "gnugol_engines.h"
+
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
 
 #define TEMPLATE  "http://ajax.googleapis.com/ajax/services/search/web?v=1.0"
+#define LICENSE_URL "I don't know if you can even get one anymore."
+#define TOU "http://code.google.com/apis/websearch/terms.html"
 
 /* See options at 
    http://code.google.com/apis/ajaxsearch/documentation/reference.html#_intro_fonje 
@@ -27,6 +34,7 @@
 
 */
 
+#if 0
 static struct {
   int start;
   int rsz; // number of results
@@ -34,29 +42,40 @@ static struct {
   char language[16];
   char ip[8*5+1]; // Room for ipv6 requests
 } search_opt;
+#endif
 
+int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
+  char   string[URL_SIZE];
+  char   key   [256];
+  size_t size;
+  
+  if(q->debug > 9) GNUGOL_OUTW(q,"Entering Setup\n");
 
-static int setup(QueryOptions_t *q, char *string) {
-  char path[PATH_MAX];
-  char key[256];
-  int fd;
-  int size = 0;
-  snprintf(path,PATH_MAX,"%s/%s",getenv("HOME"), ".googlekey");
-  if(fd = open(path,O_RDONLY)) {
-    size = read(fd, key, 256);
-    while(size > 0 && (key[size-1] == ' ' || key[size-1] == '\n')) size--;
-    key[size] = '\0';
+  size = sizeof(key);
+  if (gnugol_read_key(key,&size,".googlekey") != 0)
+  {
+    GNUGOL_OUTE(q,"A license key to search google is required. You can get one from: %s",LICENSE_URL);
+    size = 0;
   }
+
   if(q->nresults > 8) q->nresults = 8; // google enforces a maximum result of 8
+  if(q->debug) GNUGOL_OUTW(q,"KEYWORDS = %s\n", q->keywords);
 
-  if(size > 0) { 
-    snprintf(string,URL_SIZE-1,"%s&key=%s&rsz=%d&start=%d&q=",TEMPLATE,key,q->nresults,q->position); 
-  } else {
-    snprintf(string,URL_SIZE-1,"%s&%d&%d&q=",TEMPLATE, q->nresults,q->position);
+  if (size == 0)
+    size = snprintf(string,URL_SIZE,"%s&%d&%d&q=%s",TEMPLATE, q->nresults,q->position,q->keywords);
+  else
+    size = snprintf(string,URL_SIZE,"%s&key=%s&rsz=%d&start=%d&q=%s",
+		     TEMPLATE,key,q->nresults,q->position,q->keywords); 
+
+  if (size > sizeof(q->querystr))
+  {
+    GNUGOL_OUTE(q,"Size of URL exceeds space set aside for it");
+    return -1;
   }
-  if(q->debug) printf("KEYWORDS = %s\n", q->keywords);
-  strcat(string,q->keywords); // FIXME: convert to urlencoding
-  return size;
+  
+  strcpy(q->querystr,string);
+  if(q->debug > 9) GNUGOL_OUTW(q,"Exiting Setup\n");
+  return (int)size;
 }
 
 // turn quotes back into quotes and other utf-8 stuff
@@ -65,18 +84,20 @@ static int setup(QueryOptions_t *q, char *string) {
 // FIXME: do fuller error checking 
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
+// This engine takes advantage (abuses!) the CPP pasting tokens
+// with a couple macros to make the interface to json a 1 to 1 relationship 
+// The code is delightfully short this way.
 
-static int getresult(QueryOptions_t *q, char *urltxt) {
+int GNUGOL_DECLARE_ENGINE(search,google) (QueryOptions_t *q) {
     unsigned int i;
     char *text;
-    char url[URL_SIZE];
     json_t *root,*responseData, *results;
     json_error_t error;
-    if(q->debug) GNUGOL_OUTE(q,"trying url: %s", urltxt); 
+    if(q->debug) GNUGOL_OUTW(q,"%s: trying url: %s\n", q->engine_name, q->querystr); 
 
-    text = jsonrequest(urltxt);
+    text = jsonrequest(q->querystr);
     if(!text) {
-      GNUGOL_OUTE(q,"url failed to work: %s", urltxt); 
+      GNUGOL_OUTE(q,"url failed to work: %s", q->querystr); 
       return 1;
     }
 
@@ -96,7 +117,6 @@ static int getresult(QueryOptions_t *q, char *urltxt) {
     for(i = 0; i < json_array_size(results); i++)
     {
       json_t *result, *url, *titleNoFormatting, *content;
-      const char *message_text;
       GETARRAYIDX(results,result,i);
       GETSTRING(result,url);
       GETSTRING(result,titleNoFormatting);
@@ -112,13 +132,3 @@ static int getresult(QueryOptions_t *q, char *urltxt) {
     return 0;
 }
 
-// FIXME, add url encode
-// FIXME UTF-8
-
-int engine_googlev1(QueryOptions_t *q) { 
-  char basequery[URL_SIZE];
-  char qstring[URL_SIZE]; 
-  setup(q,basequery);
-  getresult(q,basequery);
-  return 0;
-}

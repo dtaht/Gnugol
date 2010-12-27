@@ -3,7 +3,7 @@ I'd like to expire them and require that people
 get new ones every two weeks (for now) rather than 
 expend lots of effort to remain backwards compatible.
 
-Look into public key infrastructure and openID
+Look into public key infrastructure and openID.
 
 Implement a 2 second timeout, retry the query 3 times.
 Do a dns lookup on the 2nd query.

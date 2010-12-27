@@ -4,6 +4,8 @@
 
 /* Command line client for gnugol */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -11,17 +13,16 @@
 #include <getopt.h>
 #include "query.h"
 #include "formats.h"
+#include "gnugol_engines.h"
 
-// extern int engine_googlev2(QueryOptions_t *q);
-extern int engine_bing(QueryOptions_t *q);
-extern int engine_googlev1(QueryOptions_t *q);
-extern int engine_dummy(QueryOptions_t *q);
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
 
 struct  output_types {
   int id;
   char *desc;
 };
-
 
 // FIXME: Verify differences between ikiwiki and media wiki format
 
@@ -33,21 +34,14 @@ static struct output_types output_type[] = {
   { FORMATORG,  "org" },
   { FORMATTERM, "text" },
   { FORMATSSML, "ssml" },
+  { FORMATTEXTILE, "textile" },
+  { FORMATRAW,  "raw" },
   { FORMATMDWN, "mdwn" },
+  { FORMATMDWN, "md" },
+  { FORMATMDWN, "markdown" },
   { 0, NULL },
   };
 
-
-/*
-FIXME: Make this a dynamic engine callback at runtime
-
-static struct engine_callbacks engine[] = {
-  { "dummy", engine_dummy },
-  { "google", engine_googlev1 },
-  { NULL },
-};
-
-*/
 
 int usage (char *err) {
   if(err) fprintf(stderr,"%s\n",err);
@@ -70,7 +64,6 @@ int usage (char *err) {
 	 "-4 --ipv4 listen on ipv4\n"
 	 "-F --dontfork don't fork off the server\n"
 	 "-S --Secure    use secure transport\n"
-	 "-B --dummy dummy input (useful for stress testing)\n"
 	 "-T --trust networks\n"
 #endif
 	 "-l --level X   result level\n"
@@ -79,8 +72,8 @@ int usage (char *err) {
 	 "-f --force     force a new query, even if cached\n"
 	 "-n --nresults  number of results to fetch\n"
 	 "-p --position  start of results to fetch\n"
-	 "-o html,json,xml,org,mdwn,iki,wiki,ssml\n"
-	 "-d --debug [level]    Debug output\n"
+	 "-o --output [html|json|xml|org|mdwn|wiki|wiki|ssml|textile]\n"
+	 "-d --debug  [level]    Debug output\n"
 	 "--defaults     show the defaults\n"
 	 "--source       fetch the source code this was compiled with\n"
 	 "--help         this message\n"
@@ -102,7 +95,7 @@ static struct option long_options[] = {
   {"level", 1, 0, 'l' },
   {"titles", 0,0, 't'},
   {"engine", 1,0, 'e'},
-  {"register", 2,0, 'r'},
+  {"register", 2,0, 'R'},
   {"input", 1,0, 'i'},
   {"plugin", 1,0, 'g'},    
   {"lucky", 0,0, 'L'},     
@@ -123,18 +116,17 @@ static struct option long_options[] = {
   {"nresults", 1,0, 'n'},
   {"position", 1,0, 'U'},
   {"verbose", 0,0, 'v'},   
-  {"dummy", 0,0, '9'},   
   {"debug", 1,0, 'd'},   
   {"defaults", 0,0, 'D'},   
   {"source", 0,0, 0},     
   {"safe", 0,0, 'S'},       
   {"help", 0,0, 'h'},       
   {"config", 0,0,'C'},
-  {"dummy", 0,0,'B'},
+  {0,0,0,0},
 };
 
-parse_config_file(QueryOptions_t *q) {
-
+int gnugol_parse_config_file(QueryOptions_t *q __attribute__((unused))) {
+  return 0;
 } 
 
 #define penabled(a) if(o->a) fprintf(fp,"" # a " ");
@@ -170,9 +162,9 @@ print_enabled_options(QueryOptions_t *o, FILE *fp) {
   penabled(engine);
   penabled(mirror);
   penabled(plugin);
-  penabled(dummy);
   penabled(debug);
   fprintf(fp,"\n");
+  return 0;
 }
 
 #define pifverbose(q,string) if(q->verbose) { printf("%s",val); }
@@ -182,14 +174,13 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   int i = 0;
   int querylen = 0;
   int opt = 0;
-  int count = 0;
   if(argc == 1) usage("");
 
 #ifdef HAVE_GNUGOLD
   // FIXME, not all opt defined, some extras
-#define QSTRING "97654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
+#define QSTRING "7654C:rusate:Ri:PplmS:bco:fOZFTDd:vU:jn:p:S"
 #else
-#define QSTRING "97654C:rusate:Ri:PplmS:bco:fdOZFTDd:vU:jn:p:S"
+#define QSTRING "7654C:rusate:Ri:PplmS:bco:fOZFTDd:vU:jn:p:S"
 #endif  
   do {
     opt = getopt_long(argc, argv, 
@@ -204,7 +195,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     case 'a': o->ads = 1; break;
     case 't': o->titles = 1; break;
     case 'T': o->trust = 1; break;
-    case 'e': o->engine = 1; o->engine_name = optarg; break; // FIXME strcpy engine type
+    case 'e': o->engine = 1; o->engine_name = optarg; break; 
     case 'R': o->reg = 1; break;
     case 'i': o->input = 1; o->input_file = optarg; break; // FIXME
     case 'P': o->prime = 1; break;
@@ -221,15 +212,14 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       break;
     case '5': o->offline = 1; break;
     case 'f': o->output = 1; break;
-    case 'l': o->level = atoi(optarg); break;
-    case 'n': o->nresults = atoi(optarg); break; 
-    case 'U': o->position = atoi(optarg); break; 
+    case 'l': o->level = strtoul(optarg,NULL,10); break;
+    case 'n': o->nresults = strtoul(optarg,NULL,10); break; 
+    case 'U': o->position = strtoul(optarg,NULL,10); break; 
     case 'Z': o->secure = 1; break; // unimplemented
-    case 'S': o->safe = 1; atoi(optarg); break; 
-    case 'd': o->debug = atoi(optarg); break;
+    case 'S': o->safe = 1; strtoul(optarg,NULL,10); break; 
+    case 'd': o->debug = strtoul(optarg,NULL,10); break;
     case 'F': o->dontfork = 1; break;
     case 'v': o->verbose = 1; break;
-    case '9': o->dummy = 1; break;
     case '6': o->ipv6 = 1; break;
     case '4': o->ipv4 = 1; break;
     case 'h': 
@@ -245,55 +235,56 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       return(1);
     }
     strcat(o->keywords,argv[i]);
-    if(i+1 < argc) strcat(o->keywords,"%20");
+    if(i+1 < argc) strcat(o->keywords,"%20"); // FIXME find urlencode lib
   }
   // FIXME: if called with no args do the right thing
   if(o->debug > 0) print_enabled_options(o, stderr);
+  if(!(o->urls | o->snippets | o->ads | o->titles)) { 
+    o->urls = 1; // Always default to fetching urls 
+  }
   return(optind);
 }
 
-main(int argc, char **argv) {
-  int i = 0;
-  int cnt = 0;
-  char host[1024];
-  int querylen = 0;
+static void gnugol_default_QueryOptions(QueryOptions_t *q) {
+  q->nresults = 4;
+  q->position = 0;
+  q->engine_name = "google";
+  q->language = "en";
+  q->header = 1;
+  q->footer = 1;
+  q->format = FORMATDEFAULT; // NONE
+  q->level = -1;
+}
+
+
+
+// gnugol_search(q) 
+
+int main(int argc, char **argv) {
   QueryOptions_t q;
   gnugol_init_QueryOptions(&q);
-  // Defaults
-
-  q.nresults = 4;
-  q.position = 0;
-  q.engine_name = "googlev1";
-  q.language = "en";
-  q.header = 1;
-  q.footer = 1;
-  q.format = FORMATDEFAULT; // NONE
-  q.level = -1;
-
+  gnugol_default_QueryOptions(&q);
   process_options(argc,argv,&q);
-  
-  if(!(q.urls | q.snippets | q.ads | q.titles)) { 
-    q.urls = 1; // Always default to fetching urls 
-  }
 
-  if(q.dummy) {
-    if(engine_dummy(&q) == 0) {
+  /*  gnugol_engine g = gnugol_get_engine(q);
+  int result = (*g)(&q);
+  */
+
+  int result = gnugol_query_engine(&q);
+
+  if(q.returned_results > 0) {     
       printf("%s",q.out.s);
-    } else {
-      fprintf(stderr,"Error %s",q.err.s);
     }
-    
-  } else {
-  
-  if(engine_bing(&q) == 0) {
-    printf("%s",q.out.s);
-  } else {
-    fprintf(stderr,"%s\n",q.err.s);
-  }
+
+  if(result < 0 || q.debug) {
+    fprintf(stderr,"Errors: %s\nWarnings:%s\n",q.err.s,q.wrn.s);
   }
 
-  if(q.debug)
-    printf("len = %d\n size = %d, Result = %s\n",q.out.len, q.out.size, q.out.s);
+  if(q.debug > 10) {
+    fprintf(stderr,"out len = %d\n size = %d, Contents = %s\n",q.out.len, q.out.size, q.out.s);
+    fprintf(stderr,"wrn len = %d\n size = %d, Contents = %s\n",q.wrn.len, q.wrn.size, q.wrn.s);
+    fprintf(stderr,"err len = %d\n size = %d, Contents  = %s\n",q.err.len, q.err.size, q.err.s);
+  }
   gnugol_free_QueryOptions(&q);
   return(0); 
 }
