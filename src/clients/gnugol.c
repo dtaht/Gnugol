@@ -86,7 +86,7 @@ int usage (char *err) {
 	 "--copyright "
 	 "--license\n"
 #endif
-	 "--verbose          provide more verbose results\n");
+	 "-v --verbose       provide more verbose insight\n");
   exit(-1);
 }
 
