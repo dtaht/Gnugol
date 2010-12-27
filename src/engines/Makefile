@@ -7,7 +7,7 @@ COMMON=
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
-OBJECTS=google.so dummy.so bing.so wikipedia.so dns.so engines.o # googlev2.so
+OBJECTS=google.so dummy.so bing.so wikipedia.so dns.so credits.so engines.o # googlev2.so
 CC=gcc
 CFLAGS += -g
 CFLAGS += -Wall -Wextra -pedantic -std=c99
@@ -41,11 +41,14 @@ wikipedia.so: wikipedia.c $(HEADERS)
 dummy.so: dummy.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dummy.c -o $@
 
-engines.o: engines.c $(HEADERS)
-	$(CC) $(SFLAGS) $(INCLUDES) $(DEBUG) engines.c -c -o $@
-
 dns.so : dns.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dns.c -o $@
+
+credits.so : credits.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) credits.c -o $@
+
+engines.o: engines.c $(HEADERS)
+	$(CC) $(SFLAGS) $(INCLUDES) $(DEBUG) engines.c -c -o $@
 
 install: $(OBJECTS)
 	@mkdir -p $(SHAREDLIBDIR)	
