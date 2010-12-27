@@ -1,1 +1,5 @@
-Protocol tests go here
+Need tests: to 
+	Test availability and functionality of various engines
+	Test -n for nresults
+	Test -p for position
+	Test quality of output 

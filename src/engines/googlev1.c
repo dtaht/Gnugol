@@ -1,5 +1,5 @@
 /* This engine implements a gnugol -> google web api -> gnugol json translator plugin 
-   using the google web api v1, which was depricated Nov 1, 2010. */
+   using the google web api v1, which was deprecated Nov 1, 2010. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,15 +54,17 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
   size = sizeof(key);
   if (gnugol_read_key(key,&size,".googlekey") != 0)
   {
-    GNUGOL_OUTE(q,"A license key to search google is required. You can get one from: %s",LICENSE_URL);
+    GNUGOL_OUTE(q,"A license key to search google is required. "
+		  "You can get one from: %s",LICENSE_URL);
     size = 0;
   }
 
-  if(q->nresults > 8) q->nresults = 8; // google enforces a maximum result of 8
+  if(q->nresults > 8) q->nresults = 8; // google enforced
   if(q->debug) GNUGOL_OUTW(q,"KEYWORDS = %s\n", q->keywords);
 
   if (size == 0)
-    size = snprintf(string,URL_SIZE,"%s&%d&%d&q=%s",TEMPLATE, q->nresults,q->position,q->keywords);
+    size = snprintf(string,URL_SIZE,"%s&rsz=%d&start=%d&q=%s",	
+		     TEMPLATE, q->nresults,q->position,q->keywords);
   else
     size = snprintf(string,URL_SIZE,"%s&key=%s&rsz=%d&start=%d&q=%s",
 		     TEMPLATE,key,q->nresults,q->position,q->keywords); 
