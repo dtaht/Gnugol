@@ -46,7 +46,7 @@
    Gnugol had  a very limited selection of html escapes to utf-8 support.
    Now it has a full html4 table, thx to Sean.
 *** Line/word breaking support
-   Coping with [[UTF-8]] is a difficult problem in C. What needs to happen is a fairly complex routine that does line breaking based on the value of the environment variable "COLUMNS" and the nearest UTF-8 word.
+   Coping with [[UTF-8]] is a difficult problem in C. What needs to happen is a fairly complex routine that does line breaking based on the value of the environment variable "COLUMNS" and the nearest UTF-8 charset word.
 *** Non-UTF-8 terminals
    Gnugol does not detect when it has a different character set than UTF-8.
 (I am not particularly interested in anything other than html<->utf-8 conversion, frankly)
