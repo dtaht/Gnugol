@@ -12,6 +12,7 @@
 *.s
 *.ko
 *.so
+*.dylib
 *.so.dbg
 *.mod.c
 *.i
@@ -20,6 +21,7 @@
 *.order
 *.cgi
 *~
+*.dSYM
 
 #
 # Top-level generic files
