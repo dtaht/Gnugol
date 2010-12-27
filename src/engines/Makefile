@@ -1,28 +1,44 @@
 LIBS=../common/fit_results.o
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
+SHAREDLIBDIR=/var/lib/gnugol
 COMMON=
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
 DEBUG=-DDEBUG
-OBJECTS=googlev1.o dummy.o bing.o # googlev2.o
+OBJECTS=google.so dummy.so bing.so wikipedia.so dns.so engines.o # googlev2.so
 CC=gcc
+CFLAGS += -g
+CFLAGS += -Wall -Wextra -pedantic -std=c99
+SFLAGS := $(CFLAGS)
+CFLAGS += -fPIC -shared
 STRIP=strip
 TESTDIR=../tests/
-CFLAGS+=-std=c99
 all: $(OBJECTS) $(PROGS)
 
-googlev1.o: googlev1.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev1.c -c
+google.so: googlev1.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev1.c -o google.so
 
-googlev2.o: googlev2.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev2.c -c
+googlev2.so: googlev2.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev2.c -o $@
 
-bing.o: bing.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) bing.c -c
+bing.so: bing.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) bing.c -o $@
 
-dummy.o: dummy.c $(HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dummy.c -c
+wikipedia.so: wikipedia.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) wikipedia.c -o $@
 
+dummy.so: dummy.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dummy.c -o $@
+
+engines.o: engines.c $(HEADERS)
+	$(CC) $(SFLAGS) $(INCLUDES) $(DEBUG) engines.c -c -o $@
+
+dns.so : dns.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dns.c -o $@
+
+install: $(OBJECTS)
+	@mkdir -p $(SHAREDLIBDIR)	
+	cp $(OBJECTS) $(SHAREDLIBDIR)
 clean:
 	rm -f $(OBJECTS) $(PROGS) *~

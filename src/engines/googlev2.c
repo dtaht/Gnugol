@@ -54,7 +54,7 @@ static struct {
 } search_opt;
 
 
-static int setup(QueryOptions_t *q, char *string) {
+int GNUGOL_DECLARE_ENGINE(setup,googlev2) (QueryOptions_t *q) {
   char path[PATH_MAX];
   char key[256];
   int fd;
@@ -114,17 +114,17 @@ GET https://www.googleapis.com/customsearch/v1?key=INSERT-YOUR-KEY&cx=0175766625
   } 
 */
 
-static int getresult(QueryOptions_t *q, char *urltxt) {
+int GNUGOL_DECLARE_ENGINE(search,googlev2) (QueryOptions_t *q) {
     unsigned int i;
     char *text;
     char url[URL_SIZE];
     json_t *root, *items, *handleResponse;
     json_error_t error;
-    if(q->debug) GNUGOL_OUTE(q,"trying url: %s", urltxt); 
+    if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr); 
 
-    text = jsonrequest(urltxt);
+    text = jsonrequest(q->querystr);
     if(!text) {
-      GNUGOL_OUTE(q,"url failed to work: %s", urltxt); 
+      GNUGOL_OUTE(q,"url failed to work: %s", q->querystr); 
       return 1;
     }
 
@@ -160,13 +160,3 @@ static int getresult(QueryOptions_t *q, char *urltxt) {
     return 0;
 }
 
-// FIXME, add url encode
-// FIXME UTF-8
-
-int engine_googlev2(QueryOptions_t *q) { 
-  char basequery[URL_SIZE];
-  char qstring[URL_SIZE]; 
-  setup(q,basequery);
-  getresult(q,basequery);
-  return 0;
-}

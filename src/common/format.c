@@ -9,6 +9,10 @@
 #include "utf8.h"
 #include "handy.h"
 
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
+
 // FIXME: Be more paranoid
 
 int gnugol_init_QueryOptions(QueryOptions_t *q) {
@@ -16,7 +20,7 @@ int gnugol_init_QueryOptions(QueryOptions_t *q) {
     memset(q,0,sizeof(QueryOptions_t));
     if((q->err.s = (char *) malloc(4096)) != NULL) q->err.size = 4096;
     if((q->out.s = (char *) malloc(1024*64)) != NULL) q->out.size = (1024*64);  
-    if((q->wrn.s = (char *) malloc(4096)) != NULL) q->out.size = (4096);  
+    if((q->wrn.s = (char *) malloc(4096)) != NULL) q->wrn.size = (4096);  
   } else {
     return(1);
   }
@@ -57,7 +61,7 @@ int gnugol_header_out(QueryOptions_t *q) {
       switch(q->format) {
       case FORMATHTML:
       case FORMATELINKS: 
-	GNUGOL_OUTF(q, "<html><head><title>Search for: %s", buffer);
+	GNUGOL_OUTF(q, "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>Search for: %s", buffer);
 	GNUGOL_OUTF(q, "</title></head><body>");
 	break;
 	
@@ -82,16 +86,20 @@ int gnugol_footer_out(QueryOptions_t *q) {
     default: break;
     }
   }
+  return 0;
 }
 
-int gnugol_keywords_out(QueryOptions_t *q) {
+int gnugol_keywords_out(QueryOptions_t *q __attribute__((unused))) {
   return(0);
 }
 
 static char *levels[] = { "", "*","**","***","****","*****", NULL };
 static char padding[] = "          ";
 
-int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet, const char *ad) {
+// FIXME: 4! possible combinations of output options here 
+// snippets/urls/titles/ads
+
+int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet, const char *ad __attribute__((unused))) {
   char tempstr[SNIPPETSIZE]; 
   q->returned_results++;
   switch (q->format) {
@@ -150,9 +158,12 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
     break;
   case FORMATTERM: 
     { 
+      strcpy(tempstr,title);
+      STRIPHTML(tempstr);
+      GNUGOL_OUTF(q,"%s %s ", url, tempstr);
       strcpy(tempstr,snippet);
       STRIPHTML(tempstr);
-      GNUGOL_OUTF(q,"%s %s %s\n", url,title,tempstr); 
+      GNUGOL_OUTF(q,"%s\n", tempstr); 
     }
     break;
   case FORMATHTML:

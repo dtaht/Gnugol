@@ -13,17 +13,14 @@
 #include "utf8.h"
 #include "handy.h"
 #include "formats.h"
+#include "gnugol_engines.h"
 
-static struct {
-  int start;
-  int rsz; // number of results
-  int safe;
-  char language[16];
-  char ip[8*5+1]; // Room for ipv6 requests
-} search_opt;
+#ifndef __GNUC__
+#define __attribute__(x)
+#endif
 
-
-static int setup(QueryOptions_t *q, char *string) {
+int GNUGOL_DECLARE_ENGINE(setup,dummy) (QueryOptions_t *q __attribute__((unused)))
+{
   return 0;
 }
 
@@ -34,31 +31,15 @@ static int setup(QueryOptions_t *q, char *string) {
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 
-static int getresult(QueryOptions_t *q, char *urltxt) {
-    unsigned int i;
-    char *text;
-    char url[URL_SIZE];
-    if(q->debug) GNUGOL_OUTE(q,"trying url: %s", urltxt); 
+int GNUGOL_DECLARE_ENGINE(search,dummy) (QueryOptions_t *q) {
+  if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr); 
+  if(q->debug) GNUGOL_OUTW(q,"trying keywords: %s", q->keywords); 
     gnugol_header_out(q);
     gnugol_result_out(q,"http://gnugol.taht.net","Gnugol - Command line Search","This is a dummy query",NULL);
     gnugol_result_out(q,"http://www.google.com","“Google Rocks” ","google is the source of many good things.",NULL);
     gnugol_result_out(q,"http://cryptolisting.taht.net","Cryptolisting - Making STARTTLS more common...  ","<b>This</b> has <i>html</i>.", NULL);
     gnugol_result_out(q,"http://www.taht.net","Dave's web site", "Dave has a web site?", NULL);
-
     gnugol_footer_out(q);
-
     // FIXME: Go recursive if we overflowed the buffer
-
     return 0;
-}
-
-// FIXME, add url encode
-// FIXME UTF-8
-
-int engine_dummy(QueryOptions_t *q) { 
-  char basequery[URL_SIZE];
-  char qstring[URL_SIZE]; 
-  setup(q,basequery);
-  getresult(q,basequery);
-  return 0;
 }

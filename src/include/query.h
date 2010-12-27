@@ -39,7 +39,6 @@ struct query_options {
   int ipv6:1;
   int trust:1;
   int dontfork:1;
-  int dummy:1;
   int footer:1;
   int header:1;
 
@@ -64,6 +63,7 @@ struct query_options {
   buffer_obj_t out;
   buffer_obj_t err;
   buffer_obj_t wrn;
+  char querystr[2048];
   char keywords[1024];
 };
 
