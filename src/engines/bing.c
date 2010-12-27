@@ -30,7 +30,7 @@ int GNUGOL_DECLARE_ENGINE(setup,bing) (QueryOptions_t *q) {
   char   uukeywords[512];
 
   size = sizeof(key);
-  if (gnugol_read_key(key,&size,".bindkey") != 0)
+  if (gnugol_read_key(key,&size,".bingkey") != 0)
   {
     GNUGOL_OUTE(q,"For bing, you need a license key from: %s\n",LICENSE_URL);
     return(-1);
