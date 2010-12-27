@@ -52,6 +52,12 @@ int usage (char *err) {
 	 "-p --position  start of results to fetch\n"
 	 "-o --output    [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
 	 "-e --engine    [bing|google|wikipedia|dummy]\n"
+	 "-l --level     X   result formatting level\n"
+	 "-H --header    0|1 disable/enable output header\n"
+	 "-F --footer    0|1 disable/enable output footer\n"
+	 "-d --debug     X   debug output level\n"
+	 "--help             this message\n"
+
 #ifdef HAVE_GNUGOLD
 	 "-P --prime     prime the caches, routes, etc\n"
 	 "-R --register\n"
@@ -63,14 +69,12 @@ int usage (char *err) {
 	 "-S --Secure    use secure transport\n"
 	 "-T --trust networks\n"
 #endif
-	 "-l --level     X   result formatting level\n"
-	 "-H --header    0|1 disable/enable output header\n"
-	 "-F --footer    0|1 disable/enable output footer\n"
-	 "-d --debug     X   debug output level\n"
-	 "--help             this message\n"
+
 #ifdef WHENIHAVETIMETOADDTHESE
 	 "-a --ads 0|1 "
 	 "-t --titles 0|1\n"
+	 "-u --urls 0|1 "
+	 "-s --snippets 0|1\n"
 	 "-r --reverse   reverse the list. \n"
 	 "-i --input     [filename] input from a file\n"
 	 "-c --cache     serve only results from cache(s)\n"
