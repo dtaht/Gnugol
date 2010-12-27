@@ -30,7 +30,7 @@ static const struct credits c[] = {
   { "Dave Täht", "http://www.taht.net", "Inspiration... and perspiration" }, 
   { "Craig Guessford", "http://www.aftertheflood.com", "Gnugol logo and related art" }, 
   { "Sean Connor", "http://boston.conman.org", "DLLs, UTF-8 improvements" }, 
-  { "Brian Clapper", "http://www.clapper.org", "OSX, textile, mdwn support" }, 
+  { "Brian Clapper", "http://www.clapper.org/bmc", "OSX, textile, mdwn support" }, 
   { NULL, NULL, NULL },
 };
 
