@@ -1,3 +1,4 @@
+PLATFORM:=$(shell uname -s)
 LIBS=../common/fit_results.o
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
@@ -11,7 +12,16 @@ CC=gcc
 CFLAGS += -g
 CFLAGS += -Wall -Wextra -pedantic -std=c99
 SFLAGS := $(CFLAGS)
+
+ifeq ($(PLATFORM),Linux)
 CFLAGS += -fPIC -shared
+endif
+
+ifeq ($(PLATFORM),Darwin)
+CFLAGS += -fno-common
+LDFLAGS += -dynamiclib
+endif
+
 STRIP=strip
 TESTDIR=../tests/
 all: $(OBJECTS) $(PROGS)
