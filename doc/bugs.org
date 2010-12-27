@@ -42,15 +42,23 @@
     :END:
 *** Refactor
 ** Shell mode
-*** UTF-8 
-   Gnugol has currently a very limited selection of html escapes to utf-8 support, implemented via a silly lookup routine. It would be better to have it be complete, and hashed with gperf.
-   There are many tools out there that try to do this (php and perl have examples), I just haven't got around to doing it myself.
-** Line/word breaking support
+*** DONE HTML-Escape to UTF-8 
+   Gnugol had  a very limited selection of html escapes to utf-8 support.
+   Now it has a full html4 table, thx to Sean.
+*** Line/word breaking support
    Coping with [[UTF-8]] is a difficult problem in C. What needs to happen is a fairly complex routine that does line breaking based on the value of the environment variable "COLUMNS" and the nearest UTF-8 word.
-** Non-utf-8 terminals
+*** Non-UTF-8 terminals
    Gnugol does not detect when it has a different character set than UTF-8.
 (I am not particularly interested in anything other than html<->utf-8 conversion, frankly)
+*** Input/Search language support
+**** Pick up the default language from the environment
+**** Different engines do this differently
 ** Add support for the footnote mode of markdown/org/textile
+** Man page(s) for gnugol
+** TODO needs a .gnugol/config format
+   - use json for this structure
+   - need shortcuts, or "abbrevs" for passing along additional search options
+     (would like google code search, for example)
 ** TODO gnugol.el is incomplete
    There are a lot of features from other emacs clients and modes I'd like to borrow. Notably I'd like search-into-pt to be more mode aware than just org-mode. Also want hooks...
 *** minor mode for *gnugol* buffer
@@ -92,6 +100,7 @@
 **** Full pages tend to be returned
 *** TODO Xapian
 *** Other engines?
+*** TODO Man
 *** TODO DNS
 *** TODO Opensearch
 *** TODO RFCs
