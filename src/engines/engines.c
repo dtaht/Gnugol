@@ -17,13 +17,13 @@ static void *gnugol_try_openlib(QueryOptions_t *q) {
   void *lib;
   char libname[FILENAME_MAX];
   
-  snprintf(libname,FILENAME_MAX, GNUGOL_SHAREDLIBDIR "/%s.so",q->engine_name);
+  snprintf(libname,FILENAME_MAX, GNUGOL_SHAREDLIBDIR "/%s.%s",q->engine_name, SO_EXT);
   lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
 
 #ifndef PRODUCTION  
   if (lib == NULL) {
     GNUGOL_OUTW(q,"%s(1): Not in default location, error: %s\n",q->engine_name,dlerror());
-    snprintf(libname,FILENAME_MAX,"../engines/%s.so",q->engine_name);
+    snprintf(libname,FILENAME_MAX,"../engines/%s.%s",q->engine_name, SO_EXT);
     lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
   }
 #endif
