@@ -56,7 +56,7 @@ int usage (char *err) {
 	 "-H --header    0|1 disable/enable output header\n"
 	 "-F --footer    0|1 disable/enable output footer\n"
 	 "-d --debug     X   debug output level\n"
-	 "--help             this message\n"
+	 "-h --help          this message\n"
 
 #ifdef HAVE_GNUGOLD
 	 "-P --prime     prime the caches, routes, etc\n"
@@ -70,7 +70,7 @@ int usage (char *err) {
 	 "-T --trust networks\n"
 #endif
 
-#ifdef WHENIHAVETIMETOADDTHESE
+#ifdef WHENIHAVETIMETOADDTHESEOFFICIALLY
 	 "-a --ads 0|1 "
 	 "-t --titles 0|1\n"
 	 "-u --urls 0|1 "
@@ -189,12 +189,13 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 #else
 #define QSTRING "7654C:ru:s:a:t:e:Ri:PlmS:bco:fOZTDd:vU:jn:p:SH:F:"
 #endif  
+// useful a -- by itself ends options parsing
+
   do {
     opt = getopt_long(argc, argv, 
 		      QSTRING,
 		      long_options, &option_index);
-    if(opt == -1) break; // Hmm need -- to end options parsing??
-
+    if(opt == -1) break; 
     switch (opt) { 
     case 'r': o->reverse = 1; break;  
     case 'u': o->urls = strtoul(optarg,NULL,10); break;

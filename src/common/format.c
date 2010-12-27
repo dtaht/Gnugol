@@ -61,7 +61,7 @@ int gnugol_header_out(QueryOptions_t *q) {
       switch(q->format) {
       case FORMATHTML:
       case FORMATELINKS: 
-	GNUGOL_OUTF(q, "<html><head><title>Search for: %s", buffer);
+	GNUGOL_OUTF(q, "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>Search for: %s", buffer);
 	GNUGOL_OUTF(q, "</title></head><body>");
 	break;
 	
@@ -158,9 +158,12 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
     break;
   case FORMATTERM: 
     { 
+      strcpy(tempstr,title);
+      STRIPHTML(tempstr);
+      GNUGOL_OUTF(q,"%s %s ", url, tempstr);
       strcpy(tempstr,snippet);
       STRIPHTML(tempstr);
-      GNUGOL_OUTF(q,"%s %s %s\n", url,title,tempstr); 
+      GNUGOL_OUTF(q,"%s\n", tempstr); 
     }
     break;
   case FORMATHTML:
