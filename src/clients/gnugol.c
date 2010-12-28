@@ -20,13 +20,13 @@
 #endif
 
 struct  output_types {
-  enum gnugol_formatter id;
-  char *desc;
+  const enum gnugol_formatter id;
+  const char *const desc;
 };
 
 // FIXME: Verify differences between ikiwiki and media wiki format
 
-static struct output_types output_type[] = {
+static const struct output_types output_type[] = {
   { FORMATHTML5, "html5" },
   { FORMATHTML, "html" },
   { FORMATIKI, "iki" },
@@ -51,92 +51,111 @@ static struct output_types output_type[] = {
   { 0, NULL },
   };
 
-
 int usage (char *err) {
   if(err) fprintf(stderr,"%s\n",err);
   printf("gnugol [options] keywords to search for\n");
   printf(
-	 "-n --nresults      number of results to fetch\n"
-	 "-p --position      start of results to fetch\n"
-	 "-o --output        [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
+	 "-a --about         [credits|copyright|license|source|config|manual|stats]\n"
+	 "-d --debug     X   debug output level\n"
 	 "-e --engine        [bing|google|wikipedia|dummy]\n"
+	 "-F --footer    0|1 disable/enable output footer\n"
+	 "-H --header    0|1 disable/enable output header\n"
+	 "-h --help          this message\n"
+	 "-i --indent    X   result indentation level\n"
 	 "-l --language-in   [language (in UTF-8 format: e.g. en_US)]\n"
 	 "-L --language-out  [language (in UTF-8 format: e.g. en_US)]\n"
-	 "-I --indent    X   result indentation level\n"
-	 "-H --header    0|1 disable/enable output header\n"
-	 "-F --footer    0|1 disable/enable output footer\n"
+	 "-n --nresults      number of results to fetch\n"
+	 "-o --output        [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
+	 "-p --position      start of results to fetch\n"
+	 "-v --verbose       provide more verbose insight\n"
+
 #ifdef HAVE_GNUGOLD
+	 "-b --broadcast broadcast results to local network\n"
+	 "   --dontfork don't fork off the server\n"
+	 "-4 --ipv4 listen on ipv4\n"
+	 "-6 --ipv6 listen on ipv6\n"
+	 "-m --multicast ask for results from local network\n"
 	 "-P --prime     prime the caches, routes, etc\n"
 	 "-R --register\n"
-	 "-m --multicast ask for results from local network\n"
-	 "-b --broadcast broadcast results to local network\n"
-	 "-6 --ipv6 listen on ipv6\n"
-	 "-4 --ipv4 listen on ipv4\n"
-	 "-F --dontfork don't fork off the server\n"
 	 "-S --Secure    use secure transport\n"
 	 "-T --trust networks\n"
 #endif
 
 #ifdef WHENIHAVETIMETOADDTHESEOFFICIALLY
-	 "-a --ads 0|1 "
-	 "-t --titles 0|1\n"
-	 "-u --urls 0|1 "
-	 "-s --snippets 0|1\n"
-	 "-r --reverse   reverse the list\n"
-	 "-i --input     [filename] input from a file\n"
+	 "-A --ads 0|1\n"
 	 "-c --cache     serve only results from cache(s)\n"
-	 "-O --Offline   store up query for later\n"
 	 "-f --force     force a new query, even if cached\n"
+	 "-I --input     [filename] input from a file\n"
+	 "-5 --offline   store up query for later\n"
+	 "-r --reverse   reverse the list\n"
+	 "-s --snippets 0|1\n"
+	 "-t --titles 0|1\n"
+	 "-u --urls 0|1\n"
 #endif
-	 "-A --about         [credits|copyright|license|source|config|manual|stats]\n"
-	 "-v --verbose       provide more verbose insight\n"
-	 "-d --debug     X   debug output level\n"
-	 "-h --help          this message\n");
+
+#ifdef WHATABOUTTHESE
+	 "-C --config\n"
+	 "-D --defaults\n"
+	 "-g --plugin\n"
+	 "-S --safe\n"
+	 "   --source\n"
+#endif
+  );
+
   exit(-1);
 }
 
 // There's a version of getopt out there that lets you put in the help text.
 // Silly to separate the two, but...
 
-static struct option long_options[] = {
-  {"reverse", 0, 0, 'r' }, 
-  {"urls", 1, 0, 'u' },
-  {"snippets", 1, 0,'s'},
-  {"ads", 1,0,'a' },
-  {"titles", 1,0, 't'},
-  {"language-in", 1, 0, 'l' },
-  {"engine", 1,0, 'e'},
-  {"register", 2,0, 'R'},
-  {"input", 1,0, 'i'},
-  {"indent", 1,0, 'I'},
-  {"plugin", 1,0, 'g'},    
-  {"language-out", 0,0, 'L'},     
+static const struct option long_options[] = {
+  { "about"		, no_argument		, NULL , 'a' } ,
+  { "debug"		, required_argument	, NULL , 'd' } ,
+  { "engine"		, required_argument	, NULL , 'e' } ,
+  { "footer"		, required_argument	, NULL , 'F' } ,
+  { "header"		, required_argument	, NULL , 'H' } ,
+  { "help"		, no_argument		, NULL , 'h' } ,
+  { "indent"		, required_argument	, NULL , 'i' } ,
+  { "language-in"	, required_argument	, NULL , 'l' } ,
+  { "language-out"	, required_argument	, NULL , 'L' } ,
+  { "nresults"		, required_argument	, NULL , 'n' } ,
+  { "output"		, required_argument	, NULL , 'o' } ,
+  { "position"		, required_argument	, NULL , 'p' } ,
+  { "verbose"		, no_argument		, NULL , 'v' } ,
+
 #ifdef HAVE_GNUGOLD
-  {"prime", 0,0, 'P'},     
-  {"multicast", 2,0, 'm'}, 
-  {"broadcast", 0,0, 'b'}, 
-  {"cache", 0,0, 'c'},     
-  {"secure", 0,0, 'Z'},  
-  {"trust", 0,0, 'T'},  
-  {"ipv6", 0,0, '6'},   
-  {"ipv4", 0,0, '4'},   
+  { "broadcast"		, no_argument		, NULL , 'b' } ,
+  { "dontfork"		, no_argument		, NULL ,  0  } ,
+  { "ipv4"		, no_argument		, NULL , '4' } ,
+  { "ipv6"		, no_argument		, NULL , '6' } ,
+  { "multicast"		, no_argument		, NULL , 'm' } ,
+  { "prime"		, no_argument		, NULL , 'P' } ,
+  { "register"		, no_argument		, NULL , 'R' } ,
+  { "secure"		, no_argument		, NULL , 'S' } ,
+  { "trust"		, no_argument		, NULL , 'T' } ,
 #endif
-  {"footer", 1,0, 'F'},   
-  {"header", 1,0, 'H'},   
-  {"output", 1,0, 'o'},  
-  {"Offline", 0,0, '5'}, 
-  {"force", 0,0, 'f'},   
-  {"nresults", 1,0, 'n'},
-  {"position", 1,0, 'p'},
-  {"verbose", 0,0, 'v'},   
-  {"debug", 1,0, 'd'},   
-  {"defaults", 0,0, 'D'},   
-  {"source", 0,0, 0},     
-  {"safe", 0,0, 'S'},       
-  {"help", 0,0, 'h'},       
-  {"config", 0,0,'C'},
-  {"about", 0,0,'A'},
-  {0,0,0,0},
+
+#ifdef WHENIHAVETIMETOADDTHESEOFFICIALLY
+  { "ads"		, required_argument	, NULL , 'A' } ,
+  { "cache"		, no_argument		, NULL , 'c' } ,     
+  { "force"		, no_argument		, NULL , 'f' } ,   
+  { "input"		, required_argument	, NULL , 'I' } ,
+  { "offline"		, no_argument		, NULL , '5' } , 
+  { "reverse"		, no_argument		, NULL , 'r' } , 
+  { "snippets"		, required_argument	, NULL , 's' } ,
+  { "titles"		, required_argument	, NULL , 't' } ,
+  { "urls"		, required_argument	, NULL , 'u' } ,
+#endif
+
+#ifdef WHATABOUTTHESE
+  { "config"		, no_argument		, NULL , 'C' } ,
+  { "defaults"		, no_argument		, NULL , 'D' } ,   
+  { "plugin"		, no_argument		, NULL , 'g' } ,    
+  { "safe"		, no_argument		, NULL , 'S' } ,       
+  { "source"		, no_argument		, NULL ,  0  } ,     
+#endif
+
+  { NULL		, 0			, NULL ,  0  }
 };
 
 int gnugol_parse_config_file(QueryOptions_t *q __attribute__((unused))) {
@@ -190,11 +209,11 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   if(argc == 1) usage("");
 
 #ifdef HAVE_GNUGOLD
-  // FIXME, not all opt defined, some extras
-#define QSTRING "7654C:I:ru:s:s:a:t:e:Ri:Pl:L:mS:bco:fOZTDd:vU:jn:p:SH:F:A"
+#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:vb46mPRST"
 #else
-#define QSTRING "7654C:I:ru:s:a:t:e:Ri:Pl:L:mS:bco:fOZTDd:vU:jn:p:SH:F:"
-#endif  
+#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:v"
+#endif
+
 // useful a -- by itself ends options parsing
 
   do {
@@ -202,46 +221,62 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 		      QSTRING,
 		      long_options, &option_index);
     if(opt == -1) break; 
-    switch (opt) { 
-    case 'r': o->reverse = 1; break;  
-    case 'u': o->urls = strtoul(optarg,NULL,10); break;
-    case 's': o->snippets = strtoul(optarg,NULL,10); break;
-    case 'a': o->ads = strtoul(optarg,NULL,10); break;
-    case 't': o->titles = strtoul(optarg,NULL,10); break;
-    case 'H': o->header = strtoul(optarg,NULL,10); break;
-    case 'F': o->footer = strtoul(optarg,NULL,10); break;
-    case 'p': o->position = strtoul(optarg,NULL,10); break;
-    case 'T': o->trust = 1; break;
-    case 'e': o->engine = 1; o->engine_name = optarg; break; 
-    case 'R': o->reg = 1; break;
-    case 'A': o->about = 1;  break; 
-    case 'i': o->input = 1; o->input_file = optarg; break; // FIXME
-    case 'P': o->plugin = 1; break;
-    case 'l': o->input_language = optarg; break;
-    case 'L': o->output_language = optarg; break;
-    case 'm': o->multicast = 1; break;
-    case 'b': o->broadcast = 1; break;
-    case 'c': o->cache = 1; break;
-    case 'o': {
-      int i;
-      for(i = 0; output_type[i].desc != NULL; i++)
-	if(strcmp(output_type[i].desc,optarg) == 0) o->format = output_type[i].id; 
-    }
-      break;
-    case '5': o->offline = 1; break;
-    case 'f': o->output = 1; break; // FIXME
-    case 'I': o->indent = strtoul(optarg,NULL,10); break;
-    case 'n': o->nresults = strtoul(optarg,NULL,10); break; 
-    case 'Z': o->secure = 1; break; // unimplemented
-    case 'S': o->safe = 1; strtoul(optarg,NULL,10); break; 
-    case 'd': o->debug = strtoul(optarg,NULL,10); break;
-    case 'v': o->verbose = 1; break;
-    case '6': o->ipv6 = 1; break;
-    case '4': o->ipv4 = 1; break;
-    case 'h': 
-    case '?': usage(NULL); break;
 
-    default: fprintf(stderr,"%c",opt); usage("Invalid option"); break;
+    switch (opt) 
+    { 
+      case 'a': o->about = 1;  break; 
+      case 'd': o->debug = strtoul(optarg,NULL,10); break;
+      case 'e': o->engine = 1; o->engine_name = optarg; break; 
+      case 'F': o->footer = strtoul(optarg,NULL,10); break;
+      case 'H': o->header = strtoul(optarg,NULL,10); break;
+      case 'h': 
+      case '?': usage(NULL); break;
+      case 'i': o->indent = strtoul(optarg,NULL,10); break;
+      case 'l': o->input_language = optarg; break;
+      case 'L': o->output_language = optarg; break;
+      case 'n': o->nresults = strtoul(optarg,NULL,10); break; 
+      case 'o':
+           for(int i = 0; output_type[i].desc != NULL; i++)
+	    if(strcmp(output_type[i].desc,optarg) == 0) 
+	      o->format = output_type[i].id; 
+           break;
+      case 'p': o->position = strtoul(optarg,NULL,10); break;
+      case 'v': o->verbose = 1; break;
+
+#ifdef HAVE_GNUGOLD
+      case 'b': o->broadcast = 1; break;
+      /* dontfork missing */
+      case '4': o->ipv4 = 1; break;
+      case '6': o->ipv6 = 1; break;
+      case 'm': o->multicast = 1; break;
+      /* prime missing */
+      case 'R': o->reg = 1; break;
+      case 'Z': o->secure = 1; break; // unimplemented
+      case 'T': o->trust = 1; break;
+#endif
+
+#ifdef WHENIHAVETIMETOADDTHESEOFFICIALLY
+      case 'A': o->ads = strtoul(optarg,NULL,10); break;
+      case 'c': o->cache = 1; break;
+      /* force missing */
+      case 'I': o->input = 1; o->input_file = optarg; break; // FIXME
+      case '5': o->offline = 1; break;
+      case 'r': o->reverse = 1; break;  
+      case 's': o->snippets = strtoul(optarg,NULL,10); break;
+      case 't': o->titles = strtoul(optarg,NULL,10); break;
+      case 'u': o->urls = strtoul(optarg,NULL,10); break;
+#endif
+
+#ifdef WHATABOUTTHESE
+      /* config missing */
+      /* defaults missing */
+      case 'P': o->plugin = 1; break;
+      case 'f': o->output = 1; break; // FIXME
+      case 'S': o->safe = 1; strtoul(optarg,NULL,10); break; 
+      /* source missing */
+#endif
+
+      default: fprintf(stderr,"%c",opt); usage("Invalid option"); break;
     } 
   } while (1); 
 
