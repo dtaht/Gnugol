@@ -24,6 +24,15 @@
    obsolete --org --wiki --etc in favor of -o wiki
 ** DONE Abstract out output mode processing from json parsing
    Make it easier to write multiple engines
+** STARTED NULL Strings can crash gnugol's formatters
+   The gnugol engine was very cavalier about empty strings and null inputs as it always gets good data back from the rest of the world. I added a set of fuzz tests to the dummy engine, and was unsurprised to see it go boom.
+   :LOGBOOK:
+   - State "STARTED"    from "STARTED"    [2010-12-28 Tue 09:11]
+   CLOCK: [2010-12-28 Tue 09:11]
+   :END:
+   :PROPERTIES:
+   :Effort:   4:00
+   :END:
 ** TODO Add an editable flag
    add an option to try to encourage gnugol to return a ptr to an editable page
    The example here would be mediawiki/wikipedia. 
