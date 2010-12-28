@@ -20,26 +20,34 @@
 #endif
 
 struct  output_types {
-  int id;
+  enum gnugol_formatter id;
   char *desc;
 };
 
 // FIXME: Verify differences between ikiwiki and media wiki format
 
 static struct output_types output_type[] = {
+  { FORMATHTML5, "html5" },
   { FORMATHTML, "html" },
+  { FORMATIKI, "iki" },
   { FORMATWIKI, "wiki" },
   { FORMATXML,  "xml" },
   { FORMATJSON, "json" },
   { FORMATORG,  "org" },
   { FORMATTERM, "term" },
-  { FORMATTERM, "text" },
+  { FORMATTEXT, "text" },
   { FORMATSSML, "ssml" },
   { FORMATTEXTILE, "textile" },
   { FORMATRAW,  "raw" },
   { FORMATMDWN, "mdwn" },
   { FORMATMDWN, "md" },
   { FORMATMDWN, "markdown" },
+  { FORMATINFO, "info" },
+  { FORMATCSV, "csv" },
+  { FORMATRAW, "raw" },
+  { FORMATSQL, "sql" },
+  { FORMATMAN, "man" },
+  { FORMATDNS, "dns" },
   { 0, NULL },
   };
 
@@ -100,6 +108,7 @@ static struct option long_options[] = {
   {"engine", 1,0, 'e'},
   {"register", 2,0, 'R'},
   {"input", 1,0, 'i'},
+  {"indent", 1,0, 'I'},
   {"plugin", 1,0, 'g'},    
   {"language-out", 0,0, 'L'},     
 #ifdef HAVE_GNUGOLD
@@ -182,9 +191,9 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 
 #ifdef HAVE_GNUGOLD
   // FIXME, not all opt defined, some extras
-#define QSTRING "7654C:ru:s:s:a:t:e:Ri:Pl:L:mS:bco:fOZTDd:vU:jn:p:SH:F:A"
+#define QSTRING "7654C:I:ru:s:s:a:t:e:Ri:Pl:L:mS:bco:fOZTDd:vU:jn:p:SH:F:A"
 #else
-#define QSTRING "7654C:ru:s:a:t:e:Ri:Pl:L:mS:bco:fOZTDd:vU:jn:p:SH:F:"
+#define QSTRING "7654C:I:ru:s:a:t:e:Ri:Pl:L:mS:bco:fOZTDd:vU:jn:p:SH:F:"
 #endif  
 // useful a -- by itself ends options parsing
 
@@ -274,6 +283,7 @@ int main(int argc, char **argv) {
   process_options(argc,argv,&q);
   if(q.about) {
     q.engine_name = "credits";  
+    q.header_str = "About";
   } 
 
   result = gnugol_query_engine(&q);

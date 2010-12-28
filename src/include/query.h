@@ -20,6 +20,8 @@ enum gnugol_formatter {
   FORMATCSV,
   FORMATSQL,
   FORMATTEXTILE, 
+  FORMATMAN, 
+  FORMATDNS, 
   FORMATINFO
 };
  

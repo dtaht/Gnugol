@@ -23,8 +23,8 @@ HTML4 <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 XML   <?xml version="1.0" encoding="UTF-8"?>
 
 meta_charset_map = {
-{ FORMATHTML, "<meta charset=\"UTF-8\">" },
-{ FORMATHTML5, "<meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\"> },
+{ FORMATHTML5, "<meta charset=\"UTF-8\">" },
+{ FORMATHTML, "<meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\"> },
 { FORMATXML", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" },
 { 0, NULL }
 
@@ -79,9 +79,11 @@ int gnugol_header_out(QueryOptions_t *q) {
       STRIPHTML(buffer); // FIXME, need to convert % escapes to strings
       switch(q->format) {
       case FORMATHTML5: 
+	GNUGOL_OUTF(q, "<html><head><meta charset=\"UTF-8\"><title>%s%s</title></head><body>", NULLP(q->header_str), NULLP(buffer));
+	break;
       case FORMATHTML:
       case FORMATELINKS: 
-	GNUGOL_OUTF(q, "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>Search for: %s</title></head><body>", NULLP(buffer));
+	GNUGOL_OUTF(q, "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>%s%s</title></head><body>",NULLP(q->header_str), NULLP(buffer));
 	break;
 	
       case FORMATSSML: 
