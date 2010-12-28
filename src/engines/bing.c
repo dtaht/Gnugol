@@ -100,7 +100,7 @@ int GNUGOL_DECLARE_ENGINE(search,bing) (QueryOptions_t *q) {
       GETSTRING(result,Url);
       GETSTRING(result,Title);
       GETSTRING(result,Description);
-      gnugol_result_out(q,jsv(Url),jsv(Title),jsv(Description),NULL);
+      gnugol_result_out(q,jsv(Url),jsv(Title),jsv(Description));
     }
 
     gnugol_footer_out(q);

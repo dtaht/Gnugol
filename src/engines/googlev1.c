@@ -123,7 +123,7 @@ int GNUGOL_DECLARE_ENGINE(search,google) (QueryOptions_t *q) {
       GETSTRING(result,url);
       GETSTRING(result,titleNoFormatting);
       GETSTRING(result,content);
-      gnugol_result_out(q,jsv(url),jsv(titleNoFormatting),jsv(content),NULL);
+      gnugol_result_out(q,jsv(url),jsv(titleNoFormatting),jsv(content));
     }
 
     gnugol_footer_out(q);

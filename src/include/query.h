@@ -40,6 +40,7 @@ struct query_options {
   int dontfork:1;
   int footer:1;
   int header:1;
+  int about:1;
 
   int indent;
   int debug;

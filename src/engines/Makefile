@@ -57,6 +57,6 @@ engines.o: engines.c $(HEADERS)
 
 install: $(OBJECTS) 
 	@mkdir -p $(SHAREDLIBDIR)	
-	cp $(OBJECTS) $(SHAREDLIBDIR)
+	cp *.$(EXT) $(SHAREDLIBDIR)
 clean:
 	rm -f $(OBJECTS) $(PROGS) *~
