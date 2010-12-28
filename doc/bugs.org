@@ -136,6 +136,8 @@
 * Gnugold Bugs
 ** Complete rewrite in progress
 ** The old UDP based protocol didn't work out
+** It would be nice to prefer text/rss/email/pdf style content for results
+   It really bugs me that most web pages are cluttered with crap.
 ** Misbehaving clients 
 ** Evil/renegade clients 
 A renegade client could respond to local multicast queries with spam - links and offensive stuff unrelated to the query itself. 
