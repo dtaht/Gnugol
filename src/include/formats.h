@@ -1,5 +1,8 @@
 #ifndef gnugol_default_formats
 #define gnugol_default_formats
+
+#define GNUGOL_SITE "http://gnugol.taht.net/"
+
 // <a href=url>title</a> content
 // url title content
 #define FORMATNONE (0)
@@ -43,6 +46,6 @@ extern int gnugol_free_QueryOptions(QueryOptions_t *q);
 extern int gnugol_header_out(QueryOptions_t *q);
 extern int gnugol_keywords_out(QueryOptions_t *q);
 extern int gnugol_footer_out(QueryOptions_t *q);
-extern int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet, const char *ad);
+extern int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet);
 
 #endif

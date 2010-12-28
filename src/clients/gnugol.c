@@ -52,14 +52,11 @@ int usage (char *err) {
 	 "-p --position      start of results to fetch\n"
 	 "-o --output        [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
 	 "-e --engine        [bing|google|wikipedia|dummy]\n"
-	 "-l --language-in   [language]\n"
-	 "-L --language-out  [language]\n"
+	 "-l --language-in   [language (in UTF-8 format: e.g. en_US)]\n"
+	 "-L --language-out  [language (in UTF-8 format: e.g. en_US)]\n"
 	 "-I --indent    X   result indentation level\n"
 	 "-H --header    0|1 disable/enable output header\n"
 	 "-F --footer    0|1 disable/enable output footer\n"
-	 "-d --debug     X   debug output level\n"
-	 "-h --help          this message\n"
-
 #ifdef HAVE_GNUGOLD
 	 "-P --prime     prime the caches, routes, etc\n"
 	 "-R --register\n"
@@ -82,13 +79,11 @@ int usage (char *err) {
 	 "-c --cache     serve only results from cache(s)\n"
 	 "-O --Offline   store up query for later\n"
 	 "-f --force     force a new query, even if cached\n"
-	 "--defaults     show the defaults\n"
-	 "--source       fetch the source code this was compiled with\n"
-	 "--config "
-	 "--copyright "
-	 "--license\n"
 #endif
-	 "-v --verbose       provide more verbose insight\n");
+	 "-A --about         [credits|copyright|license|source|config|manual|stats]\n"
+	 "-v --verbose       provide more verbose insight\n"
+	 "-d --debug     X   debug output level\n"
+	 "-h --help          this message\n");
   exit(-1);
 }
 
@@ -131,6 +126,7 @@ static struct option long_options[] = {
   {"safe", 0,0, 'S'},       
   {"help", 0,0, 'h'},       
   {"config", 0,0,'C'},
+  {"about", 0,0,'A'},
   {0,0,0,0},
 };
 
@@ -186,7 +182,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 
 #ifdef HAVE_GNUGOLD
   // FIXME, not all opt defined, some extras
-#define QSTRING "7654C:ru:s:a:t:e:Ri:Pl:L:mS:bco:fOZTDd:vU:jn:p:SH:F:"
+#define QSTRING "7654C:ru:s:s:a:t:e:Ri:Pl:L:mS:bco:fOZTDd:vU:jn:p:SH:F:A"
 #else
 #define QSTRING "7654C:ru:s:a:t:e:Ri:Pl:L:mS:bco:fOZTDd:vU:jn:p:SH:F:"
 #endif  
@@ -209,6 +205,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     case 'T': o->trust = 1; break;
     case 'e': o->engine = 1; o->engine_name = optarg; break; 
     case 'R': o->reg = 1; break;
+    case 'A': o->about = 1;  break; 
     case 'i': o->input = 1; o->input_file = optarg; break; // FIXME
     case 'P': o->plugin = 1; break;
     case 'l': o->input_language = optarg; break;
@@ -256,7 +253,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 }
 
 static void gnugol_default_QueryOptions(QueryOptions_t *q) {
-  q->nresults = 4;
+  q->nresults = 5;
   q->position = 0;
   q->urls = 1;
   q->snippets = 1;
@@ -270,12 +267,16 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
 }
 
 int main(int argc, char **argv) {
+  int result;
   QueryOptions_t q;
   gnugol_init_QueryOptions(&q);
   gnugol_default_QueryOptions(&q);
   process_options(argc,argv,&q);
+  if(q.about) {
+    q.engine_name = "credits";  
+  } 
 
-  int result = gnugol_query_engine(&q);
+  result = gnugol_query_engine(&q);
 
   if(q.returned_results > 0) {     
       printf("%s",q.out.s);

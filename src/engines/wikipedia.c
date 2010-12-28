@@ -103,7 +103,7 @@ int GNUGOL_DECLARE_ENGINE(search,wikipedia) (QueryOptions_t *q) {
       GETSTRING(result,fullurl);
       GETSTRING(result,title);
       // GETSTRING(result,content);
-      gnugol_result_out(q,jsv(fullurl),jsv(title),"Wikipedia Entry",NULL);
+      gnugol_result_out(q,jsv(fullurl),jsv(title),"Wikipedia Entry");
     }
 
     gnugol_footer_out(q);

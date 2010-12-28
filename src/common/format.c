@@ -99,7 +99,7 @@ static char padding[] = "          ";
 // FIXME: 4! possible combinations of output options here 
 // snippets/urls/titles/ads
 
-int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet, const char *ad __attribute__((unused))) {
+int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet) {
   char tempstr[SNIPPETSIZE]; 
   q->returned_results++;
   switch (q->format) {
