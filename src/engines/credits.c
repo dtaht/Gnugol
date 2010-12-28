@@ -89,7 +89,7 @@ int GNUGOL_DECLARE_ENGINE(search,credits) (QueryOptions_t *q) {
 	if(strcmp(cmap[j].catagory,c[i].catagory) == 0) {
 	  if(header_no != j) {
 	    q->indent -= 1;
-	    gnugol_result_out(q, "", cmap[j].desc, "" );
+	    gnugol_result_out(q, "", "", cmap[j].desc );
 	    header_no = j;
 	    q->indent += 1;
 	    gnugol_result_out(q,c[i].url,c[i].name,c[i].desc);

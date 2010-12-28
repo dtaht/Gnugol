@@ -115,19 +115,83 @@ int gnugol_keywords_out(QueryOptions_t *q __attribute__((unused))) {
   return(0);
 }
 
-static const char *levels[] = { "", "*","**","***","****","*****", NULL };
+
+static const char *levels[] = { "", "* ","** ","*** ","**** ","***** ", NULL };
 static const char padding[] = "          ";
 
-// FIXME: 3! possible combinations of output options here 
-// snippets/urls/titles/ads
+// FIXME: 8 possible combinations of output options here 
+// snippets/urls/titles
+
+// Some notes here on the output logic
+// with url "" and title non-"", we don't want [[]], just title
+// with url non "" and title "", we want [[url]]
+// with description non "" we want \ndescription\n (except when we only have an url?)
+// with description "" we want nada on the previous stuff but a "\n"
+// with "" "" "", don't output anything
+/* stars
+   url = 1
+   title = 2
+   snippet = 4
+   spaces
+
+   Grumble - c99 doesn't allow
+	    printf("%2$*1$d", width, num);
+*/
+
+
+static const char *org_format_str[] = {
+   "%s%s%s%s%s", // nothing
+   "%s[[%s]]%s%s%s\n", // url only
+   "%s%s[[%s]]%s%s\n", // title only
+   "%s[[%s][%s]]%s%s\n", // url and snippet
+   "%s%s%s%s%s\n", // snippet only
+   "%s[[%s]]%s\n%s%s\n", // snippet and url
+   "%s%s[[%s]]%s%s\n", // snippet and title
+   "%s[[%s][%s]]\n%s%s\n", // everything
+   NULL,
+};
+
+#define NULLPINT(str,val) (str[0] == '\0' ? 0 : val)
 
 int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet) {
   char *t = NULLP(title);
   char *u = NULLP(url);
   char *s = NULLP(snippet);
+  char *padstr;
+  int offset = 0;
+  int level = q->indent;
+  if(level > 5) level = 5;
+  if(level < 0) level = 2;
 
-  char tempstr[SNIPPETSIZE]; 
+  char tempstr[SNIPPETSIZE];
+  char stripsnip[SNIPPETSIZE]; 
+  char stripurl[URL_SIZE]; 
+  char striptitle[URL_SIZE]; 
+
+  if(!q->titles) t = "";
+  if(!q->snippets) s = "";
+  if(!q->urls) u = "";
+
+  if(t[0] == '\0' && u[0] == '\0' && s[0] == '\0') {
+  return(0);
+  }
+
+  if(t[0] == '\0' && u[0] == '\0') {
+  padstr = "\0";
+  } else {
+  padstr = &padding[10-(level + 1)]; 
+  }
+
+  if(s[0] == '\0') padstr = "\0";
+
+  offset = NULLPINT(u,1) | NULLPINT(t,2) | NULLPINT(s,4);
   q->returned_results++;
+
+  strcpy(stripsnip,s);
+  STRIPHTML(stripsnip);
+  strcpy(striptitle,t);
+  STRIPHTML(striptitle);
+
   switch (q->format) {
   case FORMATIKI: 
   case FORMATWIKI: 
@@ -141,26 +205,7 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
     }
     break;
   case FORMATORG:  
-    { 
-      int level = q->indent;
-      if(level > 5) level = 5;
-      if(level < 0) level = 2;
-
-      strcpy(tempstr,t);
-      STRIPHTML(tempstr);
-      if(level == 0) {
-      GNUGOL_OUTF(q,"[[%s][%s]]\n", u, tempstr);
-      } else {
-      GNUGOL_OUTF(q,"%s [[%s][%s]]\n", levels[level], u, tempstr);
-      }
-      strcpy(tempstr,s);
-      STRIPHTML(tempstr);
-      if(level == 0) {
-	GNUGOL_OUTF(q,"%s\n", tempstr); 
-      } else {
-	GNUGOL_OUTF(q,"%s%s\n", &padding[10-(level + 1)],tempstr); 
-      }
-    }
+    GNUGOL_OUTF(q,org_format_str[offset],levels[level],u,striptitle,padstr,stripsnip);
     break;
   case FORMATTEXTILE:  
     { 
@@ -199,7 +244,12 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
   case FORMATELINKS: 
     GNUGOL_OUTF(q,"<p><a href=\"%s\">%s</a> %s</p>", u, t, s); 
     break;
-    
+  case FORMATINFO:
+  case FORMATCSV:
+  case FORMATMAN:
+  case FORMATXML:
+  case FORMATSQL:
+    GNUGOL_OUTW(q,"format: Output format unsupported\n"); break;
   default: 
     GNUGOL_OUTF(q,"<a href=\"%s\">%s</a> %s\n", u, t, s); 
   }

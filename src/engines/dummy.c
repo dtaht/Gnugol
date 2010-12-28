@@ -62,15 +62,15 @@ int GNUGOL_DECLARE_ENGINE(search,dummy) (QueryOptions_t *q) {
   
   q->indent -= 1; gnugol_result_out(q,GNUGOL_SITE "bugs.html", "Empty String", "");
   q->indent += 1; GNUGOL_OUTW(q,"Tests: Empty string\n");
-  gnugol_result_out(q,"",GNUGOL_SITE "bugs.html", "Empty url");
+  gnugol_result_out(q,"","There was no url in this test", "Empty url");
   gnugol_result_out(q,GNUGOL_SITE "bugs.html", "", "Empty title");
-  gnugol_result_out(q,"", "", "Empty title and URL - all Empty coming up - should not appear");
+  gnugol_result_out(q,"", "", "Empty title and URL - all Empty coming up next - should not appear");
   gnugol_result_out(q,"", "", "");
   gnugol_result_out(q,GNUGOL_SITE "bugs.html", "End of empty string test", "Did it look right?");
 
   q->indent -= 1; gnugol_result_out(q,GNUGOL_SITE "bugs.html", "NULL Pointers", NULL);
   q->indent += 1; GNUGOL_OUTW(q,"Tests: Null PTR\n");
-  gnugol_result_out(q,NULL, GNUGOL_SITE "bugs.html", "NULL url");
+  gnugol_result_out(q,NULL, "There's a null url here", "NULL url");
   gnugol_result_out(q,GNUGOL_SITE "bugs.html", NULL, "NULL title");
   gnugol_result_out(q,NULL, NULL, "NULL title and URL - all NULLs coming up - should not appear");
   gnugol_result_out(q,NULL, NULL, NULL);
