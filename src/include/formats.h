@@ -2,28 +2,6 @@
 #define gnugol_default_formats
 
 #define GNUGOL_SITE "http://gnugol.taht.net/"
-
-// <a href=url>title</a> content
-// url title content
-#define FORMATNONE (0)
-#define FORMATTERM (1)
-#define FORMATHTML (2)
-// Tiny web page of results
-#define FORMATELINKS (3) 
-// [[Title|url]] content
-#define FORMATWIKI (4)
-// * [[Title][url]] content
-#define FORMATORG  (5)
-// SSML Support
-#define FORMATSSML (6)
-#define FORMATJSON (7) 
-#define FORMATXML (8) 
-#define FORMATMDWN (9) 
-#define FORMATCSV (10) 
-#define FORMATSQL (11)
-#define FORMATRAW (12)
-#define FORMATTEXTILE (13)
- 
 #define FORMATDEFAULT FORMATORG
 
 #define BUFFER_SIZE  (64 * 1024)  /* 64 KB */

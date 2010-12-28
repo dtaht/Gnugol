@@ -13,6 +13,26 @@
 #  define __attribute__(x)
 #endif
 
+/*
+
+Via:
+http://www.w3.org/International/questions/qa-html-encoding-declarations
+
+HTML5 <meta charset="UTF-8">
+HTML4 <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+XML   <?xml version="1.0" encoding="UTF-8"?>
+
+meta_charset_map = {
+{ FORMATHTML, "<meta charset=\"UTF-8\">" },
+{ FORMATHTML5, "<meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\"> },
+{ FORMATXML", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" },
+{ 0, NULL }
+
+};
+
+*/
+
+
 // FIXME: Be more paranoid
 
 int gnugol_init_QueryOptions(QueryOptions_t *q) {
@@ -58,10 +78,10 @@ int gnugol_header_out(QueryOptions_t *q) {
       strncpy(buffer,q->keywords,SNIPPETSIZE);
       STRIPHTML(buffer); // FIXME, need to convert % escapes to strings
       switch(q->format) {
+      case FORMATHTML5: 
       case FORMATHTML:
       case FORMATELINKS: 
-	GNUGOL_OUTF(q, "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>Search for: %s", NULLP(buffer));
-	GNUGOL_OUTF(q, "</title></head><body>");
+	GNUGOL_OUTF(q, "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>Search for: %s</title></head><body>", NULLP(buffer));
 	break;
 	
       case FORMATSSML: 
@@ -77,6 +97,7 @@ int gnugol_header_out(QueryOptions_t *q) {
 int gnugol_footer_out(QueryOptions_t *q) {
   if(q->footer) {
     switch(q->format) {
+    case FORMATHTML5:
     case FORMATHTML:
     case FORMATELINKS: GNUGOL_OUTF(q,"</body></html>"); break;
     case FORMATORG:
@@ -92,8 +113,8 @@ int gnugol_keywords_out(QueryOptions_t *q __attribute__((unused))) {
   return(0);
 }
 
-static char *levels[] = { "", "*","**","***","****","*****", NULL };
-static char padding[] = "          ";
+static const char *levels[] = { "", "*","**","***","****","*****", NULL };
+static const char padding[] = "          ";
 
 // FIXME: 3! possible combinations of output options here 
 // snippets/urls/titles/ads
@@ -106,6 +127,7 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
   char tempstr[SNIPPETSIZE]; 
   q->returned_results++;
   switch (q->format) {
+  case FORMATIKI: 
   case FORMATWIKI: 
     GNUGOL_OUTF(q,"[[%s|%s]] %s  \n",t, u, s);  
     break;
@@ -159,6 +181,7 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
       GNUGOL_OUTF(q,"   %s\n", tempstr); 
     }
     break;
+  case FORMATTEXT: 
   case FORMATTERM: 
     { 
       strcpy(tempstr,t);
@@ -169,6 +192,7 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
       GNUGOL_OUTF(q,"%s\n", tempstr); 
     }
     break;
+  case FORMATHTML5:
   case FORMATHTML:
   case FORMATELINKS: 
     GNUGOL_OUTF(q,"<p><a href=\"%s\">%s</a> %s</p>", u, t, s); 

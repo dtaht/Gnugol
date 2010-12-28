@@ -1,6 +1,29 @@
 #define MAX_MTU 1280
 #define MAX_ENTRIES 8
 
+
+enum gnugol_formatter {
+  FORMATNONE,
+  FORMATRAW,
+  FORMATTERM,
+  FORMATTEXT,
+  FORMATHTML,
+  FORMATHTML5,
+  FORMATELINKS,
+  FORMATWIKI,
+  FORMATIKI,
+  FORMATORG,
+  FORMATSSML,
+  FORMATJSON,
+  FORMATXML,
+  FORMATMDWN,
+  FORMATCSV,
+  FORMATSQL,
+  FORMATTEXTILE, 
+  FORMATINFO
+};
+ 
+
 struct gnugol_buffer_obj {
   int size;
   int len;
@@ -47,7 +70,7 @@ struct query_options {
   int nresults;
   int position;
   int safe; // 0, 1, 2
-  int format;
+  enum gnugol_formatter format;
   int returned_results;
   char *header_str;
   char *footer_str;
