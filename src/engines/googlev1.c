@@ -17,6 +17,7 @@
 #include "handy.h"
 #include "formats.h"
 #include "gnugol_engines.h"
+#include "gnugol_maps.h"
 
 #ifndef __GNUC__
 #  define __attribute__(x)
@@ -36,6 +37,25 @@
     safe= active | moderate | off
 
 */
+
+/* Just plain overkill unless we start taking this as a string on
+   the command line
+
+static const gnugol_intmap_t safe_map[] = {
+	{ 0, "off" },
+	{ 1, "moderate" },
+	{ 2, "active" },
+	{-1, NULL }
+};
+
+*/
+static const char *safe_map[] = {
+	"off", "moderate", "active", NULL
+};
+
+//static const gnugol_charmap_t language_map = {
+//
+//};
 
 #if 0
 static struct {
@@ -62,15 +82,25 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
     size = 0;
   }
 
+  if(q->safe < 0) q->safe = 0;
+  if(q->safe > 2) q->safe = 2;
+  if(q->debug > 5) GNUGOL_OUTW(q,"google: safesearch=%s\n",safe_map[q->safe]);
+
   if(q->nresults > 8) q->nresults = 8; // google enforced
   if(q->debug) GNUGOL_OUTW(q,"KEYWORDS = %s\n", q->keywords);
 
   if (size == 0)
-    size = snprintf(string,URL_SIZE,"%s&rsz=%d&start=%d&q=%s",
-		     TEMPLATE, q->nresults,q->position,q->keywords);
+	  size = snprintf(string,URL_SIZE,
+			  "%s&rsz=%d&start=%d&safe=%s&q=%s",
+			  TEMPLATE,
+			  q->nresults,q->position,
+			  safe_map[q->safe], q->keywords);
   else
-    size = snprintf(string,URL_SIZE,"%s&key=%s&rsz=%d&start=%d&q=%s",
-		     TEMPLATE,key,q->nresults,q->position,q->keywords);
+	  size = snprintf(string,URL_SIZE,
+			  "%s&key=%s&rsz=%d&start=%d&safe=%s&q=%s",
+			  TEMPLATE,key,
+			  q->nresults,q->position,
+			  safe_map[q->safe],q->keywords);
 
   if (size > sizeof(q->querystr))
   {

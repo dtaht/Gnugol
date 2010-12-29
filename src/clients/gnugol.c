@@ -55,22 +55,23 @@ int usage (char *err) {
   if(err) fprintf(stderr,"%s\n",err);
   printf("gnugol [options] keywords to search for\n");
   printf(
-	 "-a --about         [credits|copyright|license|source|config|manual|stats]\n"
-	 "-d --debug     X   debug output level\n"
-	 "-e --engine        [bing|google|dummy]\n"
-	 "-F --footer    0|1 disable/enable output footer\n"
-	 "-H --header    0|1 disable/enable output header\n"
-	 "-h --help          this message\n"
-	 "-i --indent    X   result indentation level\n"
-	 "-l --language-in   [language (in UTF-8 format: e.g. en_US)]\n"
-	 "-L --language-out  [language (in UTF-8 format: e.g. en_US)]\n"
 	 "-n --nresults      number of results to fetch\n"
-	 "-o --output        [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
 	 "-p --position      start of results to fetch\n"
+	 "-e --engine        [bing|google|dummy]\n"
+	 "-o --output        [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
 	 "-s --snippets  0|1 disable/enable snippets\n"
 	 "-t --titles    0|1 disable/enable titles\n"
 	 "-u --urls      0|1 disable/enable urls\n"
+	 "-S --safe    0|1|2 [off|moderate|active] result filtering\n"
+	 "-l --language-in   [language (in UTF-8 format: e.g. en_US)]\n"
+	 "-L --language-out  [language (in UTF-8 format: e.g. en_US)]\n"
+	 "-H --header    0|1 disable/enable output header\n"
+	 "-F --footer    0|1 disable/enable output footer\n"
+	 "-i --indent    X   result indentation level\n"
+	 "-d --debug     X   debug output level\n"
 	 "-v --verbose       provide more verbose insight\n"
+	 "-h --help          this message\n"
+	 "-a --about         [credits|copyright|license|source|config|manual|stats]\n"
 
 #ifdef HAVE_GNUGOLD
 	 "-b --broadcast broadcast results to local network\n"
@@ -97,7 +98,6 @@ int usage (char *err) {
 	 "-C --config\n"
 	 "-D --defaults\n"
 	 "-g --plugin\n"
-	 "-S --safe\n"
 	 "   --source\n"
 #endif
   );
@@ -119,6 +119,7 @@ static const struct option long_options[] = {
   { "output"		, required_argument	, NULL , 'o' } ,
   { "position"		, required_argument	, NULL , 'p' } ,
   { "snippets"		, required_argument	, NULL , 's' } ,
+  { "safe"		, required_argument    	, NULL , 'S' } ,
   { "titles"		, required_argument	, NULL , 't' } ,
   { "urls"		, required_argument	, NULL , 'u' } ,
   { "verbose"		, no_argument		, NULL , 'v' } ,
@@ -137,18 +138,17 @@ static const struct option long_options[] = {
 
 #ifdef WHENIHAVETIMETOADDTHESEOFFICIALLY
   { "ads"		, required_argument	, NULL , 'A' } ,
-  { "cache"		, no_argument		, NULL , 'c' } ,     
-  { "force"		, no_argument		, NULL , 'f' } ,   
+  { "cache"		, no_argument		, NULL , 'c' } ,
+  { "force"		, no_argument		, NULL , 'f' } ,
   { "input"		, required_argument	, NULL , 'I' } ,
-  { "offline"		, no_argument		, NULL , '5' } , 
-  { "reverse"		, no_argument		, NULL , 'r' } , 
+  { "offline"		, no_argument		, NULL , '5' } ,
+  { "reverse"		, no_argument		, NULL , 'r' } ,
 #endif
 
 #ifdef WHATABOUTTHESE
   { "config"		, no_argument		, NULL , 'C' } ,
   { "defaults"		, no_argument		, NULL , 'D' } ,
   { "plugin"		, no_argument		, NULL , 'g' } ,
-  { "safe"		, no_argument		, NULL , 'S' } ,
   { "source"		, no_argument		, NULL ,  0  } ,
 #endif
 
@@ -157,11 +157,11 @@ static const struct option long_options[] = {
 
 int gnugol_parse_config_file(QueryOptions_t *q __attribute__((unused))) {
   return 0;
-} 
+}
 
 #define penabled(a) if(o->a) fprintf(fp,"" # a " ");
 
-int 
+int
 print_enabled_options(QueryOptions_t *o, FILE *fp) {
   if(o->verbose) fprintf(fp,"Search Keywords: %s\n",o->keywords);
   fprintf(fp,"Results Requested: %d\n", o->nresults);
@@ -197,6 +197,7 @@ print_enabled_options(QueryOptions_t *o, FILE *fp) {
 }
 
 #define pifverbose(q,string) if(q->verbose) { printf("%s",val); }
+#define BOOLOPT(OPTION) OPTION = (strtoul(optarg,NULL,10) & 1)
 
 int process_options(int argc, char **argv, QueryOptions_t *o) {
   int option_index = 0;
@@ -206,39 +207,40 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   if(argc == 1) usage("");
 
 #ifdef HAVE_GNUGOLD
-#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:t:u:vb46mPRST"
+#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:S:t:u:vb46mPRST"
 #else
-#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:t:u:v"
+#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:S:t:u:v"
 #endif
 
 // useful a -- by itself ends options parsing
 
   do {
-    opt = getopt_long(argc, argv, 
+    opt = getopt_long(argc, argv,
 		      QSTRING,
 		      long_options, &option_index);
-    if(opt == -1) break; 
+    if(opt == -1) break;
 
-    switch (opt) 
-    { 
-      case 'a': o->about = 1;  break; 
+    switch (opt)
+    {
+      case 'a': o->about = 1;  break;
       case 'd': o->debug = strtoul(optarg,NULL,10); break;
-      case 'e': o->engine = 1; o->engine_name = optarg; break; 
-      case 'F': o->footer = strtoul(optarg,NULL,10); break;
+      case 'e': o->engine = 1; o->engine_name = optarg; break;
+      case 'F': BOOLOPT(o->footer); break;
       case 'H': o->header = strtoul(optarg,NULL,10); break;
-      case 'h': 
+      case 'h':
       case '?': usage(NULL); break;
       case 'i': o->indent = strtoul(optarg,NULL,10); break;
       case 'l': o->input_language = optarg; break;
       case 'L': o->output_language = optarg; break;
-      case 'n': o->nresults = strtoul(optarg,NULL,10); break; 
+      case 'n': o->nresults = strtoul(optarg,NULL,10); break;
       case 'o':
            for(int i = 0; output_type[i].desc != NULL; i++)
-	    if(strcmp(output_type[i].desc,optarg) == 0) 
-	      o->format = output_type[i].id; 
+	    if(strcmp(output_type[i].desc,optarg) == 0)
+	      o->format = output_type[i].id;
            break;
       case 'p': o->position = strtoul(optarg,NULL,10); break;
       case 's': o->snippets = strtoul(optarg,NULL,10); break;
+      case 'S': o->safe = strtoul(optarg,NULL,10); break;
       case 't': o->titles = strtoul(optarg,NULL,10); break;
       case 'u': o->urls = strtoul(optarg,NULL,10); break;
       case 'v': o->verbose = 1; break;
@@ -261,7 +263,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       /* force missing */
       case 'I': o->input = 1; o->input_file = optarg; break; // FIXME
       case '5': o->offline = 1; break;
-      case 'r': o->reverse = 1; break;  
+      case 'r': o->reverse = 1; break;
 #endif
 
 #ifdef WHATABOUTTHESE
@@ -269,13 +271,12 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       /* defaults missing */
       case 'P': o->plugin = 1; break;
       case 'f': o->output = 1; break; // FIXME
-      case 'S': o->safe = 1; strtoul(optarg,NULL,10); break; 
       /* source missing */
 #endif
 
       default: fprintf(stderr,"%c",opt); usage("Invalid option"); break;
-    } 
-  } while (1); 
+    }
+  } while (1);
 
   for(i = optind; i < argc; i++) {
     if((querylen += strlen(argv[i]) > MAX_MTU - 80)) {
@@ -287,24 +288,25 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   }
   // FIXME: if called with no args do the right thing
   if(o->debug > 0) print_enabled_options(o, stderr);
-  if(!(o->urls | o->snippets | o->ads | o->titles)) { 
-    o->urls = 1; // Always default to fetching urls 
+  if(!(o->urls | o->snippets | o->ads | o->titles)) {
+    o->urls = 1; // Always default to fetching urls
   }
   return(optind);
 }
 
 static void gnugol_default_QueryOptions(QueryOptions_t *q) {
-  q->nresults = 5;
-  q->position = 0;
-  q->urls = 1;
-  q->snippets = 1;
-  q->titles = 1;
-  q->engine_name = "google";
-  q->input_language = "en";
-  q->header = 1;
-  q->footer = 1;
-  q->format = FORMATDEFAULT; // NONE
-  q->indent = -1;
+	q->nresults = 5;
+	q->position = 0;
+	q->urls = 1;
+	q->snippets = 1;
+	q->titles = 1;
+	q->engine_name = "google";
+	q->input_language = "en";
+	q->header = 1;
+	q->footer = 1;
+	q->format = FORMATDEFAULT; // NONE
+	q->indent = -1;
+	q->safe = 1;
 }
 
 int main(int argc, char **argv) {
@@ -314,13 +316,13 @@ int main(int argc, char **argv) {
   gnugol_default_QueryOptions(&q);
   process_options(argc,argv,&q);
   if(q.about) {
-    q.engine_name = "credits";  
+    q.engine_name = "credits";
     q.header_str = "About";
-  } 
+  }
 
   result = gnugol_query_engine(&q);
 
-  if(q.returned_results > 0) {     
+  if(q.returned_results > 0) {
       printf("%s",q.out.s);
     }
 
@@ -334,5 +336,5 @@ int main(int argc, char **argv) {
     fprintf(stderr,"err len = %d\n size = %d, Contents  = %s\n",q.err.len, q.err.size, q.err.s);
   }
   gnugol_free_QueryOptions(&q);
-  return(0); 
+  return(0);
 }
