@@ -62,8 +62,6 @@ int usage (char *err) {
 	 "-s --snippets  0|1 disable/enable snippets\n"
 	 "-t --titles    0|1 disable/enable titles\n"
 	 "-u --urls      0|1 disable/enable urls\n"
-	 "-l --language-in   [en|es|fr|nl or other 2 char locale]\n"
-	 "-L --language-out  [en|es|fr|nl or other 2 char locale]\n"
 	 "-H --header    0|1 disable/enable output header\n"
 	 "-F --footer    0|1 disable/enable output footer\n"
 	 "-i --indent    X   result indentation level\n"
@@ -86,6 +84,8 @@ int usage (char *err) {
 #endif
 
 #ifdef WHENIHAVETIMETOADDTHESEOFFICIALLY
+	 "-l --language-in   [en|es|fr|nl or other 2 char locale]\n"
+	 "-L --language-out  [en|es|fr|nl or other 2 char locale]\n"
 	 "-A --ads 0|1\n"
 	 "-c --cache     serve only results from cache(s)\n"
 	 "-f --force     force a new query, even if cached\n"
