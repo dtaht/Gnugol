@@ -17,7 +17,7 @@
 
 ;; FIXME: Convert all to defcustom and add support for args
 
-(defcustom gnugol-cmd "gnugol -o org"
+(defcustom gnugol-cmd "gnugol"
   "Shell command to invoke gnugol."
   :type 'string
   :group 'gnugol)
@@ -111,7 +111,7 @@
   (interactive "sSearch: ")
   (if (< (length str) gnugol-search-maxlen)
       (let (newbuffer)
-	(setq gnugol-opts (concat gnugol-default-opts " -n " gnugol-default-nresults))
+	(setq gnugol-opts (concat " " gnugol-default-opts " -n " (int-to-string gnugol-default-nresults)))
 	(setq newbuffer (get-buffer-create gnugol-default-output-buffer))
 	(set-buffer newbuffer)
 	(org-mode)
@@ -120,7 +120,8 @@
 	;; (if (search-forward (concat "[Search: " str "]")) () 
 	(save-excursion 
 	  (insert-string (concat "* [[gnugol: " str "][Search: " str "]]\n"))
-	  (insert (shell-command-to-string (concat gnugol-cmd " " gnugol-opts " -- " str )))
+	  (insert (shell-command-to-string (concat gnugol-cmd gnugol-opts " -- " str )))
+	  ;; (message (concat gnugol-cmd gnugol-opts " -- " str))
 	  (switch-to-buffer newbuffer)
 	  ))
     ( (beep) (message "search string too long")))) 
