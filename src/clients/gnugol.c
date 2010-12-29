@@ -57,7 +57,7 @@ int usage (char *err) {
   printf(
 	 "-a --about         [credits|copyright|license|source|config|manual|stats]\n"
 	 "-d --debug     X   debug output level\n"
-	 "-e --engine        [bing|google|wikipedia|dummy]\n"
+	 "-e --engine        [bing|google|dummy]\n"
 	 "-F --footer    0|1 disable/enable output footer\n"
 	 "-H --header    0|1 disable/enable output header\n"
 	 "-h --help          this message\n"
@@ -67,6 +67,9 @@ int usage (char *err) {
 	 "-n --nresults      number of results to fetch\n"
 	 "-o --output        [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
 	 "-p --position      start of results to fetch\n"
+	 "-s --snippets  0|1 disable/enable snippets\n"
+	 "-t --titles    0|1 disable/enable titles\n"
+	 "-u --urls      0|1 disable/enable urls\n"
 	 "-v --verbose       provide more verbose insight\n"
 
 #ifdef HAVE_GNUGOLD
@@ -88,9 +91,6 @@ int usage (char *err) {
 	 "-I --input     [filename] input from a file\n"
 	 "-5 --offline   store up query for later\n"
 	 "-r --reverse   reverse the list\n"
-	 "-s --snippets 0|1\n"
-	 "-t --titles 0|1\n"
-	 "-u --urls 0|1\n"
 #endif
 
 #ifdef WHATABOUTTHESE
@@ -105,9 +105,6 @@ int usage (char *err) {
   exit(-1);
 }
 
-// There's a version of getopt out there that lets you put in the help text.
-// Silly to separate the two, but...
-
 static const struct option long_options[] = {
   { "about"		, no_argument		, NULL , 'a' } ,
   { "debug"		, required_argument	, NULL , 'd' } ,
@@ -121,6 +118,9 @@ static const struct option long_options[] = {
   { "nresults"		, required_argument	, NULL , 'n' } ,
   { "output"		, required_argument	, NULL , 'o' } ,
   { "position"		, required_argument	, NULL , 'p' } ,
+  { "snippets"		, required_argument	, NULL , 's' } ,
+  { "titles"		, required_argument	, NULL , 't' } ,
+  { "urls"		, required_argument	, NULL , 'u' } ,
   { "verbose"		, no_argument		, NULL , 'v' } ,
 
 #ifdef HAVE_GNUGOLD
@@ -142,17 +142,14 @@ static const struct option long_options[] = {
   { "input"		, required_argument	, NULL , 'I' } ,
   { "offline"		, no_argument		, NULL , '5' } , 
   { "reverse"		, no_argument		, NULL , 'r' } , 
-  { "snippets"		, required_argument	, NULL , 's' } ,
-  { "titles"		, required_argument	, NULL , 't' } ,
-  { "urls"		, required_argument	, NULL , 'u' } ,
 #endif
 
 #ifdef WHATABOUTTHESE
   { "config"		, no_argument		, NULL , 'C' } ,
-  { "defaults"		, no_argument		, NULL , 'D' } ,   
-  { "plugin"		, no_argument		, NULL , 'g' } ,    
-  { "safe"		, no_argument		, NULL , 'S' } ,       
-  { "source"		, no_argument		, NULL ,  0  } ,     
+  { "defaults"		, no_argument		, NULL , 'D' } ,
+  { "plugin"		, no_argument		, NULL , 'g' } ,
+  { "safe"		, no_argument		, NULL , 'S' } ,
+  { "source"		, no_argument		, NULL ,  0  } ,
 #endif
 
   { NULL		, 0			, NULL ,  0  }
@@ -209,9 +206,9 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   if(argc == 1) usage("");
 
 #ifdef HAVE_GNUGOLD
-#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:vb46mPRST"
+#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:t:u:vb46mPRST"
 #else
-#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:v"
+#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:t:u:v"
 #endif
 
 // useful a -- by itself ends options parsing
@@ -241,6 +238,9 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 	      o->format = output_type[i].id; 
            break;
       case 'p': o->position = strtoul(optarg,NULL,10); break;
+      case 's': o->snippets = strtoul(optarg,NULL,10); break;
+      case 't': o->titles = strtoul(optarg,NULL,10); break;
+      case 'u': o->urls = strtoul(optarg,NULL,10); break;
       case 'v': o->verbose = 1; break;
 
 #ifdef HAVE_GNUGOLD
@@ -262,9 +262,6 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       case 'I': o->input = 1; o->input_file = optarg; break; // FIXME
       case '5': o->offline = 1; break;
       case 'r': o->reverse = 1; break;  
-      case 's': o->snippets = strtoul(optarg,NULL,10); break;
-      case 't': o->titles = strtoul(optarg,NULL,10); break;
-      case 'u': o->urls = strtoul(optarg,NULL,10); break;
 #endif
 
 #ifdef WHATABOUTTHESE
