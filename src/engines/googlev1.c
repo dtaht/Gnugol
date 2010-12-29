@@ -1,5 +1,8 @@
-/* This engine implements a gnugol -> google web api -> gnugol json translator plugin 
-   using the google web api v1, which was deprecated Nov 1, 2010. */
+/* This engine implements a:
+   gnugol -> google web api -> gnugol json translator engine
+   using the google web api v1, which was deprecated Nov 1, 2010. 
+   According to google's API policy, they will no longer provide
+   this api 3 years from that date. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,8 +26,8 @@
 #define LICENSE_URL "I don't know if you can even get one anymore."
 #define TOU "http://code.google.com/apis/websearch/terms.html"
 
-/* See options at 
-   http://code.google.com/apis/ajaxsearch/documentation/reference.html#_intro_fonje 
+/* See options at
+   http://code.google.com/apis/ajaxsearch/documentation/reference.html#_intro_fonje
    including:
     rsz= large | small  (8 vs 4)
     start= <0-indexed offset>
@@ -48,7 +51,7 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
   char   string[URL_SIZE];
   char   key   [256];
   size_t size;
-  
+
   if(q->debug > 9) GNUGOL_OUTW(q,"Entering Setup\n");
 
   size = sizeof(key);
@@ -63,18 +66,18 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
   if(q->debug) GNUGOL_OUTW(q,"KEYWORDS = %s\n", q->keywords);
 
   if (size == 0)
-    size = snprintf(string,URL_SIZE,"%s&rsz=%d&start=%d&q=%s",	
+    size = snprintf(string,URL_SIZE,"%s&rsz=%d&start=%d&q=%s",
 		     TEMPLATE, q->nresults,q->position,q->keywords);
   else
     size = snprintf(string,URL_SIZE,"%s&key=%s&rsz=%d&start=%d&q=%s",
-		     TEMPLATE,key,q->nresults,q->position,q->keywords); 
+		     TEMPLATE,key,q->nresults,q->position,q->keywords);
 
   if (size > sizeof(q->querystr))
   {
     GNUGOL_OUTE(q,"Size of URL exceeds space set aside for it");
     return -1;
   }
-  
+
   strcpy(q->querystr,string);
   if(q->debug > 9) GNUGOL_OUTW(q,"Exiting Setup\n");
   return (int)size;
@@ -83,11 +86,11 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
 // turn quotes back into quotes and other utf-8 stuff
 // FIXME: Error outs cause a memory leak from "root"
 // use thread local storage? or malloc for the buffer
-// FIXME: do fuller error checking 
+// FIXME: do fuller error checking
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 // This engine takes advantage (abuses!) the CPP pasting tokens
-// with a couple macros to make the interface to json a 1 to 1 relationship 
+// with a couple macros to make the interface to json a 1 to 1 relationship
 // The code is delightfully short this way.
 
 int GNUGOL_DECLARE_ENGINE(search,google) (QueryOptions_t *q) {
@@ -95,11 +98,11 @@ int GNUGOL_DECLARE_ENGINE(search,google) (QueryOptions_t *q) {
     char *text;
     json_t *root,*responseData, *results;
     json_error_t error;
-    if(q->debug) GNUGOL_OUTW(q,"%s: trying url: %s\n", q->engine_name, q->querystr); 
+    if(q->debug) GNUGOL_OUTW(q,"%s: trying url: %s\n", q->engine_name, q->querystr);
 
     text = jsonrequest(q->querystr);
     if(!text) {
-      GNUGOL_OUTE(q,"url failed to work: %s", q->querystr); 
+      GNUGOL_OUTE(q,"url failed to work: %s", q->querystr);
       return 1;
     }
 
@@ -111,9 +114,9 @@ int GNUGOL_DECLARE_ENGINE(search,google) (QueryOptions_t *q) {
         GNUGOL_OUTE(q,"error: on line %d: %s\n", error.line, error.text);
         return 1;
     }
-    
+
     GETOBJ(root,responseData);
-    GETARRAY(responseData,results);  
+    GETARRAY(responseData,results);
     gnugol_header_out(q);
 
     for(i = 0; i < json_array_size(results); i++)

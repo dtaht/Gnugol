@@ -16,24 +16,24 @@ extern int engine_googlev1(QueryOptions_t *q);
 extern int engine_dummy(QueryOptions_t *q);
 
 struct  output_types {
-  int id;
-  char *desc;
+	int id;
+	char *desc;
 };
 
 
 // FIXME: Verify differences between ikiwiki and media wiki format
 
 static struct output_types output_type[] = {
-  { FORMATHTML, "html" },
-  { FORMATWIKI, "wiki" },
-  { FORMATXML,  "xml" },
-  { FORMATJSON, "json" },
-  { FORMATORG,  "org" },
-  { FORMATTERM, "text" },
-  { FORMATSSML, "ssml" },
-  { FORMATMDWN, "mdwn" },
-  { 0, NULL },
-  };
+	{ FORMATHTML, "html" },
+	{ FORMATWIKI, "wiki" },
+	{ FORMATXML,  "xml" },
+	{ FORMATJSON, "json" },
+	{ FORMATORG,  "org" },
+	{ FORMATTERM, "text" },
+	{ FORMATSSML, "ssml" },
+	{ FORMATMDWN, "mdwn" },
+	{ 0, NULL },
+};
 
 
 #define penabled(a) if(o->a) fprintf(fp,"" # a " ");
