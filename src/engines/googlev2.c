@@ -149,7 +149,7 @@ int GNUGOL_DECLARE_ENGINE(search,googlev2) (QueryOptions_t *q) {
       GETSTRING(item,link);
       GETSTRING(item,title);
       GETSTRING(item,snippet);
-      gnugol_result_out(q,jsv(link),jsv(title),jsv(snippet),NULL);
+      gnugol_result_out(q,jsv(link),jsv(title),jsv(snippet));
     }
 
     gnugol_footer_out(q);

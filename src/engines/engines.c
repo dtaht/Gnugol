@@ -16,14 +16,14 @@
 static void *gnugol_try_openlib(QueryOptions_t *q) {
   void *lib;
   char libname[FILENAME_MAX];
-  
-  snprintf(libname,FILENAME_MAX, GNUGOL_SHAREDLIBDIR "/%s.so",q->engine_name);
+
+  snprintf(libname,FILENAME_MAX, GNUGOL_SHAREDLIBDIR "/%s.%s",q->engine_name, SO_EXT);
   lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
 
-#ifndef PRODUCTION  
+#ifndef PRODUCTION
   if (lib == NULL) {
     GNUGOL_OUTW(q,"%s(1): Not in default location, error: %s\n",q->engine_name,dlerror());
-    snprintf(libname,FILENAME_MAX,"../engines/%s.so",q->engine_name);
+    snprintf(libname,FILENAME_MAX,"../engines/%s.%s",q->engine_name, SO_EXT);
     lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
   }
 #endif
@@ -38,14 +38,14 @@ static void *gnugol_try_openlib(QueryOptions_t *q) {
 
 // The external namespace is of the format
 // gnugol_engine_type_engine
-// FIXME: There is a major security hole. We really want to 
+// FIXME: There is a major security hole. We really want to
 // sanitize our inputs, otherwise ANY shared library could be
 // run
 
 #define ENGINE_FORMAT "gnugol_engine_%s_%s"
 int gnugol_query_engine(QueryOptions_t *q)
 {
-  void *lib;
+	void *lib;
   char funcname[255];
   int (*setup)(QueryOptions_t *);
   int (*results)(QueryOptions_t *);
@@ -58,7 +58,7 @@ int gnugol_query_engine(QueryOptions_t *q)
   if(q->debug)
     GNUGOL_OUTW(q,"%s: trying to acquire shared lib\n",q->engine_name);
 
-  if(lib == NULL) { 
+  if(lib == NULL) {
     GNUGOL_OUTE(q,"%s: failed to acquire shared lib\n",q->engine_name);
     return(-1);
   }
@@ -74,7 +74,7 @@ int gnugol_query_engine(QueryOptions_t *q)
     dlclose(lib);
     return -1;
   }
-  
+
   if(q->debug)
     GNUGOL_OUTW(q,"%s: got setup function \n",q->engine_name);
   sprintf(funcname,ENGINE_FORMAT,"search",q->engine_name);
@@ -88,19 +88,19 @@ int gnugol_query_engine(QueryOptions_t *q)
 
   if(q->debug)
     GNUGOL_OUTW(q,"%s: shared libs are live\n",q->engine_name);
-  
+
   rc = (*setup)(q);
   if (rc < 0)
-  { 
+  {
     GNUGOL_OUTW(q,"%s: Went boom on setup\n",q->engine_name);
     dlclose(lib);
     return rc;
   }
   if(q->debug)
     GNUGOL_OUTW(q,"%s: trying query\n",q->engine_name);
-  
+
   rc = (*results)(q);
-  
+
   dlclose(lib);
   return rc;
 }
@@ -116,39 +116,39 @@ int gnugol_read_key(
   int      fd;
   ssize_t  size;
   int      err;
-  
+
   assert(key     != NULL);
   assert(pksize  != NULL);
   assert(*pksize >  0);
   assert(keyfile != NULL);
-  
+
   home = getenv("HOME");
-  if (home == NULL) 
+  if (home == NULL)
     home = "";
-  
+
   snprintf(path,sizeof(path),"%s/%s",home,keyfile);
   fd = open(path,O_RDONLY);
   if (fd == -1)
     return errno;
-  
+
   size = read(fd,key,*pksize);
   err  = errno;
   close(fd);
-  
+
   if (size == -1)
     return errno;
-  
+
   if (size == 0)
     return ENODATA;
-  
+
   while((size > 0) && ((key[size - 1] == ' ') || (key[size - 1] == '\n')))
     size--;
-  
+
   if (size == 0)
     return ENODATA;
-  
+
   key[size] = '\0';
-  
+
   *pksize = size;
   return 0;
 }
@@ -157,7 +157,7 @@ int gnugol_read_key(
 
 #ifdef GNUGOL_STATIC
 
-struct engines { 
+struct engines {
   char *id;
   gnugol_engine e;
 };
@@ -168,7 +168,7 @@ static int no_engine(QueryOptions_t *q) {
 }
 
 
-static struct engines e[] = { 
+static struct engines e[] = {
   { "google", GNUGOL_DECLARE_ENGINE(search,google) },
   { "bing",   GNUGOL_DECLARE_ENGINE(search,bing) },
   { "wikipedia", GNUGOL_DECLARE_ENGINE(search,wikipedia) },
@@ -190,22 +190,22 @@ gnugol_engine gnugol_get_engine(QueryOptions_t *q) {
 
 Can you tell what the following declaration means?
 
- 
+
   void (*p[10]) (void (*)() );
 
 Only few programmers can tell that p is an "array of 10 pointers to a function returning void and taking a pointer to another function that returns void and takes no arguments." The cumbersome syntax is nearly indecipherable. However, you can simplify it considerably by using typedef declarations. First, declare a typedef for "pointer to a function returning void and taking no arguments" as follows:
 
- 
+
   typedef void (*pfv)();
 
 Next, declare another typedef for "pointer to a function returning void and taking a pfv" based on the typedef we previously declared:
 
- 
+
   typedef void (*pf_taking_pfv) (pfv);
 
 Now that we have created the pf_taking_pfv typedef as a synonym for the unwieldy "pointer to a function returning void and taking a pfv", declaring an array of 10 such pointers is a breeze:
 
- 
+
   pf_taking_pfv p[10];
 
 */

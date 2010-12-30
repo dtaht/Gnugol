@@ -24,10 +24,28 @@
    obsolete --org --wiki --etc in favor of -o wiki
 ** DONE Abstract out output mode processing from json parsing
    Make it easier to write multiple engines
+** DONE NULL Strings can crash gnugol's formatters
+   CLOSED: [2010-12-28 Tue 15:38]
+   The gnugol engine was very cavalier about empty strings and null inputs as it always gets good data back from the rest of the world. I added a set of fuzz tests to the dummy engine, and was unsurprised to see it go boom. Fixing it took a GOOD long while though.
+   :LOGBOOK:
+   - State "DONE"       from "STARTED"    [2010-12-28 Tue 15:38]
+   - State "STARTED"    from "STARTED"    [2010-12-28 Tue 15:36]
+   CLOCK: [2010-12-28 Tue 13:04]--[2010-12-28 Tue 15:38] =>  2:34
+   - State "STARTED"    from "STARTED"    [2010-12-28 Tue 15:36]
+   - State "STARTED"    from "STARTED"    [2010-12-28 Tue 09:11]
+   CLOCK: [2010-12-28 Tue 09:11]--[2010-12-28 Tue 12:22] =>  3:11
+   :END:
+   :PROPERTIES:
+   :Effort:   4:00
+   :END:
+** TODO Formats vary based on NULL/missing inputs
+   There are 8 different ways the output can look, when data is missing. 
+   As part of fixing the NULL strings problem, I got an org formatter to basically work.
+   It should be fairly simple to get the remaining formatters to do the "right thing" 
 ** TODO Add an editable flag
    add an option to try to encourage gnugol to return a ptr to an editable page
    The example here would be mediawiki/wikipedia. 
-** Clean up memory management
+** TODO Clean up memory management
 *** DONE make buffer more of an object
     CLOSED: [2010-12-21 Tue 10:50]
     :LOGBOOK:
@@ -41,16 +59,31 @@
     :Effort:   1:00
     :END:
 *** Refactor
-** Shell mode
-*** UTF-8 
-   Gnugol has currently a very limited selection of html escapes to utf-8 support, implemented via a silly lookup routine. It would be better to have it be complete, and hashed with gperf.
-   There are many tools out there that try to do this (php and perl have examples), I just haven't got around to doing it myself.
-** Line/word breaking support
-   Coping with [[UTF-8]] is a difficult problem in C. What needs to happen is a fairly complex routine that does line breaking based on the value of the environment variable "COLUMNS" and the nearest UTF-8 word.
-** Non-utf-8 terminals
+** TODO Shell mode
+*** DONE HTML-Escape to UTF-8 
+   Gnugol had  a very limited selection of html escapes to utf-8 support.
+   Now it has a full html4 table, thx to Sean.
+*** Line/word breaking support
+   Coping with [[UTF-8]] is a difficult problem in C. What needs to happen is a fairly complex routine that does line breaking based on the value of the environment variable "COLUMNS" and the nearest UTF-8 charset word.
+*** Non-UTF-8 terminals
    Gnugol does not detect when it has a different character set than UTF-8.
 (I am not particularly interested in anything other than html<->utf-8 conversion, frankly)
-** Add support for the footnote mode of markdown/org/textile
+*** Input/Search language support
+**** STARTED Pick up the default language from the environment
+     :LOGBOOK:
+     - State "STARTED"    from "STARTED"    [2010-12-30 Thu 12:46]
+     CLOCK: [2010-12-30 Thu 12:46]
+     :END:
+     :PROPERTIES:
+     :Effort:   1:00
+     :END:
+     Different engines do this differently. Google needs 2 char codes, bing uses the full utf-8 string
+** TODO Add support for the footnote mode of markdown/org/textile
+** TODO Man page(s) for gnugol
+** TODO needs a .gnugol/config format
+   - use json for this structure
+   - need shortcuts, or "abbrevs" for passing along additional search options
+     (would like google code search, for example)
 ** TODO gnugol.el is incomplete
    There are a lot of features from other emacs clients and modes I'd like to borrow. Notably I'd like search-into-pt to be more mode aware than just org-mode. Also want hooks...
 *** minor mode for *gnugol* buffer
@@ -62,6 +95,15 @@
    --levels 0-5
 ** TODO Does not properly escape "[" characters when in a url or text snippet.
    This one is downright annoying, especially when mailing list results are returned. Substitute another utf-8 char?
+** TODO Coherently handle url escaping
+** TODO Input from a file
+   :LOGBOOK:
+   - State "STARTED"    from "STARTED"    [2010-12-30 Thu 05:40]
+   CLOCK: [2010-12-30 Thu 05:40]--[2010-12-30 Thu 09:32] =>  3:52
+   :END:
+   :PROPERTIES:
+   :Effort:   8:00
+   :END:
 ** Limited search engine support
 *** DONE Google's basic engine is essentially complete
 *** DONE Dummy engine
@@ -92,6 +134,7 @@
 **** Full pages tend to be returned
 *** TODO Xapian
 *** Other engines?
+*** TODO Man
 *** TODO DNS
 *** TODO Opensearch
 *** TODO RFCs
@@ -115,9 +158,21 @@
 **** Need a marking scheme for speech enabled search
 ** SearchMarks
    Unimplemented, prototyping in emacs
+** TODO Obsolete gnugold
+   There is a ton of broken code from the old networked client lying around that may be useful in the future.
+   Right now, however, it's just cluttering up the source tree and making the makefiles more complex. It's going to hurt to axe my own child, but it has to be done.
+** TODO make internationalization possible
+** TODO work with the latest json API
+   The jansson lib has evolved a slightly new API
+** Adopt a sane build system
+   Cmake? Waf? Autoconf? WTF?
+*** MUST cross compile
+
 * Gnugold Bugs
 ** Complete rewrite in progress
 ** The old UDP based protocol didn't work out
+** It would be nice to prefer text/rss/email/pdf style content for results
+   It really bugs me that most web pages are cluttered with crap.
 ** Misbehaving clients 
 ** Evil/renegade clients 
 A renegade client could respond to local multicast queries with spam - links and offensive stuff unrelated to the query itself. 

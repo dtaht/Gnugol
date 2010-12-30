@@ -11,7 +11,7 @@ TESTDIR=../tests/
 CFLAGS += -Wall -Wextra -pedantic
 CFLAGS+=-std=c99
 
-OBJECTS := handy.o utf8.o format.o
+OBJECTS := handy.o utf8.o format.o utf8_urlencode.o
 
 all: $(PROGS) $(OBJECTS) 
 
@@ -41,6 +41,9 @@ listen_server.o: listen_server.c $(INC)/listen_server.h
 
 fit_results.o: fit_results.c $(INC)/query.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c fit_results.c
+
+utf8_urlencode.o: utf8_urlencode.c $(INC)/utf8_urlencode.h
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c utf8_urlencode.c
 
 handy.o: handy.c $(INC)/query.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c handy.c

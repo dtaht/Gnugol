@@ -4,7 +4,7 @@
 ;; Author:     Dave Taht
 ;; Maintainer: d AT @ taht.net
 ;; Created:    Dec-2008
-;; Version:    0.03
+;; Version:    See git tree
 ;; Keywords:   extensions, web, search, google
 
 ;; This is an interface to the gnugol command line
@@ -17,7 +17,12 @@
 
 ;; FIXME: Convert all to defcustom and add support for args
 
-(defcustom gnugol-cmd "gnugol -o org"
+(defcustom gnugol-cmd "gnugol"
+  "Shell command to invoke gnugol."
+  :type 'string
+  :group 'gnugol)
+
+(defcustom gnugol-default-opts "-o org"
   "Shell command to invoke gnugol."
   :type 'string
   :group 'gnugol)
@@ -27,8 +32,13 @@
   :type 'string
   :group 'gnugol)
 
-(defcustom gnugol-default-nresults 4
+(defcustom gnugol-default-nresults 8
   "Default number of results for gnugol to return."
+  :type 'integer
+  :group 'gnugol)
+
+(defcustom gnugol-default-safe-mode 1
+  "Default safe mode to search in: 0 = none, 1 = moderate, 2 = active"
   :type 'integer
   :group 'gnugol)
 
@@ -38,7 +48,7 @@
   :group 'gnugol)
 
 (defcustom gnugol-default-output-buffer "*gnugol*"
-  "Output buffer. Set this to ~/org/gnugol.org if you want to keep your history."
+  "Output buffer. Set this to ~/org/gnugol_history.org if you want to keep your history."
   :type 'string
   :group 'gnugol)
 
@@ -74,8 +84,23 @@
 (defun gnugol-get-output-mode
   "Get the gnugol output mode from the current buffer mode."
   (if gnugol-default-output-mode-sensitive 
-    (	) 
+      () 
     ("org")))
+
+
+(defun gnugol-url-encode (str)
+  "URL-encode STR."
+  (interactive "sURL-encode: ")
+  (message "%s" (url-hexify-string str)))
+
+(defun gnugol-url-decode (str)
+  "URL-decode STR."
+  (interactive "sURL-decode: ")
+  (message "%s" (decode-coding-string
+		 (url-unhex-string str)
+		 'utf-8)))
+
+
 
 ;; FIXME: gnugol should act more like "woman"
 
@@ -84,19 +109,24 @@
 
 ;; FIXME: add next, prev, and refresh buttons 
 ;        [[gnugol: :next :pos 4 str][more]] [[gnugol: prev][prev]] [[refresh]]
-;; FIXME: Document this shell shortcut into org
+;; FIXME: Document this shell shortcut into org or write org mode version
 ;; FIXME: search forward in the buffer for an existing
 ;;        set of keywords rather than call gnugol
 ;;        (if (search-forward (concat "[[Search: " str )) () (gnugol-cmd str)))?
 ;; FIXME: Sanitize the shell arguments to prevent abuse !! For example no CRs
 ;;        regexp? Maybe the shell does it for me? What?
 ;; FIXME: actually, going to the 4th char in on the title would work best
-
+;; FIXME: make gnugol opts be local
+;; FIXME: CNTR-U should set the position
+;; FIXME: a query with the same keywords as the previous should fetch more 
+;;        results (maybe)
+;; (shell-quote-argument str )
 (defun gnugol (str)
   "search the web via gnugol, bring up results in org buffer"
   (interactive "sSearch: ")
   (if (< (length str) gnugol-search-maxlen)
       (let (newbuffer)
+	(setq gnugol-opts (concat " " gnugol-default-opts " -n " (int-to-string gnugol-default-nresults)))
 	(setq newbuffer (get-buffer-create gnugol-default-output-buffer))
 	(set-buffer newbuffer)
 	(org-mode)
@@ -105,10 +135,16 @@
 	;; (if (search-forward (concat "[Search: " str "]")) () 
 	(save-excursion 
 	  (insert-string (concat "* [[gnugol: " str "][Search: " str "]]\n"))
-	  (insert (shell-command-to-string (concat gnugol-cmd " " str )))
+	  (insert 
+	   (shell-command-to-string 
+	    (concat gnugol-cmd gnugol-opts " -U -- " 
+		    (shell-quote-argument 
+		     (gnugol-url-encode str)))
+	    ))
+	  ;; (message (concat gnugol-cmd gnugol-opts " -- " str))
 	  (switch-to-buffer newbuffer)
 	  ))
-    ( (beep) (message "search string too long")))) 
+    ( (beep) (message "search string too long"))))
 
 (defun gnugol-search-selection ()
   "Do a gnugol search based on a region"

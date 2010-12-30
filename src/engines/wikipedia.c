@@ -15,10 +15,6 @@
 #include "formats.h"
 #include "gnugol_engines.h"
 
-#ifndef __GNUC__
-#  define __attribute__ ((unused))
-#endif
-
 #define TEMPLATE  "http://en.wikipedia.org/w/api.php?action=query&prop=info&inprop=url&format=json&titles="
 
 /* Via Mark Hershberger
@@ -103,7 +99,7 @@ int GNUGOL_DECLARE_ENGINE(search,wikipedia) (QueryOptions_t *q) {
       GETSTRING(result,fullurl);
       GETSTRING(result,title);
       // GETSTRING(result,content);
-      gnugol_result_out(q,jsv(fullurl),jsv(title),"Wikipedia Entry",NULL);
+      gnugol_result_out(q,jsv(fullurl),jsv(title),"Wikipedia Entry");
     }
 
     gnugol_footer_out(q);

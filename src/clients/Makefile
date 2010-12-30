@@ -1,7 +1,10 @@
+# GNU Make only, please
+PLATFORM=$(shell uname -s)
+
 LIBS=-ljansson -lcurl -ldl
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
-COMMON=../common/handy.o ../common/utf8.o ../common/format.o
+COMMON=../common/handy.o ../common/utf8.o ../common/format.o ../common/utf8_urlencode.o
 #ENGINES=../engines/googlev1.o  ../engines/dummy.o ../engines/bing.o ../engines/wikipedia.o ../engines/engines.o # ../engines/googlev2.o
 ENGINES=../engines/engines.o
 
@@ -14,9 +17,17 @@ CGIDIR=/usr/lib/cgi-bin
 #BINDIR=$(HOME)/bin
 BINDIR=/usr/local/bin
 OBJECTS=gnugol.o #gnugol_fcgi.o
-CC=gcc
-CFLAGS += -rdynamic -std=c99 -Wall -Wextra -pedantic
+CFLAGS += -std=c99 -Wall -Wextra -pedantic
 STRIP=strip
+
+ifeq "$(PLATFORM)" "Darwin"
+CFLAGS += -fno-common
+LDFLAGS  = -dynamiclib
+else
+CC=gcc
+CFLAGS += -rdynamic
+endif
+
 CFLAGS+=-g
 
 #OBJECTS := connect_client.o listen_server.o parser.o 
