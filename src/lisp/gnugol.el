@@ -4,7 +4,7 @@
 ;; Author:     Dave Taht
 ;; Maintainer: d AT @ taht.net
 ;; Created:    Dec-2008
-;; Version:    0.03
+;; Version:    See git tree
 ;; Keywords:   extensions, web, search, google
 
 ;; This is an interface to the gnugol command line
@@ -87,6 +87,21 @@
       () 
     ("org")))
 
+
+(defun gnugol-url-encode (str)
+  "URL-encode STR."
+  (interactive "sURL-encode: ")
+  (message "%s" (url-hexify-string str)))
+
+(defun gnugol-url-decode (str)
+  "URL-decode STR."
+  (interactive "sURL-decode: ")
+  (message "%s" (decode-coding-string
+		 (url-unhex-string str)
+		 'utf-8)))
+
+
+
 ;; FIXME: gnugol should act more like "woman"
 
 ;; FIXME: If there is a visible gnugol buffer change focus to that rather than the current
@@ -105,7 +120,7 @@
 ;; FIXME: CNTR-U should set the position
 ;; FIXME: a query with the same keywords as the previous should fetch more 
 ;;        results (maybe)
-
+;; (shell-quote-argument str )
 (defun gnugol (str)
   "search the web via gnugol, bring up results in org buffer"
   (interactive "sSearch: ")
@@ -120,11 +135,16 @@
 	;; (if (search-forward (concat "[Search: " str "]")) () 
 	(save-excursion 
 	  (insert-string (concat "* [[gnugol: " str "][Search: " str "]]\n"))
-	  (insert (shell-command-to-string (concat gnugol-cmd gnugol-opts " -- " str )))
+	  (insert 
+	   (shell-command-to-string 
+	    (concat gnugol-cmd gnugol-opts " -U -- " 
+		    (shell-quote-argument 
+		     (gnugol-url-encode str)))
+	    ))
 	  ;; (message (concat gnugol-cmd gnugol-opts " -- " str))
 	  (switch-to-buffer newbuffer)
 	  ))
-    ( (beep) (message "search string too long")))) 
+    ( (beep) (message "search string too long"))))
 
 (defun gnugol-search-selection ()
   "Do a gnugol search based on a region"

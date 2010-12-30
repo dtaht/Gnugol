@@ -45,6 +45,7 @@ static const struct credits c[] = {
   { "config",  "Gnugol Configuration", "https://github.com/dtaht/Gnugol.git", "At present gnugol can only be configured via command line options. There will be a ~/.gnugol/config someday, in json format. " },
   { "manual",  "Gnugol Manual", GNUGOL_SITE, "Sorry, no manual yet. See the web site for some tips or try --help" },
   { "jwz", "jwz", "http://www.jwz.org/blog", "I share jwz's preference for green on black screens. His gruntle columns kept me sane in a darker era of web development, and I always loved the subversive element of the about:jwz parameter of Mozilla in an otherwise bland, corporatized world." },
+  { "quotes", "jwz", "http://www.jwz.org/blog", "Some people, when confronted with a problem, think 'I know, I'll use regular expressions.' Now they have two problems."},
   { "gnugol","gnugol",GNUGOL_SITE,"BEHOLD. THE WORLD WAS GREEN ON BLACK AND IT WAS GOOD." },  
   { NULL,NULL, NULL, NULL },
 };

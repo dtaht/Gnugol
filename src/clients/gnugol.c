@@ -14,6 +14,7 @@
 #include "query.h"
 #include "formats.h"
 #include "gnugol_engines.h"
+#include "utf8_urlencode.h"
 
 #ifndef __GNUC__
 #  define __attribute__(x)
@@ -48,6 +49,7 @@ static const struct output_types output_type[] = {
   { FORMATSQL, "sql" },
   { FORMATMAN, "man" },
   { FORMATDNS, "dns" },
+  { FORMATLISP, "lisp" },
   { 0, NULL },
   };
 
@@ -84,6 +86,7 @@ int usage (char *err) {
 #endif
 
 #ifdef WHENIHAVETIMETOADDTHESEOFFICIALLY
+	 "-U --url-escaped   input is already url escaped"
 	 "-l --language-in   [en|es|fr|nl or other 2 char locale]\n"
 	 "-L --language-out  [en|es|fr|nl or other 2 char locale]\n"
 	 "-A --ads 0|1\n"
@@ -122,6 +125,7 @@ static const struct option long_options[] = {
   { "safe"		, required_argument    	, NULL , 'S' } ,
   { "titles"		, required_argument	, NULL , 't' } ,
   { "urls"		, required_argument	, NULL , 'u' } ,
+  { "url-escaped"      	, no_argument		, NULL , 'U' } ,
   { "verbose"		, no_argument		, NULL , 'v' } ,
 
 #ifdef HAVE_GNUGOLD
@@ -204,12 +208,15 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   int i = 0;
   int querylen = 0;
   int opt = 0;
+  char string[1024];
+  string[0] = '\0';
+
   if(argc == 1) usage("");
 
 #ifdef HAVE_GNUGOLD
-#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:S:t:u:vb46mPRST"
+#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uvb46mPRST"
 #else
-#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:S:t:u:v"
+#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uv"
 #endif
 
 // useful a -- by itself ends options parsing
@@ -230,8 +237,8 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       case 'h':
       case '?': usage(NULL); break;
       case 'i': o->indent = strtoul(optarg,NULL,10); break;
-      case 'l': o->input_language = optarg; break;
-      case 'L': o->output_language = optarg; break;
+      case 'l': strcpy(o->input_language,optarg); break;
+      case 'L': strcpy(o->output_language,optarg); break;
       case 'n': o->nresults = strtoul(optarg,NULL,10); break;
       case 'o':
            for(int i = 0; output_type[i].desc != NULL; i++)
@@ -243,6 +250,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       case 'S': o->safe = strtoul(optarg,NULL,10); break;
       case 't': o->titles = strtoul(optarg,NULL,10); break;
       case 'u': o->urls = strtoul(optarg,NULL,10); break;
+      case 'U': o->url_escape = 1; break;
       case 'v': o->verbose = 1; break;
 
 #ifdef HAVE_GNUGOLD
@@ -283,14 +291,23 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       fprintf(stderr,"Too many words in query, try something smaller\n");
       return(1);
     }
-    strcat(o->keywords,argv[i]);
-    if(i+1 < argc) strcat(o->keywords,"%20"); // FIXME find urlencode lib
+    if(!o->url_escape) {
+	    strcat(string,argv[i]);
+    if(i+1 < argc) strcat(string," "); // FIXME: length check
+    } else {
+	    strcat(string,argv[i]);
+	    if(i+1 < argc) strcat(string,"+"); // FIXME: length check
+    }
   }
-  // FIXME: if called with no args do the right thing
+
+  if(!o->url_escape) {
+	  url_escape_utf8(o->keywords,string);
+	  o->url_escape = 1;
+  } else {
+	  strcpy(o->keywords,string);
+  }
   if(o->debug > 0) print_enabled_options(o, stderr);
-  if(!(o->urls | o->snippets | o->ads | o->titles)) {
-    o->urls = 1; // Always default to fetching urls
-  }
+  if(!(o->urls | o->snippets | o->ads | o->titles)) o->urls = 1;
   return(optind);
 }
 
@@ -301,7 +318,7 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
 	q->snippets = 1;
 	q->titles = 1;
 	q->engine_name = "google";
-	q->input_language = "en";
+	strcpy(q->input_language,"en");
 	q->header = 1;
 	q->footer = 1;
 	q->format = FORMATDEFAULT; // NONE

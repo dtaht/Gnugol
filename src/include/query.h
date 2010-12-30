@@ -1,7 +1,6 @@
 #define MAX_MTU 1280
 #define MAX_ENTRIES 8
 
-
 enum gnugol_formatter {
   FORMATNONE,
   FORMATRAW,
@@ -19,12 +18,13 @@ enum gnugol_formatter {
   FORMATMDWN,
   FORMATCSV,
   FORMATSQL,
-  FORMATTEXTILE, 
-  FORMATMAN, 
-  FORMATDNS, 
-  FORMATINFO
+  FORMATTEXTILE,
+  FORMATMAN,
+  FORMATDNS,
+  FORMATINFO,
+  FORMATLISP
 };
- 
+
 
 struct gnugol_buffer_obj {
   int size;
@@ -46,7 +46,7 @@ struct query_options {
   int reverse:1;
   int broadcast:1;
   int multicast:1;
-  int force:1; 
+  int force:1;
   int secure:1;
   int offline:1;
   int page:1;
@@ -66,7 +66,7 @@ struct query_options {
   int footer:1;
   int header:1;
   int about:1;
-
+  int url_escape:1;
   int indent;
   int debug;
   int nresults;
@@ -81,55 +81,15 @@ struct query_options {
   char *output_file;
   char *input_file;
   char *plugin_file;
-  char *input_language;
-  char *output_language;
   char *server;
   char *client;
   buffer_obj_t out;
   buffer_obj_t err;
   buffer_obj_t wrn;
+  char input_language[12];
+  char output_language[12];
   char querystr[2048];
   char keywords[1024];
 };
 
 typedef struct query_options QueryOptions_t;
-
-/* I have no idea any more what this was used for. I think it was
-   gnugold's internal format.
-
-struct query_args {
-  QueryOptions_t options;        // 
-  int entries;
-  unsigned char qsha1[20]; // Query's Sha1 - text? prefer binary... later
-  unsigned char asha1[20]; // Answer's Sha1
-  int nresults;
-  int position;
-  int nurls;
-  int nsnippets;
-  int nads;
-  int ntitles;
-  int nmisc;
-
-  short nlinkbytes[MAX_ENTRIES];
-  short nsnippetbytes[MAX_ENTRIES];
-  short ntitlebytes[MAX_ENTRIES];		      
-  short nadbytes[MAX_ENTRIES];
-  short nmiscbytes[MAX_ENTRIES];
-
-  char *links[MAX_ENTRIES]; 
-  char *snippets[MAX_ENTRIES];
-  char *titles[MAX_ENTRIES];
-  char *ads[MAX_ENTRIES];
-  char *misc[MAX_ENTRIES];
-  char query[MAX_MTU];
-  char keywords[MAX_MTU];
-  char answer[MAX_MTU];	// gonnaleakmemory	      
-};
-
-typedef struct query_args QueryData;
-
-
-extern int query_main  (QueryData *answers, char *host);
-extern int answer_parse(QueryData *q);
-extern int build_query (QueryData *q);
-*/
