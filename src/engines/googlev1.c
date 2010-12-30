@@ -1,6 +1,6 @@
 /* This engine implements a:
    gnugol -> google web api -> gnugol json translator engine
-   using the google web api v1, which was deprecated Nov 1, 2010. 
+   using the google web api v1, which was deprecated Nov 1, 2010.
    According to google's API policy, they will no longer provide
    this api 3 years from that date. */
 
@@ -17,7 +17,6 @@
 #include "handy.h"
 #include "formats.h"
 #include "gnugol_engines.h"
-#include "gnugol_maps.h"
 
 #ifndef __GNUC__
 #  define __attribute__(x)
@@ -50,7 +49,7 @@ static const gnugol_intmap_t safe_map[] = {
 
 */
 static const char *safe_map[] = {
-	"off", "moderate", "active", NULL
+	 "off", "moderate", "active", NULL
 };
 
 //static const gnugol_charmap_t language_map = {
@@ -71,13 +70,17 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
   char   string[URL_SIZE];
   char   key   [256];
   size_t size;
+  char   hl[8];
+  char   lr[8];
+
+  hl[0] = lr[0] = '\0';
 
   if(q->debug > 9) GNUGOL_OUTW(q,"Entering Setup\n");
 
   size = sizeof(key);
   if (gnugol_read_key(key,&size,".googlekey") != 0)
   {
-    GNUGOL_OUTE(q,"A license key to search google is required. "
+    GNUGOL_OUTE(q,"A license key to search google is recommended. "
 		  "You can get one from: %s",LICENSE_URL);
     size = 0;
   }
@@ -85,22 +88,44 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
   if(q->safe < 0) q->safe = 0;
   if(q->safe > 2) q->safe = 2;
   if(q->debug > 5) GNUGOL_OUTW(q,"google: safesearch=%s\n",safe_map[q->safe]);
-
   if(q->nresults > 8) q->nresults = 8; // google enforced
-  if(q->debug) GNUGOL_OUTW(q,"KEYWORDS = %s\n", q->keywords);
+  if(q->debug > 4) GNUGOL_OUTW(q,"google: KEYWORDS = %s\n", q->keywords);
+
+/* FIXME: This needs to be considerably more robust
+   think !! as a lang!
+*/
+
+  if(q->input_language[0] != '\0') {
+	  hl[0] = '&';
+	  hl[1] = 'h';
+	  hl[2] = 'l';
+	  hl[3] = '=';
+	  hl[4] = q->input_language[0];
+	  hl[5] = q->input_language[1];
+	  hl[6] = '\0';
+  }
+  if(q->output_language[0] != '\0') {
+	  lr[0] = '&';
+	  lr[1] = 'l';
+	  lr[2] = 'r';
+	  lr[3] = '=';
+	  lr[4] = q->output_language[0];
+	  lr[5] = q->output_language[1];
+	  lr[6] = '\0';
+  }
 
   if (size == 0)
 	  size = snprintf(string,URL_SIZE,
-			  "%s&rsz=%d&start=%d&safe=%s&q=%s",
+			  "%s&rsz=%d&start=%d&safe=%s%s%s&q=%s",
 			  TEMPLATE,
 			  q->nresults,q->position,
-			  safe_map[q->safe], q->keywords);
+			  safe_map[q->safe], hl, lr, q->keywords);
   else
 	  size = snprintf(string,URL_SIZE,
-			  "%s&key=%s&rsz=%d&start=%d&safe=%s&q=%s",
+			  "%s&key=%s&rsz=%d&start=%d&safe=%s%s%s&q=%s",
 			  TEMPLATE,key,
 			  q->nresults,q->position,
-			  safe_map[q->safe],q->keywords);
+			  safe_map[q->safe],hl, lr, q->keywords);
 
   if (size > sizeof(q->querystr))
   {

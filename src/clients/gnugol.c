@@ -69,6 +69,9 @@ int usage (char *err) {
 	 "-i --indent    X   result indentation level\n"
 	 "-S --safe    0|1|2 [off|moderate|active] result filtering\n"
 	 "-d --debug     X   debug output level\n"
+	 "-U --escaped       input is already url escaped\n"
+	 "-l --language-in   [en|es|fr|nl or other 2 char locale]\n"
+	 "-L --language-out  [en|es|fr|nl or other 2 char locale]\n"
 	 "-v --verbose       provide more verbose insight\n"
 	 "-h --help          this message\n"
 	 "-a --about         [credits|copyright|license|source|config|manual|stats]\n"
@@ -86,9 +89,6 @@ int usage (char *err) {
 #endif
 
 #ifdef WHENIHAVETIMETOADDTHESEOFFICIALLY
-	 "-U --url-escaped   input is already url escaped"
-	 "-l --language-in   [en|es|fr|nl or other 2 char locale]\n"
-	 "-L --language-out  [en|es|fr|nl or other 2 char locale]\n"
 	 "-A --ads 0|1\n"
 	 "-c --cache     serve only results from cache(s)\n"
 	 "-f --force     force a new query, even if cached\n"
@@ -125,7 +125,7 @@ static const struct option long_options[] = {
   { "safe"		, required_argument    	, NULL , 'S' } ,
   { "titles"		, required_argument	, NULL , 't' } ,
   { "urls"		, required_argument	, NULL , 'u' } ,
-  { "url-escaped"      	, no_argument		, NULL , 'U' } ,
+  { "escaped"      	, no_argument		, NULL , 'U' } ,
   { "verbose"		, no_argument		, NULL , 'v' } ,
 
 #ifdef HAVE_GNUGOLD
@@ -208,7 +208,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   int i = 0;
   int querylen = 0;
   int opt = 0;
-  char string[1024];
+  char string[MAX_MTU];
   string[0] = '\0';
 
   if(argc == 1) usage("");
@@ -287,17 +287,18 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   } while (1);
 
   for(i = optind; i < argc; i++) {
-    if((querylen += strlen(argv[i]) > MAX_MTU - 80)) {
-      fprintf(stderr,"Too many words in query, try something smaller\n");
-      return(1);
-    }
-    if(!o->url_escape) {
-	    strcat(string,argv[i]);
-    if(i+1 < argc) strcat(string," "); // FIXME: length check
-    } else {
-	    strcat(string,argv[i]);
-	    if(i+1 < argc) strcat(string,"+"); // FIXME: length check
-    }
+	  if((querylen += (strlen(argv[i])+1) > MAX_MTU - 80)) {
+		  fprintf(stderr,"Too many words in query, try something smaller\n");
+		  return(1);
+	  }
+	  /* FIXME: Although I did a length check above it could be cleaner here */
+	  if(!o->url_escape) {
+		  strcat(string,argv[i]);
+		  if(i+1 < argc) strcat(string," ");
+	  } else {
+		  strcat(string,argv[i]);
+		  if(i+1 < argc) strcat(string,"+");
+	  }
   }
 
   if(!o->url_escape) {
@@ -311,6 +312,18 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   return(optind);
 }
 
+static void gnugol_default_language (QueryOptions_t *q) {
+	// Get this from the locale? What's portable?
+	// FIXME: We always want utf-8
+
+	char *lang = getenv("LANG");
+	if(lang != NULL) {
+		strcpy(q->input_language,lang);
+	} else {
+		strcpy(q->input_language,"en_US.utf8");
+	}
+}
+
 static void gnugol_default_QueryOptions(QueryOptions_t *q) {
 	q->nresults = 5;
 	q->position = 0;
@@ -318,12 +331,12 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
 	q->snippets = 1;
 	q->titles = 1;
 	q->engine_name = "google";
-	strcpy(q->input_language,"en");
 	q->header = 1;
 	q->footer = 1;
-	q->format = FORMATDEFAULT; // NONE
-	q->indent = -1;
-	q->safe = 1;
+	q->format = FORMATDEFAULT; // ORG
+	q->indent = -1; // None
+	q->safe = 1; // Moderate
+	gnugol_default_language(q);
 }
 
 int main(int argc, char **argv) {
@@ -343,7 +356,7 @@ int main(int argc, char **argv) {
       printf("%s",q.out.s);
     }
 
-  if(result < 0 || q.debug) {
+  if(result < 0 || q.debug > 5) {
     fprintf(stderr,"Errors: %s\nWarnings:%s\n",q.err.s,q.wrn.s);
   }
 
