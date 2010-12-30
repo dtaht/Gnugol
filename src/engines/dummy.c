@@ -15,10 +15,6 @@
 #include "formats.h"
 #include "gnugol_engines.h"
 
-#ifndef __GNUC__
-#define __attribute__(x)
-#endif
-
 int GNUGOL_DECLARE_ENGINE(setup,dummy) (QueryOptions_t *q __attribute__((unused)))
 {
   return 0;

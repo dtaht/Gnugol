@@ -11,16 +11,13 @@
 #include <errno.h>
 #include <string.h>
 #include <jansson.h>
+#include <ctype.h>
 #include <curl/curl.h>
 #include "query.h"
 #include "utf8.h"
 #include "handy.h"
 #include "formats.h"
 #include "gnugol_engines.h"
-
-#ifndef __GNUC__
-#  define __attribute__(x)
-#endif
 
 #define TEMPLATE  "http://ajax.googleapis.com/ajax/services/search/web?v=1.0"
 #define LICENSE_URL "I don't know if you can even get one anymore."
@@ -91,11 +88,14 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
   if(q->nresults > 8) q->nresults = 8; // google enforced
   if(q->debug > 4) GNUGOL_OUTW(q,"google: KEYWORDS = %s\n", q->keywords);
 
-/* FIXME: This needs to be considerably more robust
-   think !! as a lang!
+/*
+   While we can't be sure the user's two letter code is supported
+   we CAN try harder to not mess up than this.
 */
 
-  if(q->input_language[0] != '\0') {
+  if((q->input_language[0] != '\0') &&
+	  (isalpha(q->input_language[0])) &&
+	  (isalpha(q->input_language[1]))) {
 	  hl[0] = '&';
 	  hl[1] = 'h';
 	  hl[2] = 'l';
@@ -104,7 +104,9 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
 	  hl[5] = q->input_language[1];
 	  hl[6] = '\0';
   }
-  if(q->output_language[0] != '\0') {
+  if((q->output_language[0] != '\0') &&
+	  (isalpha(q->output_language[0])) &&
+	  (isalpha(q->output_language[1]))) {
 	  lr[0] = '&';
 	  lr[1] = 'l';
 	  lr[2] = 'r';
@@ -125,7 +127,7 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
 			  "%s&key=%s&rsz=%d&start=%d&safe=%s%s%s&q=%s",
 			  TEMPLATE,key,
 			  q->nresults,q->position,
-			  safe_map[q->safe],hl, lr, q->keywords);
+			  safe_map[q->safe], hl, lr, q->keywords);
 
   if (size > sizeof(q->querystr))
   {
@@ -158,7 +160,7 @@ int GNUGOL_DECLARE_ENGINE(search,google) (QueryOptions_t *q) {
     text = jsonrequest(q->querystr);
     if(!text) {
       GNUGOL_OUTE(q,"url failed to work: %s", q->querystr);
-      return 1;
+      return -1;
     }
 
     root = json_loads(text, &error);
@@ -167,7 +169,7 @@ int GNUGOL_DECLARE_ENGINE(search,google) (QueryOptions_t *q) {
     if(!root)
     {
         GNUGOL_OUTE(q,"error: on line %d: %s\n", error.line, error.text);
-        return 1;
+        return -1;
     }
 
     GETOBJ(root,responseData);

@@ -15,10 +15,6 @@
 #include "formats.h"
 #include "gnugol_engines.h"
 
-#ifndef __GNUC__
-#define __attribute__(x)
-#endif
-
 struct credits { 
   const char *catagory;
   const char *name;

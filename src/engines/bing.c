@@ -1,4 +1,5 @@
-/* This file implements a gnugol -> bing api -> gnugol json translator plugin 
+/*
+   This file implements a gnugol -> bing api -> gnugol json translator plugin 
  */
 
 #include <stdio.h>
@@ -8,16 +9,14 @@
 #include <errno.h>
 #include <string.h>
 #include <jansson.h>
+#include <ctype.h>
 #include <curl/curl.h>
 #include "query.h"
 #include "utf8.h"
 #include "handy.h"
 #include "formats.h"
 #include "gnugol_engines.h"
-
-#ifndef __GNUC__
-#  define __attribute__(x)
-#endif
+#include "utf8_urlencode.h"
 
 #define TEMPLATE "http://api.bing.net/json.aspx?AppId=%s&Version=2.2&Market=%s&Query=%s&Sources=web&Web.Count=%d&JsonType=raw"
 #define LICENSE_URL "http://www.bing.com/developers/createapp.aspx"
@@ -26,8 +25,10 @@
 int GNUGOL_DECLARE_ENGINE(setup,bing) (QueryOptions_t *q) {
   char   string[URL_SIZE];
   char   key[256];
+  char hl[16];
+  char lr[16];
   size_t size = 0;
-  char   uukeywords[512];
+  char   uukeywords[MAX_MTU];
 
   size = sizeof(key);
   if (gnugol_read_key(key,&size,".bingkey") != 0)
@@ -35,16 +36,52 @@ int GNUGOL_DECLARE_ENGINE(setup,bing) (QueryOptions_t *q) {
     GNUGOL_OUTE(q,"For bing, you need a license key from: %s\n",LICENSE_URL);
     return(-1);
   }
-    
+
   if(q->nresults > 10) q->nresults = 10; // bing enforces a maximum result of 10, I think
+
+  if(q->safe < 0) q->safe = 0;
+  if(q->safe > 2) q->safe = 2;
 
   if (strlen(q->keywords) >= sizeof(uukeywords))
   {
     GNUGOL_OUTE(q,"Keywords exceed size of space set aside");
     return -1;
   }
-  
-  strcpy(uukeywords,q->keywords); // FIXME: convert to urlencoding
+
+/*
+   While we can't be sure the user's two letter country code is supported
+   we CAN try harder to not mess up than this.
+   FIXME: This is also incorrect for bing and is disabled
+*/
+  if((q->input_language[0] != '\0') &&
+	  (isalpha(q->input_language[0])) &&
+	  (isalpha(q->input_language[1]))) {
+	  hl[0] = '&';
+	  hl[1] = 'h';
+	  hl[2] = 'l';
+	  hl[3] = '=';
+	  hl[4] = q->input_language[0];
+	  hl[5] = q->input_language[1];
+	  hl[6] = '\0';
+  }
+  if((q->output_language[0] != '\0') &&
+	  (isalpha(q->output_language[0])) &&
+	  (isalpha(q->output_language[1]))) {
+	  lr[0] = '&';
+	  lr[1] = 'l';
+	  lr[2] = 'r';
+	  lr[3] = '=';
+	  lr[4] = q->output_language[0];
+	  lr[5] = q->output_language[1];
+	  lr[6] = '\0';
+  }
+
+  if(!q->url_escape) {
+	  url_encode_utf8(uukeywords,q->keywords);
+  } else {
+	  strcpy(uukeywords,q->keywords);
+  }
+
   size = snprintf(string,URL_SIZE,TEMPLATE,key,"en-US",uukeywords,q->nresults);
   strcpy(q->querystr,string);
   if(q->debug) GNUGOL_OUTW(q,"%s\n%s\n", q->keywords, string);
@@ -52,13 +89,12 @@ int GNUGOL_DECLARE_ENGINE(setup,bing) (QueryOptions_t *q) {
 }
 
 // turn quotes back into quotes and other utf-8 stuff
-// FIXME: Error outs cause a memory leak from "root"
-// use thread local storage? or malloc for the buffer
-// FIXME: do fuller error checking 
+// FIXME: Error outs cause a memory leak from "root"?
+// FIXME: do fuller error checking
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 // This engine takes advantage (abuses!) the CPP pasting tokens
-// with a couple macros to make the interface to json a 1 to 1 relationship 
+// with a couple macros to make the interface to json a 1 to 1 relationship
 // The code is delightfully short this way.
 
 int GNUGOL_DECLARE_ENGINE(search,bing) (QueryOptions_t *q) {
@@ -67,15 +103,15 @@ int GNUGOL_DECLARE_ENGINE(search,bing) (QueryOptions_t *q) {
     json_t *root,*Web, *SearchResponse, *Results;
     json_error_t error;
 
-    if(q->debug) GNUGOL_OUTW(q,"%s: trying url: %s\n", q->engine_name, q->querystr); 
+    if(q->debug) GNUGOL_OUTW(q,"%s: trying url: %s\n", q->engine_name, q->querystr);
 
     text = jsonrequest(q->querystr);
     if(!text) {
-      GNUGOL_OUTE(q,"url failed to work: %s\n", q->querystr); 
+      GNUGOL_OUTE(q,"url failed to work: %s\n", q->querystr);
       return 1;
     }
 
-    if(q->debug) GNUGOL_OUTW(q,"%s: get url request succeeded: %s\n", q->engine_name, q->querystr); 
+    if(q->debug) GNUGOL_OUTW(q,"%s: get url request succeeded: %s\n", q->engine_name, q->querystr);
 
     root = json_loads(text, &error);
     free(text);
@@ -86,11 +122,10 @@ int GNUGOL_DECLARE_ENGINE(search,bing) (QueryOptions_t *q) {
         return 1;
     }
 
-    if(q->debug) GNUGOL_OUTW(q,"%s: got json url request!: %s\n", q->engine_name, q->querystr); 
-    
+    if(q->debug) GNUGOL_OUTW(q,"%s: got json url request!: %s\n", q->engine_name, q->querystr);
     GETOBJ(root,SearchResponse);
     GETOBJ(SearchResponse,Web);
-    GETARRAY(Web,Results);  
+    GETARRAY(Web,Results);
     gnugol_header_out(q);
 
     for(i = 0; i < json_array_size(Results); i++)

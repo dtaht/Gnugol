@@ -16,10 +16,6 @@
 #include "gnugol_engines.h"
 #include "utf8_urlencode.h"
 
-#ifndef __GNUC__
-#  define __attribute__(x)
-#endif
-
 struct  output_types {
   const enum gnugol_formatter id;
   const char *const desc;

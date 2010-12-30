@@ -15,10 +15,6 @@
 #include "formats.h"
 #include "gnugol_engines.h"
 
-#ifndef __GNUC__
-#  define __attribute__ ((unused))
-#endif
-
 #define TEMPLATE  "http://en.wikipedia.org/w/api.php?action=query&prop=info&inprop=url&format=json&titles="
 
 /* Via Mark Hershberger

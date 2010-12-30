@@ -1,3 +1,9 @@
+#ifndef _gnugol_query_h
+
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
+
 #define MAX_MTU 1280
 #define MAX_ENTRIES 8
 
@@ -93,3 +99,4 @@ struct query_options {
 };
 
 typedef struct query_options QueryOptions_t;
+#endif

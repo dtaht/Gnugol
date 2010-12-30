@@ -45,7 +45,7 @@
 ** TODO Add an editable flag
    add an option to try to encourage gnugol to return a ptr to an editable page
    The example here would be mediawiki/wikipedia. 
-** Clean up memory management
+** TODO Clean up memory management
 *** DONE make buffer more of an object
     CLOSED: [2010-12-21 Tue 10:50]
     :LOGBOOK:
@@ -59,7 +59,7 @@
     :Effort:   1:00
     :END:
 *** Refactor
-** Shell mode
+** TODO Shell mode
 *** DONE HTML-Escape to UTF-8 
    Gnugol had  a very limited selection of html escapes to utf-8 support.
    Now it has a full html4 table, thx to Sean.
@@ -69,10 +69,17 @@
    Gnugol does not detect when it has a different character set than UTF-8.
 (I am not particularly interested in anything other than html<->utf-8 conversion, frankly)
 *** Input/Search language support
-**** Pick up the default language from the environment
-**** Different engines do this differently
-** Add support for the footnote mode of markdown/org/textile
-** Man page(s) for gnugol
+**** STARTED Pick up the default language from the environment
+     :LOGBOOK:
+     - State "STARTED"    from "STARTED"    [2010-12-30 Thu 12:46]
+     CLOCK: [2010-12-30 Thu 12:46]
+     :END:
+     :PROPERTIES:
+     :Effort:   1:00
+     :END:
+     Different engines do this differently. Google needs 2 char codes, bing uses the full utf-8 string
+** TODO Add support for the footnote mode of markdown/org/textile
+** TODO Man page(s) for gnugol
 ** TODO needs a .gnugol/config format
    - use json for this structure
    - need shortcuts, or "abbrevs" for passing along additional search options
@@ -89,10 +96,10 @@
 ** TODO Does not properly escape "[" characters when in a url or text snippet.
    This one is downright annoying, especially when mailing list results are returned. Substitute another utf-8 char?
 ** TODO Coherently handle url escaping
-** STARTED Input from a file
+** TODO Input from a file
    :LOGBOOK:
    - State "STARTED"    from "STARTED"    [2010-12-30 Thu 05:40]
-   CLOCK: [2010-12-30 Thu 05:40]
+   CLOCK: [2010-12-30 Thu 05:40]--[2010-12-30 Thu 09:32] =>  3:52
    :END:
    :PROPERTIES:
    :Effort:   8:00
@@ -152,9 +159,11 @@
 ** SearchMarks
    Unimplemented, prototyping in emacs
 ** TODO Obsolete gnugold
-   There is a ton of broken code lying around that may be useful in the future.
+   There is a ton of broken code from the old networked client lying around that may be useful in the future.
    Right now, however, it's just cluttering up the source tree and making the makefiles more complex. It's going to hurt to axe my own child, but it has to be done.
 ** TODO make internationalization possible
+** TODO work with the latest json API
+   The jansson lib has evolved a slightly new API
 ** Adopt a sane build system
    Cmake? Waf? Autoconf? WTF?
 *** MUST cross compile

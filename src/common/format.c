@@ -9,10 +9,6 @@
 #include "utf8.h"
 #include "handy.h"
 
-#ifndef __GNUC__
-#  define __attribute__(x)
-#endif
-
 /*
 
 Via:

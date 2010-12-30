@@ -11,10 +11,6 @@
 #include "utf8.h"
 #include "handy.h"
 
-#ifndef __GNUC__
-#  define __attribute__(x)
-#endif
-
 #define BUFFER_SIZE (64*1024)
 
 // Convert html entities into an equivalent UTF-8 code
