@@ -1,4 +1,4 @@
-/* This engine implements contributor credits, licensing and copyright information,  
+/* This engine implements contributor credits, licensing and copyright information,
    and other misc configuration parameters internal to gnugol */
 
 #include <stdio.h>
@@ -15,7 +15,7 @@
 #include "formats.h"
 #include "gnugol_engines.h"
 
-struct credits { 
+struct credits {
   const char *catagory;
   const char *name;
   const char *url;
@@ -37,10 +37,13 @@ static const struct credits c[] = {
   { "license", "GNU General Public License", "http://www.gnu.org/licenses/gpl.html", "" },
   { "license", "GNU General Lesser General Public License", "http://www.gnu.org/licenses/lgpl.html", "" },
   { "license", "Free Beer License", "http://en.wikipedia.org/wiki/Beerware", "" },
-  { "source",  "Gnugol Source Code", "https://github.com/dtaht/Gnugol.git", "" },
+  { "source",  "Gnugol Source Code via git", "https://github.com/dtaht/Gnugol.git", "" },
+  { "source",  "Mirror sites", GNUGOL_SITE, "The main site has a list of mirrors" },
   { "config",  "Gnugol Configuration", "https://github.com/dtaht/Gnugol.git", "At present gnugol can only be configured via command line options. There will be a ~/.gnugol/config someday, in json format. " },
   { "manual",  "Gnugol Manual", GNUGOL_SITE, "Sorry, no manual yet. See the web site for some tips or try --help" },
   { "jwz", "jwz", "http://www.jwz.org/blog", "I share jwz's preference for green on black screens. His gruntle columns kept me sane in a darker era of web development, and I always loved the subversive element of the about:jwz parameter of Mozilla in an otherwise bland, corporatized world." },
+  { "rms", "rms", "http://www.stallman.org", "If he didn't exist, we'd have had to invent him." },
+  { "quotes", "esr", "http://esr.ibiblio.org/", "With enough eyeballs, all bugs are shallow." },
   { "quotes", "jwz", "http://www.jwz.org/blog", "Some people, when confronted with a problem, think 'I know, I'll use regular expressions.' Now they have two problems."},
   { "gnugol","gnugol",GNUGOL_SITE,"BEHOLD. THE WORLD WAS GREEN ON BLACK AND IT WAS GOOD." },
   { NULL,NULL, NULL, NULL },

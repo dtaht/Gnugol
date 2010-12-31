@@ -264,11 +264,9 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
   if(level > 5) level = 5;
   if(level < 0) level = 2;
 
-  char tempstr[SNIPPETSIZE];
   char stripsnip[SNIPPETSIZE];
   char stripurl[URL_SIZE];
   char striptitle[URL_SIZE];
-
 
   if(!q->titles) t = "";
   if(!q->snippets) s = "";
@@ -295,31 +293,46 @@ if(q->format != FORMATTERM) {
 } else {
   strcpy(stripsnip,s);
   STRIPHTML(stripsnip);
-} // See below... however
-
-/*
-
+}
+/* 
 // NEW idea
+// TERM output looks at the columns variable
+
 // snippet = 0 - suppress
 // snippet = 1 - do the right thing
 // snippet = X - constrain size to that
+
+// Unfortunately I don't know how to pass the
+// following. Perhaps new a flag -B to break words?
 // snippet = -1 - do the right thing, break words
-// snippet = -X - break words at
+// snippet = -X - break words at X
 
-// TERM output would look at the columns variable
+// to say this is currently messy would be an understatement
 
-if(q->format == FORMATTERM) {
-  int size = q->snippets;
-  if(size == 1) {
-    char *termsize = getenv("COLUMNS");
-    if(termsize) {
-      size = strtoul(termsize, NULL, 10);
-    }
+  int newsize = q->snippets;
+  int size = strlen(s);
+  if(size > 0) {
+  char tempstr[size+1];  // FIXME: I'm not convinced this is enough
+  strcpy(tempstr,s);
+  size=strip_html(size,tempstr);
+  if((q->format == FORMATTERM) && (size > 0)) {
+     if(newsize == 1) {
+     char *termsize = getenv("COLUMNS");
+     if(termsize) size = strtoul(termsize, NULL, 10);
+     } else {
+     size = newsize;
+     }
+   }
+   if(size-(level+1) > 0) {
+   strncpy(stripsnip,s,u8_offset(tempstr,size));
+   } else {
+   stripsnip[0] = '\0';
+   }
+  } else {
+   stripsnip[0] = '\0';
   }
-  strncpy(stripsnip,s,size-1); // FIXME: need utf8 strncpy
 }
-
-*/
+ */
 
   strcpy(striptitle,t);
   STRIPHTML(striptitle);
@@ -329,11 +342,9 @@ if(q->format == FORMATTERM) {
   case FORMATWIKI:
     GNUGOL_OUTF(q,wiki_format_str[offset],hashes[level],striptitle,u,padstr,stripsnip);
     break;
-  case FORMATSSML:
+  case FORMATSSML: // FIXME: need to use marks properly
     {
-     strcpy(tempstr,s);
-     STRIPHTML(tempstr);
-     GNUGOL_OUTF(q,"%s <mark name='%d'>%s</mark>.", tempstr, q->returned_results, u);
+     GNUGOL_OUTF(q,"%s <mark name='%d'>%s</mark>.", stripsnip, q->returned_results, u);
     }
     break;
   case FORMATORG:
