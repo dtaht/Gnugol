@@ -26,7 +26,7 @@ struct entitymap {
 ; column.  When adding new entries, make sure they're sorted properly.
 ;----------------------------------------------------------------------*/
 
-static const struct entitymap emap[] = { 
+static const struct entitymap emap[] = {
   { "AElig" 	,  198 },
   { "Aacute" 	,  193 },
   { "Acirc" 	,  194 },
@@ -287,7 +287,6 @@ static int entity_cmp(const void *needle,const void *haystack)
 {
   const char             *key = needle;
   const struct entitymap *hay = haystack;
-  
   return strcmp(key,hay->entity);
 }
 
@@ -296,10 +295,9 @@ size_t substitute_utf8(char *string,size_t lenstr,char *entity)
   assert(string  != NULL);
   assert(entity  != NULL);
   assert(*entity == '&');
-  
   if (lenstr < 5)	/* not enough space for worst case scenario */
     return 0;
-  
+
   /*-------------------------------------------------------------------------
   ; The above table is sorted using the C collate sequence (US-ASCII) so we
   ; need to make sure our locale is set so a subsequent search will return
@@ -307,33 +305,33 @@ size_t substitute_utf8(char *string,size_t lenstr,char *entity)
   ; as to the locale elsewhere in the code, we have the current locale, set
   ; it, then restore it upon return.
   ;-------------------------------------------------------------------------*/
-  
+
   char *collate = setlocale(LC_COLLATE,NULL);
   if (collate == NULL)
     collate = "";
-  
+
   char savecollate[strlen(collate) + 1];
   memcpy(savecollate,collate,strlen(collate) + 1);
-  
+
   setlocale(LC_COLLATE,"C");
-  
+
   const struct entitymap *e;
   size_t                  len;
   size_t                  size;
   char                    buf[5];
   u_int32_t               value;
-  
+
   entity++;
   len = strlen(entity);
-  if(entity[len-1]==';') entity[len-1] = '\0'; 
-  
+  if(entity[len-1]==';') entity[len-1] = '\0';
+
   /*----------------------------------------------------------------
   ; if the entity is in the form of &#nn; then nn is the Unicode code point
   ; for the character (it's in numeric form).  If it's in that form, convert
   ; to a proper UTF-8 charracter, otherwise, lookup the symbolic form, get
   ; it's codepoint and convert.  If the character isn't found, return '?'
   ;-------------------------------------------------------------------------*/
-  
+
   if (entity[0] == '#')
     value = strtoul(&entity[1],NULL,10);
   else
@@ -344,20 +342,20 @@ size_t substitute_utf8(char *string,size_t lenstr,char *entity)
     else
       value = '?';
   }
-   
-  size = u8_wc_toutf8(buf,value);  
+
+  size = u8_wc_toutf8(buf,value);
   assert(size <= 4);
-  memcpy(string,buf,size);  
+  memcpy(string,buf,size);
   string[size] = '\0';
 
-  setlocale(LC_COLLATE,savecollate);  
+  setlocale(LC_COLLATE,savecollate);
   return size;
 }
 
 // Strip out newlines from string, too.
 static int strip_newlines(char *string, int len) {
   int j = 0;
-  for (int i = 0; i < len; i++) if(string[i] != '\n' &&string[i] != '\r') string[j++] = string[i]; 
+  for (int i = 0; i < len; i++) if(string[i] != '\n' &&string[i] != '\r') string[j++] = string[i];
   string[j] = '\0';
   return(j);
 }
@@ -371,18 +369,18 @@ int format_term(char * string, int len) {
   int newlen = strip_newlines(string, strlen(string));
   // Handling utf-8 is tricky, we can't work by bytes
   int newstrlen = newlen+u8_strlen(string)/columns+1;
-  if(newstrlen < len) 
+  if(newstrlen < len)
   {
     char newstr[newstrlen];
     do {
     } while ( 0 );
-    memcpy(string, newstr, strlen(newstr));  
+    memcpy(string, newstr, strlen(newstr));
   }
   return(newstrlen);
 }
 
 // Instead of a regex, this is a small state machine for what I want
-// We eliminate multiple spaces, ellipses and anything that's inside 
+// We eliminate multiple spaces, ellipses and anything that's inside
 // html. We also convert html entities into the equivalent utf-8.
 
 int strip_html(int len, char *htmlstr) {
@@ -413,81 +411,81 @@ int strip_html(int len, char *htmlstr) {
 
     if(!inhtml) {
       switch(htmlstr[i]) {
-      case '&': 
+      case '&':
 	  if(isspace) isspace = 0;
 	  if(inperiod) inperiod = 0;
-	  inentity = 1; 
-	  entitypos = i; 
-	  break; 
-      
-      case ';': 
+	  inentity = 1;
+	  entitypos = i;
+	  break;
+
+      case ';':
 	if(!(isspace|inperiod)) {
-	  if(inentity) { 
+	  if(inentity) {
 	    strncpy(entity,&htmlstr[entitypos],i-entitypos);
 	    entity[i-entitypos] = '\0';
 	    /* I think len - j is the correct length to pass in */
 	    j += substitute_utf8(&string[j],len - j,entity);
-	    inentity = 0; 
+	    inentity = 0;
 	  } else {
 	    string[j++] = ';';
 	  }
 	} else {
-	  if(isspace) { 
-	    string[j++] = ';'; 
-	    isspace = 0; 
+	  if(isspace) {
+		  string[j++] = ';';
+	    isspace = 0;
 	  } else {
-	    if(inperiod) 
-	      { 
-		string[j++] = ';'; 
-		inperiod = 0; 
-	      } 
+	    if(inperiod)
+	      {
+		string[j++] = ';';
+		inperiod = 0;
+	      }
 	  }
 	}
-	
-	break; 
-      
-      case ' ': 
-      case '\n': 
+
+	break;
+
+      case ' ':
+      case '\n':
       case '\r':
-	if(isspace == 0) { 
-	  isspace = 1; 
-	  if(j > 0 && string[j-1] != ' ') 
-	    string[j++] = ' '; 
-	} 
+	if(isspace == 0) {
+	  isspace = 1;
+	  if(j > 0 && string[j-1] != ' ')
+	    string[j++] = ' ';
+	}
 	if(inperiod) inperiod = 0;
 	if(inentity) inentity = 0;
 	break;
 
-      case '.': 
-	if((inperiod == 1) && !(isspace || inentity)) 
-	  { 
-	    j--; 
-	    inperiod++; // if we have more than one period strip it out 
-	    break; 
+      case '.':
+	if((inperiod == 1) && !(isspace || inentity))
+	  {
+	    j--;
+	    inperiod++; // if we have more than one period strip it out
+	    break;
 	  }
-	if ((inperiod == 0) && !(isspace || inentity)) 
-	  { 
-	    string[j++] = '.';  
-	    inperiod = 1; 
-	    break; 
+	if ((inperiod == 0) && !(isspace || inentity))
+	  {
+	    string[j++] = '.';
+	    inperiod = 1;
+	    break;
 	  }
-	if((inperiod == 1) && (isspace)) 
-	  { 
-	    j--; 
-	    inperiod++; // if we have more than one period strip it out 
+	if((inperiod == 1) && (isspace))
+	  {
+	    j--;
+	    inperiod++; // if we have more than one period strip it out
 	    isspace = 0;
-	    break; 
+	    break;
 	  }
-	if((inperiod == 0) && (isspace)) 
-	  { 
-	    string[j++] = '.';  
-	    inperiod = 1; 
+	if((inperiod == 0) && (isspace))
+	  {
+	    string[j++] = '.';
+	    inperiod = 1;
 	    isspace = 0;
-	    break; 
+	    break;
 	  }
-      
+
 	break;
-      default: 
+      default:
 	isspace = 0;
 	inperiod = 0;
 	if(!inentity) string[j++] = htmlstr[i];
