@@ -69,15 +69,15 @@
    Gnugol does not detect when it has a different character set than UTF-8.
 (I am not particularly interested in anything other than html<->utf-8 conversion, frankly)
 *** Input/Search language support
-**** STARTED Pick up the default language from the environment
+**** TODO Pick up the default language from the environment
      :LOGBOOK:
      - State "STARTED"    from "STARTED"    [2010-12-30 Thu 12:46]
-     CLOCK: [2010-12-30 Thu 12:46]
+     CLOCK: [2010-12-30 Thu 12:46]--[2010-12-30 Thu 13:53] =>  1:07
      :END:
      :PROPERTIES:
      :Effort:   1:00
      :END:
-     Different engines do this differently. Google needs 2 char codes, bing uses the full utf-8 string
+     Different engines do this differently. Google needs 2 char codes, bing uses the full utf-8 string, but in an odd format... There must be a standard for this...
 ** TODO Add support for the footnote mode of markdown/org/textile
 ** TODO Man page(s) for gnugol
 ** TODO needs a .gnugol/config format

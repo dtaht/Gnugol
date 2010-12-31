@@ -22,16 +22,16 @@ struct credits {
   const char *desc;
 };
 
-static const struct credits c[] = { 
-  { "credits", "Dave Täht", "http://www.taht.net/", "Inspiration... and perspiration" }, 
-  { "credits", "Craig Guessford", "http://www.aftertheflood.com/", "Gnugol logo and related art" }, 
-  { "credits", "Sean Conner", "http://boston.conman.org/", "DLLs, UTF-8 improvements" }, 
-  { "credits", "Brian Clapper", "http://www.clapper.org/bmc/", "OSX, textile, mdwn support" }, 
+static const struct credits c[] = {
+  { "credits", "Dave Täht", "http://www.taht.net/", "Inspiration... and perspiration" },
+  { "credits", "Craig Guessford", "http://www.aftertheflood.com/", "Gnugol logo and related art" },
+  { "credits", "Sean Conner", "http://boston.conman.org/", "DLLs, UTF-8 improvements" },
+  { "credits", "Brian Clapper", "http://www.clapper.org/bmc/", "OSX, textile, mdwn support" },
   { "copyright", "&copy; Sean Conner 2010", "http://boston.conman.org/", "Portions contributed by Sean Connor" },
-  { "copyright", "© Michael D. Taht 2010", "http://www.taht.net/", 
+  { "copyright", "© Michael D. Taht 2010", "http://www.taht.net/",
     "The bulk of gnugol is under the AGPLv3. See --about license for more details" },
   { "license", "Gnugol's Licensing", GNUGOL_SITE, "FIXME: Manifesto to be made here" },
-  { "license", "GNU Affero General Public License, Version 3", "http://www.gnu.org/licenses/agpl.html", 
+  { "license", "GNU Affero General Public License, Version 3", "http://www.gnu.org/licenses/agpl.html",
 "The GNU Affero General Public License is a free, copyleft license for software and other kinds of works, specifically designed to ensure cooperation with the community in the case of network server software.\n\n"
 "The GNU Affero General Public License is designed specifically to ensure that the modified source code becomes available to the community. It requires the operator of a network server to provide the source code of the modified version running there to the users of that server. Therefore, public use of a modified version, on a publicly accessible server, gives the public access to the source code of the modified version.\n\n (For the complete license, visit the web site)\n\n" },
   { "license", "GNU General Public License", "http://www.gnu.org/licenses/gpl.html", "" },
@@ -42,16 +42,16 @@ static const struct credits c[] = {
   { "manual",  "Gnugol Manual", GNUGOL_SITE, "Sorry, no manual yet. See the web site for some tips or try --help" },
   { "jwz", "jwz", "http://www.jwz.org/blog", "I share jwz's preference for green on black screens. His gruntle columns kept me sane in a darker era of web development, and I always loved the subversive element of the about:jwz parameter of Mozilla in an otherwise bland, corporatized world." },
   { "quotes", "jwz", "http://www.jwz.org/blog", "Some people, when confronted with a problem, think 'I know, I'll use regular expressions.' Now they have two problems."},
-  { "gnugol","gnugol",GNUGOL_SITE,"BEHOLD. THE WORLD WAS GREEN ON BLACK AND IT WAS GOOD." },  
+  { "gnugol","gnugol",GNUGOL_SITE,"BEHOLD. THE WORLD WAS GREEN ON BLACK AND IT WAS GOOD." },
   { NULL,NULL, NULL, NULL },
 };
 
-struct cat_map { 
+struct cat_map {
   const char *catagory;
   const char *desc;
 };
 
-static const struct cat_map cmap[] = { 
+static const struct cat_map cmap[] = {
  { "license","Gnugol Licenses" },
  { "credits","Gnugol Contributor Credits" },
  { "source","Gnugol Source availability" },
@@ -76,9 +76,12 @@ int GNUGOL_DECLARE_ENGINE(setup,credits) (QueryOptions_t *q __attribute__((unuse
 // FIXME: allow multiple keywords
 
 int GNUGOL_DECLARE_ENGINE(search,credits) (QueryOptions_t *q) {
-  char tempstr[20];  
+  char tempstr[20];
   int header_no = -1;
   q->indent = 2;
+//  if(!q->url_encode) {
+//  }
+
   if(strcmp(q->keywords,"all") == 0 || q->keywords[0] == '\0') {
     gnugol_header_out(q);
     for(int i = 0; c[i].name != NULL; i++) {

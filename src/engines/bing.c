@@ -22,6 +22,23 @@
 #define LICENSE_URL "http://www.bing.com/developers/createapp.aspx"
 #define TOU "http://www.bing.com/developers/tou.aspx"
 
+/*
+By default, the output has no newlines, and spaces are used between
+array and object elements for a readable output. This behavior can be
+altered by using the ``JSON_INDENT`` and ``JSON_COMPACT`` flags
+described below. A newline is never appended to the end of the encoded
+JSON data.*/
+
+/*
+.. function:: char *json_dumps(const json_t *root, size_t flags)
+
+   Returns the JSON representation of *root* as a string, or *NULL* on
+   error. *flags* is described above. The return value must be freed
+   by the caller using :func:`free()`.
+
+	  */
+
+
 int GNUGOL_DECLARE_ENGINE(setup,bing) (QueryOptions_t *q) {
   char   string[URL_SIZE];
   char   key[256];
@@ -77,7 +94,7 @@ int GNUGOL_DECLARE_ENGINE(setup,bing) (QueryOptions_t *q) {
   }
 
   if(!q->url_escape) {
-	  url_encode_utf8(uukeywords,q->keywords);
+	  url_escape_utf8(uukeywords,q->keywords);
   } else {
 	  strcpy(uukeywords,q->keywords);
   }

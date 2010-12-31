@@ -44,7 +44,6 @@ typedef struct gnugol_buffer_obj buffer_obj_t;
 
 struct query_options {
   int urls:1;
-  int snippets:1;
   int ads:1;
   int titles:1;
   int misc:1;
@@ -73,6 +72,7 @@ struct query_options {
   int header:1;
   int about:1;
   int url_escape:1;
+  int snippets;
   int indent;
   int debug;
   int nresults;
