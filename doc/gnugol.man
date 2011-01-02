@@ -1,4 +1,4 @@
-.TH gnugol 1  "January 02, 2011" "version 0.3" "USER COMMANDS"
+.TH gnugol 1  "January 02, 2011" "version 1" "USER COMMANDS"
 .SH NAME
 gnugol \- search web based search engines at the command line
 .SH SYNOPSIS
@@ -34,7 +34,7 @@ By outputting results in the format you want, with minimal (no)
 markup, gnugol makes it easier to get your answers or create useful
 content of your own, in the mode you are used to working in.
 .PP
-Gnugol makes you less distracted by a shiny web browser for search.
+Gnugol reduces shiny web browser distractions while searching.
 .PP
 There is a gnugol.el for GNU Emacs included with the distribution that
 makes many of gnugol's features available in Emacs buffers.
@@ -42,10 +42,45 @@ makes many of gnugol's features available in Emacs buffers.
 As it is written in C, gnugol is also lightweight and pretty fast.
 .SH OPTIONS
 .TP
-\-? \-\-help display a short help text. The features listed via
-\-\-help are likely to be more up to date than this manual page!
+\-? \-\-help display help text. The features listed via this option are likely to be more up to date than this manual page!
 .TP
-\-s \-\-snippets 0|1gg
+\-e \-\-engine        [bing|google|dummy]
+
+At some point more engines (citeseer, wikipedia, omega, etc) will be supported. To see the list of supported engines with this build, do a 
+.PP
+.B gnugol
+--about engines
+.PP
+(The dummy engine is useful for testing)
+.TP 
+\-o \-\-output        [html|org|mdwn|wiki|text|term|textile]
+
+The default output format is currently org. (The emacs based org-mode outliner format, for Emacs) After utf-8 word breaking is figured out it will probably default to term. More output formats will exist one day.
+
+.TP
+\-n \-\-nresults      number of results to fetch
+
+The default is 5.
+
+.TP
+\-p \-\-position      start of results to fetch
+
+The default is 0.
+.TP
+\-U \-\-escaped       input is already url escaped
+Gnugol expects keywords in UTF-8 format, shell escaped, by default. A shell escaped AND url escaped argument is often simpler.
+.TP
+\-l \-\-language-in   [en|es|fr|nl or other 2 char locale]
+.TP
+\-L \-\-language-out  [en|es|fr|nl or other 2 char locale]
+.TP
+\-H \-\-header    0|1 
+disable/enable output header
+.TP
+\-F \-\-footer    0|1 
+disable/enable output footer
+.TP
+\-s \-\-snippets 0|1
 disable/enable snippet output. Default: enabled.
 .TP
 \-t \-\-titles 0|1
@@ -54,13 +89,22 @@ disable/enable title output. Default: enabled.
 \-u \-\-urls 0|1
 disable/enable url output. Default: enabled.
 .TP
-\-d \-\-debug X
-Debug level. 1 = only catastrophic 11 = everything
+-i --indent 0..5 
+Amount of indentation of results
 .TP
-\-S \-\-safe-mode 0|1|2
-Set the safety of the search. (How much Pr0n you want)
-
-Defaults to 1.
+\-S \-\-safe 0|1|2 
+Set the pr0n-safety of the search. 
+.PP
+0 = Depraved. 2 = Prudish.
+.PP
+Default: 1.
+.TP
+\-v \-\-verbose       provide more verbose insight
+.TP
+\-d \-\-debug X
+Debug level. 1 = only catastrophic errors 11 = everything
+.TP
+\-a \-\-about [credits|copyright|license|source|config|keys|all]
 
 .SH EXAMPLES
 .TP
@@ -76,15 +120,24 @@ Complex search, using google's site restriction parameter:
 Search bing, output results to elinks
 .B gnugol
 \-e bing -o html -H 1 -F 1 the Täht bug | elinks
+.TP
+For more examples see the web site at http://gnugol.taht.net
 .PP
 .SH EXIT STATUS
 gnugol returns a negative exit status if the query fails.
 .SH NOTES
 To search bing, a license key is required. To search google, no
 license key is required, however, it is highly recommended.
+
+A google search is thus, currently, the default.
+For more details:
+
+.B gnugol
+\-\-about keys
+
 .SH BUGS
 Lots! UTF\-8 support is incomplete at the moment. SSML is untested.
 .SH AUTHOR
-Michael ("Dave") Täht (d+gnugol (at) taht.net)
+Michael ("Dave") Täht (d+gnugol (at) taht.net) 
 .SH SEE ALSO
 surfraw(1) whois(1) dig(1) nslookup(1) elinks(1) host(1) 

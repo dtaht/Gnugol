@@ -202,44 +202,100 @@
 (defun gnugol-search-dummy(str)
   "Search the dummy engine via gnugol. (Useful for debugging)"
   (interactive "sSearch: ")
-  (if (< (length str) gnugol-search-maxlen)
-      (let (gnugol-default-engine)
-	(setq gnugol-default-engine "dummy")
-	(gnugol str)
-	))
+  (let (gnugol-default-engine)
+    (setq gnugol-default-engine "dummy")
+    (gnugol str)
+    )
 )
 
 (defun gnugol-search-credits(str)
   "Search the local credits engine via gnugol."
   (interactive "sSearch: ")
-  (if (< (length str) gnugol-search-maxlen)
-      (let (gnugol-default-engine)
-	(setq gnugol-default-engine "credits")
-	(gnugol str)
-	))
+  (let (gnugol-default-engine)
+    (setq gnugol-default-engine "credits")
+    (gnugol str)
+    )
 )
 
 (defun gnugol-search-bing(str)
   "Search bing via gnugol."
   (interactive "sSearch: ")
-  (if (< (length str) gnugol-search-maxlen)
-      (let (gnugol-default-engine)
-	(setq gnugol-default-engine "bing")
-	(gnugol str)
-	))
+  (let (gnugol-default-engine)
+    (setq gnugol-default-engine "bing")
+    (gnugol str)
+    )
 )
 
 (defun gnugol-search-google(str)
   "Search google via gnugol."
   (interactive "sSearch: ")
-  (if (< (length str) gnugol-search-maxlen)
-      (let (gnugol-default-engine)
-	(setq gnugol-default-engine "google")
-	(gnugol str)
-	))
+  (let (gnugol-default-engine)
+    (setq gnugol-default-engine "google")
+    (gnugol str)
+    )
 )
 
-;; FIXME: NOTHING BELOW HERE ACTUALLY WORKS YET
+;; This are examples of using a site specific search
+
+(defun gnugol-search-emacswiki(str)
+  "Search emacswiki via gnugol."
+  (interactive "sSearch: ")
+  (gnugol-search-google (concat "site:www.emacswiki.org " str))
+  )
+
+(defun gnugol-search-gnugol(str)
+  "Search gnugol site via gnugol."
+  (interactive "sGnugol Search: ")
+  (gnugol-search-google (concat "site:gnugol.taht.net " str))
+  )
+
+(defun gnugol-search-the-edge(str)
+  "Search the-edge via gnugol."
+  (interactive "sSearch the-edge: ")
+  (gnugol-search-google (concat "site:the-edge.blogspot.com " str))
+  )
+
+(defun gnugol-search-nex-6(str)
+  "Search nex-6 site via gnugol."
+  (interactive "sSearch Nex-6: ")
+  (gnugol-search-google (concat "site:nex-6.taht.net " str))
+  )
+
+(defun gnugol-search-koders(str)
+  "Search koders.com site via gnugol."
+  (interactive "sSearch Koders: ")
+  (gnugol-search-google (concat "site:www.koders.com " str))
+  )
+;; It would be nice to do the above via command completion
+;; (gnugol-search-site arg, arg), but this isn't right
+;; I need to prepend args
+;; (defun gnugol-search-site(str)
+;;   "Search any specific site via gnugol."
+;;   (interactive "site: ")
+;;   (gnugol-search-google (concat "site:" str))
+;;   )
+
+;; And this is just around so that I test output formats
+;; It suffers because I would like it to toss output
+;; into a buffer formatted in that format...
+
+(defun gnugol-test(str)
+  "Output gnugol's test data."
+  (interactive "sMode: ")
+  (let (gnugol-default-output-format)
+    (setq gnugol-default-output-format str)
+    (gnugol-search-dummy "all")
+    )
+)
+
+;; FIXME: I'd really like a way to split the current window 
+;;        at 80 characters and bring up the search on the 
+;;        right. AND override my default url opener to be
+;;        the internal emacs web browser for sites on a
+;;        whitelist.
+;; FIXME: NOTHING BELOW HERE ACTUALLY WORKS at all YET
+;; (in contrast to the above which only sort of works)
+;; FIXME: add hooks for additional modes - 
 ;; FIXME: For the into-pt stuff, be sensitive to the mode
 ;;        If I'm in markdown format, return markdown
 ;;        org, do org
@@ -254,6 +310,6 @@
 ;; gnugol-into-pt
 ;; gnugol-thing-at-pt-into-pt
 
-;; add hooks for additional modes - 
+
 
 (provide 'gnugol)
