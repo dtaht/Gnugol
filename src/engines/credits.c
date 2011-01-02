@@ -27,6 +27,8 @@ static const struct credits c[] = {
   { "credits", "Craig Guessford", "http://www.aftertheflood.com/", "Gnugol logo and related art" },
   { "credits", "Sean Conner", "http://boston.conman.org/", "DLLs, UTF-8 improvements" },
   { "credits", "Brian Clapper", "http://www.clapper.org/bmc/", "OSX, textile, mdwn support" },
+  { "credits", "David Rowe", "http://www.rowetel.com/", "Original scraper/fpipe code, moral support" },
+  { "credits", "Nick Mainsbridge", "http://deprogram.net/", "The name, 'gnugol', and the backing music" },
   { "copyright", "&copy; Sean Conner 2010", "http://boston.conman.org/", "Portions contributed by Sean Connor" },
   { "copyright", "© Michael D. Taht 2010", "http://www.taht.net/",
     "The bulk of gnugol is under the AGPLv3. See --about license for more details" },
@@ -80,13 +82,18 @@ int GNUGOL_DECLARE_ENGINE(setup,credits) (QueryOptions_t *q __attribute__((unuse
 // FIXME: allow multiple keywords
 
 int GNUGOL_DECLARE_ENGINE(search,credits) (QueryOptions_t *q) {
-  char tempstr[20];
   int header_no = -1;
   q->indent = 2;
+
+//  fixme, handle url encoded strings
 //  if(!q->url_encode) {
 //  }
+// also - may have a bug in string handling - short strings have
+// a bad byte at the end of them, see pass "all" to see it.
 
-  if(strcmp(q->keywords,"all") == 0 || q->keywords[0] == '\0') {
+//  printf("Did I get here? keywords= %s\n", q->keywords);
+  
+  if((strcmp("all",q->keywords) == 0) || q->keywords[0] == '\0') {
     gnugol_header_out(q);
     for(int i = 0; c[i].name != NULL; i++) {
       for(int j = 0; cmap[j].catagory != NULL; j++) {
