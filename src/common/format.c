@@ -112,6 +112,7 @@ int gnugol_keywords_out(QueryOptions_t *q __attribute__((unused))) {
 
 
 static const char *levels[] = { "", "* ","** ","*** ","**** ","***** ", NULL };
+static const char *hashes[] = { "", "# ","## ","### ","#### ","##### ", NULL };
 static const char padding[] = "          ";
 
 // FIXME: 8 possible combinations of output options here
@@ -133,6 +134,7 @@ static const char padding[] = "          ";
 	    printf("%2$*1$d", width, num);
 */
 
+//   At least this one is complete
 
 static const char *org_format_str[] = {
    "%s%s%s%s%s", // nothing
@@ -146,7 +148,13 @@ static const char *org_format_str[] = {
    NULL,
 };
 
-static const char *html_format_str[] = {
+// FIXME: Haven't addressed anything but everything/nothing
+//    GNUGOL_OUTF(q,"[[%s|%s]] %s  \n",t, u, s);
+
+// How much do I care about the whole level thing for wikis?
+// Check ikiwiki vs mediawiki formats
+
+static const char *wiki_format_str[] = {
    "%s%s%s%s%s", // nothing
    "%s[[%s]]%s%s%s\n", // url only
    "%s%s[[%s]]%s%s\n", // title only
@@ -154,44 +162,75 @@ static const char *html_format_str[] = {
    "%s%s%s%s%s\n", // snippet only
    "%s[[%s]]%s\n%s%s\n", // snippet and url
    "%s%s[[%s]]%s%s\n", // snippet and title
-   "%s[[%s][%s]]\n%s%s\n", // everything
+   "%s[[%s|%s]]\n%s%s\n", // everything
    NULL,
 };
+
+// FIXME: We could have a little fun with utf-8 here
+// use “”
+
+static const char *text_format_str[] = {
+   "%s%s%s", // nothing
+   "%s%s%s\n", // url only
+   "%s%s%s\n", // title only
+   "%s %s%s\n", // url and snippet
+   "%s%s%s\n", // snippet only
+   "%s %s%s\n", // snippet and url
+   "%s%s %s\n", // snippet and title
+   "%s %s\n%s\n", // everything
+   NULL,
+};
+
+//    GNUGOL_OUTF(q,"<p><a href=\"%s\">%s</a> %s</p>", u, t, s);
+//    FIXME: Actually implement levels? Nav?
+
+static const char *html_format_str[] = {
+   "%s%s%s", // nothing
+   "<p><a href=\"%s\">See LINK</a>%s%s</p>", // url only
+   "<p>%s%s%s</p>", // title only
+   "<p><a href=\"%s\">%s</a>%s</p>", // url and snippet
+   "<p>%s%s%s</p>", // snippet only
+   "<p><a href=\"%s\">%s%s</a></p>", // snippet and url
+   "<p>%s%s: %s</p>", // snippet and title
+   "<p><a href=\"%s\">%s</a> %s</p>", // everything
+   NULL,
+};
+
+// FIXME: Haven't addressed anything but everything/nothing
 
 static const char *mdwn_format_str[] = {
    "%s%s%s%s%s", // nothing
-   "%s[[%s]]%s%s%s\n", // url only
-   "%s%s[[%s]]%s%s\n", // title only
-   "%s[[%s][%s]]%s%s\n", // url and snippet
+   "%s%s(%s)%s%s\n", // url only
+   "%s%s%s%s%s\n", // title only
+   "%s%s(%s)%s%s\n", // url and snippet
    "%s%s%s%s%s\n", // snippet only
-   "%s[[%s]]%s\n%s%s\n", // snippet and url
-   "%s%s[[%s]]%s%s\n", // snippet and title
-   "%s[[%s][%s]]\n%s%s\n", // everything
+   "%s[%s]%s%s(%s)\n", // snippet and url
+   "%s%s%s %s%s\n", // snippet and title
+   "%s[%s](%s)\n%s%s\n", // everything
    NULL,
 };
+
+// FIXME: Haven't addressed anything but everything/nothing
 
 static const char *textile_format_str[] = {
    "%s%s%s%s%s", // nothing
-   "%s[[%s]]%s%s%s\n", // url only
-   "%s%s[[%s]]%s%s\n", // title only
-   "%s[[%s][%s]]%s%s\n", // url and snippet
-   "%s%s%s%s%s\n", // snippet only
-   "%s[[%s]]%s\n%s%s\n", // snippet and url
-   "%s%s[[%s]]%s%s\n", // snippet and title
-   "%s[[%s][%s]]\n%s%s\n", // everything
+   "%s\"%s\":%s\n%s%s\n", // url only
+   "%s\"%s\":%s\n%s%s\n", // title only
+   "%s\"%s\":%s\n%s%s\n", // url and snippet
+   "%s\"%s\":%s\n%s%s\n", // snippet only
+   "%s\"%s\":%s\n%s%s\n", // snippet and url
+   "%s\"%s\":%s\n%s%s\n", // snippet and title
+   "%s\"%s\":%s\n%s%s\n", // everything
    NULL,
 };
 
+// FIXME: Have a format that makes sense to parse in LISP
+
 #define NULLPINT(str,val) (str[0] == '\0' ? 0 : val)
 
-     FILE *
-     concat_fopen (char *s1, char *s2, char *mode)
-     {
-       char str[strlen (s1) + strlen (s2) + 1];
-       strcpy (str, s1);
-       strcat (str, s2);
-       return fopen (str, mode);
-     }
+/*
+
+CLEANUP: Use C99 style dynamic arrays later
 
 static int result_out(QueryOptions_t *q, const char *url,
                      const char *title,
@@ -200,16 +239,20 @@ char u[strlen(url)];
 char t[strlen(title)];
 char s[strlen(snippet)];
 strcpy(u,url);
-strcpy(t,title);
-strcpy(s,snippet);
+STRIPHTML(t,title);
+STRIPHTML(s,snippet);
 
 printf("%s%s%s\n",u,s,t);
 
-// Can C99 do this?
+...
+
 }
 
+*/
 
-
+// FIXME: This is going to take some serious testing
+//        Human input forms are so messy
+// FIXME: ORG: need to escape []
 
 int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet) {
   char *t = NULLP(title);
@@ -221,7 +264,6 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
   if(level > 5) level = 5;
   if(level < 0) level = 2;
 
-  char tempstr[SNIPPETSIZE];
   char stripsnip[SNIPPETSIZE];
   char stripurl[URL_SIZE];
   char striptitle[URL_SIZE];
@@ -245,68 +287,90 @@ int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, con
   offset = NULLPINT(u,1) | NULLPINT(t,2) | NULLPINT(s,4);
   q->returned_results++;
 
+if(q->format != FORMATTERM) {
   strcpy(stripsnip,s);
   STRIPHTML(stripsnip);
+} else {
+  strcpy(stripsnip,s);
+  STRIPHTML(stripsnip);
+}
+/*
+// NEW idea
+// TERM output looks at the columns variable
+
+// snippet = 0 - suppress
+// snippet = 1 - do the right thing
+// snippet = X - constrain size to that
+
+// Unfortunately I don't know how to pass the
+// following. Perhaps new a flag -B to break words?
+// snippet = -1 - do the right thing, break words
+// snippet = -X - break words at X
+
+// to say this is currently messy would be an understatement
+
+  int newsize = q->snippets;
+  int size = strlen(s);
+  if(size > 0) {
+  char tempstr[size+1];  // FIXME: I'm not convinced this is enough
+  strcpy(tempstr,s);
+  size=strip_html(size,tempstr);
+  if((q->format == FORMATTERM) && (size > 0)) {
+     if(newsize == 1) {
+     char *termsize = getenv("COLUMNS");
+     if(termsize) size = strtoul(termsize, NULL, 10);
+     } else {
+     size = newsize;
+     }
+   }
+   if(size-(level+1) > 0) {
+   strncpy(stripsnip,s,u8_offset(tempstr,size));
+   } else {
+   stripsnip[0] = '\0';
+   }
+  } else {
+   stripsnip[0] = '\0';
+  }
+}
+ */
+
   strcpy(striptitle,t);
   STRIPHTML(striptitle);
 
   switch (q->format) {
   case FORMATIKI:
   case FORMATWIKI:
-    GNUGOL_OUTF(q,"[[%s|%s]] %s  \n",t, u, s);
+    GNUGOL_OUTF(q,wiki_format_str[offset],hashes[level],striptitle,u,padstr,stripsnip);
     break;
-  case FORMATSSML:
+  case FORMATSSML: // FIXME: need to use marks properly
     {
-     strcpy(tempstr,s);
-     STRIPHTML(tempstr);
-     GNUGOL_OUTF(q,"%s <mark name='%d'>%s</mark>.", tempstr, q->returned_results, u);
+     GNUGOL_OUTF(q,"%s <mark name='%d'>%s</mark>.", stripsnip, q->returned_results, u);
     }
     break;
   case FORMATORG:
     GNUGOL_OUTF(q,org_format_str[offset],levels[level],u,striptitle,padstr,stripsnip);
     break;
   case FORMATTEXTILE:
-    {
-      strcpy(tempstr,t);
-      STRIPHTML(tempstr);
-      GNUGOL_OUTF(q,"\"%s\":%s\n", tempstr, u);
-      strcpy(tempstr,s);
-      STRIPHTML(tempstr);
-      GNUGOL_OUTF(q,"   %s\n", tempstr);
-    }
+    GNUGOL_OUTF(q,textile_format_str[offset],padstr,striptitle,u,padstr,stripsnip);
     break;
-
   case FORMATMDWN:
-    {
-      strcpy(tempstr,t);
-      STRIPHTML(tempstr);
-      GNUGOL_OUTF(q,"[%s](%s)\n", tempstr, u);
-      strcpy(tempstr,s);
-      STRIPHTML(tempstr);
-      GNUGOL_OUTF(q,"   %s\n", tempstr);
-    }
+    GNUGOL_OUTF(q,mdwn_format_str[offset],padstr,striptitle,u,padstr,stripsnip);
     break;
-  case FORMATTEXT:
   case FORMATTERM:
-    {
-      strcpy(tempstr,t);
-      STRIPHTML(tempstr);
-      GNUGOL_OUTF(q,"%s %s ", u, tempstr);
-      strcpy(tempstr,s);
-      STRIPHTML(tempstr);
-      GNUGOL_OUTF(q,"%s\n", tempstr);
-    }
+  case FORMATTEXT:
+    GNUGOL_OUTF(q,text_format_str[offset],u,striptitle,stripsnip);
     break;
   case FORMATHTML5:
   case FORMATHTML:
   case FORMATELINKS:
-    GNUGOL_OUTF(q,"<p><a href=\"%s\">%s</a> %s</p>", u, t, s);
+    GNUGOL_OUTF(q,html_format_str[offset],u,striptitle,stripsnip);
     break;
   case FORMATINFO:
   case FORMATCSV:
   case FORMATMAN:
   case FORMATXML:
   case FORMATSQL:
+  case FORMATLISP:
     GNUGOL_OUTW(q,"format: Output format unsupported\n"); break;
   default:
     GNUGOL_OUTF(q,"<a href=\"%s\">%s</a> %s\n", u, t, s);

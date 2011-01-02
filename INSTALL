@@ -1,18 +1,7 @@
 * gnugol
-  The curl and jansson libraries are required.
-
-* gnugold & ggl
-
-You will need working IPv6, or a working IPv6 tunnel. 
-This requires a license key. 
-
-You also need the boutell c cgilib library.
+  The curl-dev and jansson-1.3 libraries are required.
+  gnugol does not currently compile against the jansson git tree.
 
 do a make
 then a sudo make install
-
-To install a version that talks to my server in california.
-
-To install one that talks to localhost, (useful for debugging or when you 
-have no outside ipv6 connectivity)
 

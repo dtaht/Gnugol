@@ -1,0 +1,90 @@
+.TH gnugol 1  "January 02, 2011" "version 0.3" "USER COMMANDS"
+.SH NAME
+gnugol \- search web based search engines at the command line
+.SH SYNOPSIS
+.B gnugol
+[\-?] [\-o output_format] [\-e engine] [keywords]
+.SH DESCRIPTION
+The modern 
+.B Web 
+is a vast, wonderful resource for all kinds of
+information. Searching it is a great IQ enhancer.
+.PP
+The modern 
+.B search results 
+page, on the other hand, is a vast source of colorized formatting,
+innumerable fonts, javascript, multiple images, potential malware, and
+advertising, with an ever changing look and feel based on the whim of
+whatever graphic designer has a bee up their posterior that month, and
+whatever new html features are trendy, with the answer(s) to your
+question(s) buried somewhere deep within all that.
+.PP
+Gnugol is written in the spirit of "whois" and other stable command
+line tools in that it always outputs a web search in the format you
+want, whether that be html, org, markdown, textile, or plain text.
+
+It outputs a basic combination of "url", "title", and "snippet" in
+those formats.
+.PP
+A web browser is 
+.B NOT 
+required to use gnugol.
+.PP
+By outputting results in the format you want, with minimal (no)
+markup, gnugol makes it easier to get your answers or create useful
+content of your own, in the mode you are used to working in.
+.PP
+Gnugol makes you less distracted by a shiny web browser for search.
+.PP
+There is a gnugol.el for GNU Emacs included with the distribution that
+makes many of gnugol's features available in Emacs buffers.
+.PP
+As it is written in C, gnugol is also lightweight and pretty fast.
+.SH OPTIONS
+.TP
+\-? \-\-help display a short help text. The features listed via
+\-\-help are likely to be more up to date than this manual page!
+.TP
+\-s \-\-snippets 0|1gg
+disable/enable snippet output. Default: enabled.
+.TP
+\-t \-\-titles 0|1
+disable/enable title output. Default: enabled.
+.TP
+\-u \-\-urls 0|1
+disable/enable url output. Default: enabled.
+.TP
+\-d \-\-debug X
+Debug level. 1 = only catastrophic 11 = everything
+.TP
+\-S \-\-safe-mode 0|1|2
+Set the safety of the search. (How much Pr0n you want)
+
+Defaults to 1.
+
+.SH EXAMPLES
+.TP
+Basic search:
+.B gnugol
+in the beginning was the command line
+.PP
+.TP
+Complex search, using google's site restriction parameter:
+.B gnugol
+\-e google -o mdwn site:nex-6.taht.net latency
+.TP
+Search bing, output results to elinks
+.B gnugol
+\-e bing -o html -H 1 -F 1 the Täht bug | elinks
+.PP
+.SH EXIT STATUS
+gnugol returns a negative exit status if the query fails.
+.SH NOTES
+To search bing, a license key is required. To search google, no
+license key is required, however, it is highly recommended.
+.SH BUGS
+Lots! UTF\-8 support is incomplete at the moment. SSML is untested.
+.SH AUTHOR
+Michael ("Dave") Täht (d+gnugol (at) taht.net)
+.SH SEE ALSO
+surfraw(1) whois(1) dig(1) nslookup(1) elinks(1) host(1) 

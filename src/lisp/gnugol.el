@@ -22,13 +22,17 @@
   :type 'string
   :group 'gnugol)
 
-(defcustom gnugol-default-opts "-o org"
-  "Shell command to invoke gnugol."
+(defcustom gnugol-default-opts nil
+  "Additional default options for gnugol."
   :type 'string
   :group 'gnugol)
 
 (defcustom gnugol-default-engine nil
-  "Default search engine backend for gnugol."
+  "Default search engine backend for gnugol. Presently supported are:
+  google: Full support (license key recommended)
+  bing: (with a license key)
+  dummy: (useful for testing)
+  credits: various options like about, licenses etc."
   :type 'string
   :group 'gnugol)
 
@@ -37,18 +41,38 @@
   :type 'integer
   :group 'gnugol)
 
-(defcustom gnugol-default-safe-mode 1
+(defcustom gnugol-default-safe-mode "1"
   "Default safe mode to search in: 0 = none, 1 = moderate, 2 = active"
-  :type 'integer
+  :type 'string
   :group 'gnugol)
 
-(defcustom gnugol-default-base-output-format "org"
+(defcustom gnugol-default-header "0"
+  "Default output header for gnugol. 0 = no header. "
+  :type 'string
+  :group 'gnugol)
+
+(defcustom gnugol-default-footer "0"
+  "Default output footer for gnugol. 0 = no footer"
+  :type 'string
+  :group 'gnugol)
+
+(defcustom gnugol-default-output-format "org"
   "Default output format for gnugol."
   :type 'string
   :group 'gnugol)
 
 (defcustom gnugol-default-output-buffer "*gnugol*"
-  "Output buffer. Set this to ~/org/gnugol_history.org if you want to keep your history."
+  "Output buffer. Set this to something like ~/org/gnugol_history.org if you want to keep your history."
+  :type 'string
+  :group 'gnugol)
+
+(defcustom gnugol-default-input-language nil
+  "Set this to your preferred language 2 character code if you want to override the LANG variable in your environment."
+  :type 'string
+  :group 'gnugol)
+
+(defcustom gnugol-default-output-language nil
+  "Set this to the preferred language 2 character code to **restrict** the results you get to this language."
   :type 'string
   :group 'gnugol)
 
@@ -100,10 +124,8 @@
 		 (url-unhex-string str)
 		 'utf-8)))
 
-
-
 ;; FIXME: gnugol should act more like "woman"
-
+;; FIXME: gnugol should maybe output info and LISP format
 ;; FIXME: If there is a visible gnugol buffer change focus to that rather than the current
 ;; FIXME: Add hooks for further washing the data
 
@@ -114,36 +136,50 @@
 ;;        set of keywords rather than call gnugol
 ;;        (if (search-forward (concat "[[Search: " str )) () (gnugol-cmd str)))?
 ;; FIXME: Sanitize the shell arguments to prevent abuse !! For example no CRs
-;;        regexp? Maybe the shell does it for me? What?
+;;        regexp? I'm *nearly* certain that url escaping and shell quoting the args
+;;        is good enough.
 ;; FIXME: actually, going to the 4th char in on the title would work best
 ;; FIXME: make gnugol opts be local
 ;; FIXME: CNTR-U should set the position
 ;; FIXME: a query with the same keywords as the previous should fetch more 
 ;;        results (maybe)
-;; (shell-quote-argument str )
+
 (defun gnugol (str)
-  "search the web via gnugol, bring up results in org buffer"
+  "Search the web via gnugol, bring up results in org buffer."
   (interactive "sSearch: ")
   (if (< (length str) gnugol-search-maxlen)
       (let (newbuffer)
-	(setq gnugol-opts (concat " " gnugol-default-opts " -n " (int-to-string gnugol-default-nresults)))
+	(setq gnugol-opts (concat (if gnugol-default-opts (concat gnugol-default-opts) ()) 
+				  (if gnugol-default-nresults (concat " -n " (int-to-string gnugol-default-nresults) ()))
+				  (if gnugol-default-engine (concat " -e " gnugol-default-engine))
+				  (if gnugol-default-output-format (concat " -o " gnugol-default-output-format) ())
+				  (if gnugol-default-header (concat " -H " gnugol-default-header) ())
+				  (if gnugol-default-footer (concat " -F " gnugol-default-footer) ())
+;;				  (if gnugol-default-safe-mode (concat " -S " gnugol-default-safe-mode) ())
+				  (if gnugol-default-input-language (concat " -l " gnugol-default-input-language) ())
+				  (if gnugol-default-output-language (concat " -L " gnugol-default-output-language) ())
+				  ))	
+	(setq gnugol-full-cmd  (concat gnugol-cmd " " gnugol-opts " -U -- " 
+				       (shell-quote-argument 
+					(gnugol-url-encode str))))
+;; FIXME: Open the file, or reload the file if not a *gnugol* buffer
 	(setq newbuffer (get-buffer-create gnugol-default-output-buffer))
 	(set-buffer newbuffer)
+;; FIXME: Set mode of buffer based on the extension
 	(org-mode)
 	(goto-char (point-min))
 	;; FIXME what we want to do is something like this but I'm getting it wrong
 	;; (if (search-forward (concat "[Search: " str "]")) () 
+;;	(message "%s" gnugol-full-cmd)	
 	(save-excursion 
 	  (insert-string (concat "* [[gnugol: " str "][Search: " str "]]\n"))
 	  (insert 
-	   (shell-command-to-string 
-	    (concat gnugol-cmd gnugol-opts " -U -- " 
-		    (shell-quote-argument 
-		     (gnugol-url-encode str)))
-	    ))
-	  ;; (message (concat gnugol-cmd gnugol-opts " -- " str))
+	   (shell-command-to-string gnugol-full-cmd)
+	    )
 	  (switch-to-buffer newbuffer)
-	  ))
+	  )
+	;; (goto-char (+ point-min 4))
+	)
     ( (beep) (message "search string too long"))))
 
 (defun gnugol-search-selection ()
@@ -161,6 +197,47 @@
       (beep)
       (message "Region not active"))))
 
+;; Do I really understand lexical scoping yet?
+
+(defun gnugol-search-dummy(str)
+  "Search the dummy engine via gnugol. (Useful for debugging)"
+  (interactive "sSearch: ")
+  (if (< (length str) gnugol-search-maxlen)
+      (let (gnugol-default-engine)
+	(setq gnugol-default-engine "dummy")
+	(gnugol str)
+	))
+)
+
+(defun gnugol-search-credits(str)
+  "Search the local credits engine via gnugol."
+  (interactive "sSearch: ")
+  (if (< (length str) gnugol-search-maxlen)
+      (let (gnugol-default-engine)
+	(setq gnugol-default-engine "credits")
+	(gnugol str)
+	))
+)
+
+(defun gnugol-search-bing(str)
+  "Search bing via gnugol."
+  (interactive "sSearch: ")
+  (if (< (length str) gnugol-search-maxlen)
+      (let (gnugol-default-engine)
+	(setq gnugol-default-engine "bing")
+	(gnugol str)
+	))
+)
+
+(defun gnugol-search-google(str)
+  "Search google via gnugol."
+  (interactive "sSearch: ")
+  (if (< (length str) gnugol-search-maxlen)
+      (let (gnugol-default-engine)
+	(setq gnugol-default-engine "google")
+	(gnugol str)
+	))
+)
 
 ;; FIXME: NOTHING BELOW HERE ACTUALLY WORKS YET
 ;; FIXME: For the into-pt stuff, be sensitive to the mode
