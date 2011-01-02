@@ -294,7 +294,7 @@ if(q->format != FORMATTERM) {
   strcpy(stripsnip,s);
   STRIPHTML(stripsnip);
 }
-/* 
+/*
 // NEW idea
 // TERM output looks at the columns variable
 

@@ -146,6 +146,7 @@ static const struct option long_options[] = {
 #endif
 
 #ifdef WHATABOUTTHESE
+  { "word-break"	, no_argument		, NULL , 'B' } ,
   { "config"		, no_argument		, NULL , 'C' } ,
   { "defaults"		, no_argument		, NULL , 'D' } ,
   { "plugin"		, no_argument		, NULL , 'g' } ,
@@ -305,6 +306,10 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   }
   if(o->debug > 0) print_enabled_options(o, stderr);
   if(!(o->urls | o->snippets | o->ads | o->titles)) o->urls = 1;
+  if(q.about) {
+    q.engine_name = "credits";
+    q.header_str = "About: ";
+  }
   return(optind);
 }
 
@@ -341,11 +346,6 @@ int main(int argc, char **argv) {
   gnugol_init_QueryOptions(&q);
   gnugol_default_QueryOptions(&q);
   process_options(argc,argv,&q);
-  if(q.about) {
-    q.engine_name = "credits";
-    q.header_str = "About";
-  }
-
   result = gnugol_query_engine(&q);
 
   if(q.returned_results > 0) {

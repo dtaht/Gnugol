@@ -96,7 +96,7 @@ static const char *url_escapes[] = {
 // As best as I can tell this is STILL wrong in that you can double
 // encode the darn string
 
-int url_escape_utf8(char *to, char *s) {
+int url_escape_utf8_char(char *to, char *s) {
 	int len = strlen(s);
 	char buf[len * 9 + 1]; // Maximum expansion due to utf-8
 	int j = 0;
@@ -120,8 +120,68 @@ int url_escape_utf8(char *to, char *s) {
 			strcpy(&buf[j],url_escapes[ch]);
 			j+=3;
 		}
-/* FIXME: Handle the utf-8 escape correctly
-		} else if (ch <= 0x07FF) { // non-ASCII <= 0x7FF
+/* else {
+brain dumping core now...
+			int b = s[++i];
+			if (b <= 0x7F) {
+                        }
+
+For some reason the java code expects an int here, so I assume java is unicode
+
+else if (ch <= 0x07FF) { // non-ASCII <= 0x7FF
+			sbuf.append(url_escapes[0xc0 | (ch >> 6)]);
+			sbuf.append(url_escapes[0x80 | (ch & 0x3F)]);
+		} else { // 0x7FF < ch <= 0xFFFF
+			sbuf.append(url_escapes[0xe0 | (ch >> 12)]);
+			sbuf.append(url_escapes[0x80 | ((ch >> 6) & 0x3F)]);
+			sbuf.append(url_escapes[0x80 | (ch & 0x3F)]);
+		}
+*/
+	}
+
+	if(to == NULL) {
+		to = malloc(j+1);
+	}
+	strncpy(to,buf,j+1);
+	return(j);
+}
+
+
+int url_escape_utf8(char *to, char *s) {
+	int len = strlen(s);
+	char buf[len * 9 + 1]; // Maximum expansion due to utf-8
+	int j = 0;
+	for (int i = 0; i < len; i++) {
+		int ch = s[i];
+
+		if ('A' <= ch && ch <= 'Z') {		// 'A'..'Z'
+			buf[j++] = ch;
+		} else if ('a' <= ch && ch <= 'z') {	// 'a'..'z'
+			buf[j++] = ch;
+		} else if ('0' <= ch && ch <= '9') {	// '0'..'9'
+			buf[j++] = ch;
+		} else if (ch == ' ') {			// space
+			buf[j++] = '+';
+		} else if (ch == '-' || ch == '_'		// unreserved
+			|| ch == '.' || ch == '!'
+			|| ch == '~' || ch == '*'
+			|| ch == '\'' || ch == '('
+			|| ch == ')') {
+			buf[j++] = ch;
+		} else if (ch <= 0x7f) { // other ASCII
+			strcpy(&buf[j],url_escapes[ch]);
+			j+=3;
+		}
+
+/* else {
+brain dumping core now...
+			int b = s[++i];
+			if (b <= 0x7F) {
+                        }
+
+For some reason the java code expects an int here, so I assume java is unicode
+
+else if (ch <= 0x07FF) { // non-ASCII <= 0x7FF
 			sbuf.append(url_escapes[0xc0 | (ch >> 6)]);
 			sbuf.append(url_escapes[0x80 | (ch & 0x3F)]);
 		} else { // 0x7FF < ch <= 0xFFFF
@@ -156,6 +216,8 @@ int url_escape_utf8(char *to, char *s) {
  *
  * [1] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
  */
+
+// FIXME utf-8 chars should be explicitly unsigned
 
 int url_unescape_utf8(char *to, char *s) {
 	int l = strlen(s);
