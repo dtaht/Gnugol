@@ -74,9 +74,11 @@ Gnugol expects keywords in UTF-8 format, shell escaped, by default. A shell esca
 .TP
 \-L \-\-language-out  [en|es|fr|nl or other 2 char locale]
 .TP
-\-H \-\-header    0|1 disable/enable output header
+\-H \-\-header    0|1 
+disable/enable output header
 .TP
-\-F \-\-footer    0|1 disable/enable output footer
+\-F \-\-footer    0|1 
+disable/enable output footer
 .TP
 \-s \-\-snippets 0|1
 disable/enable snippet output. Default: enabled.
@@ -91,11 +93,11 @@ disable/enable url output. Default: enabled.
 Amount of indentation of results
 .TP
 \-S \-\-safe 0|1|2 
-Set the Pr0n-safety of the search. 
+Set the pr0n-safety of the search. 
 .PP
-0 = all. 2 = none.
+0 = Depraved. 2 = Prudish.
 .PP
-Default: 1. 
+Default: 1.
 .TP
 \-v \-\-verbose       provide more verbose insight
 .TP
