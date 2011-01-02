@@ -306,9 +306,9 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   }
   if(o->debug > 0) print_enabled_options(o, stderr);
   if(!(o->urls | o->snippets | o->ads | o->titles)) o->urls = 1;
-  if(q.about) {
-    q.engine_name = "credits";
-    q.header_str = "About: ";
+  if(o->about) {
+    o->engine_name = "credits";
+    o->header_str = "About: ";
   }
   return(optind);
 }

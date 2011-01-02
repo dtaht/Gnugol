@@ -45,6 +45,7 @@ static const struct credits c[] = {
   { "rms", "rms", "http://www.stallman.org", "If he didn't exist, we'd have had to invent him." },
   { "quotes", "esr", "http://esr.ibiblio.org/", "With enough eyeballs, all bugs are shallow." },
   { "quotes", "jwz", "http://www.jwz.org/blog", "Some people, when confronted with a problem, think 'I know, I'll use regular expressions.' Now they have two problems."},
+  { "quotes", "mdt", "http://nex-6.taht.net/", "Some people, when confronted with a problem, think 'I know, I'll use IPv6.' Now they have two problems."},
   { "gnugol","gnugol",GNUGOL_SITE,"BEHOLD. THE WORLD WAS GREEN ON BLACK AND IT WAS GOOD." },
   { NULL,NULL, NULL, NULL },
 };
