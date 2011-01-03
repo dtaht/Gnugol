@@ -1,6 +1,6 @@
 #+TITLE:     GNUGOLD's RATIONALE
 #+AUTHOR:    Dave Täht
-#+EMAIL:     d AT taht.net
+#+EMAIL:     d + gnugol AT taht.net
 #+DATE:      <2010-12-19 Sun>
 #+LANGUAGE:  en
 #+TEXT:      Searching the Web in Plain Text
@@ -18,7 +18,7 @@ Problem with that was that most query-response protocols don't work well through
 
 Enter IPv6. Without NAT, you have end to end networking. Response problem solved. Billing problem solved, too.
 
-The most basic version of this system uses 2!! packets to get a query out and a response. If you are going through a 6in4 tunnel, it's 4 packets. (2 very short ones, however)
+The first version of this system, in 2008, used 2 packets to get a query out and a response. If you went through a 6in4 tunnel, it's 4 packets. (2 very short ones, however)
 
 This means that by the time you complete a tcp handshake vs the normal google, you've already got a response from this, on a long latency link. 
 
@@ -30,4 +30,4 @@ The second nice thing about end to end networking is that it makes it possible -
 
 Benefits - vastly reduced data traffic. Control of the formatting can be controlled on the phone or remote servers. 
 
-The proof is in the pudding. Install this. Try it out. Let me know how it works.
+However, since then, the client rotted, and the protocol was, shall we say, not the best. I figure if I make a usable client that eventually I can go back to what was interesting in the first place - improving search speed through new network protocols - and have thus focused on producing a usable libcurl-based client first, leaving  a new network backend for later, if ever.

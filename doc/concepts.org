@@ -16,7 +16,7 @@
 ** SearchMarks
    Classic Web “bookmarks” store the "answer" to a question, but not the process that led to finding that answer. A user might put bookmarks into catagories, and share them via the web, but that involves an extra step.
 
-   Searchmarks retain the “keywords” -> answers component of the question you asked. By retaining the keywords you searched for you can remember the question you had, and the answer you got, instead of bookmarking and categorizing the input. If you consider the number of words in the English language, 
+   Searchmarks retain the “keywords” -> answers component of the question you asked. By retaining the keywords you searched for you can remember the question you had, and the answer you got, instead of bookmarking and categorizing the input. 
 
    You are, of course, free to further categorize your Searchmarks. 
 ** Simplicity
@@ -27,7 +27,3 @@
    Gnugol lets you "drive" the browser from the command line, a program, or your text editor.
 ** Speed
    The less data you transfer and render, the faster your searching experience.
-* Gnugold Concepts
-** Persistent connections
-** Caching
-** P2P trust

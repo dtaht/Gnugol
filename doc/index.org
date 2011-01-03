@@ -3,7 +3,7 @@
 #+EMAIL:     d at taht.net
 #+DATE:      <2010-12-21 Tue>
 #+LANGUAGE:  en
-#+TEXT:      Searching the Web in Plain Text
+#+TEXT:      A command line text only web search client
 #+DESCRIPTION: GNUGOL - an org-mode compatible search client
 #+OPTIONS:   H:2 num:nil todo:nil toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:nil tags:not-in-toc
 #+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:org-info.js
