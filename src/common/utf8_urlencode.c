@@ -138,11 +138,13 @@ else if (ch <= 0x07FF) { // non-ASCII <= 0x7FF
 		}
 */
 	}
+	
+	buf[j] = '\0';
 
 	if(to == NULL) {
 		to = malloc(j+1);
 	}
-	strncpy(to,buf,j+1);
+	memcpy(to,buf,j+1);
 	return(j);
 }
 
@@ -191,11 +193,13 @@ else if (ch <= 0x07FF) { // non-ASCII <= 0x7FF
 		}
 */
 	}
+	
+	buf[j] = '\0';
 
 	if(to == NULL) {
 		to = malloc(j+1);
 	}
-	strncpy(to,buf,j+1);
+	memcpy(to,buf,j+1);
 	return(j);
 }
 
