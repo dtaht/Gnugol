@@ -43,6 +43,16 @@ static const struct credits c[] = {
   { "source",  "Mirror sites", GNUGOL_SITE, "The main site has a list of mirrors" },
   { "config",  "Gnugol Configuration", "https://github.com/dtaht/Gnugol.git", "At present gnugol can only be configured via command line options. There will be a ~/.gnugol/config someday, in json format. " },
   { "manual",  "Gnugol Manual", GNUGOL_SITE, "Sorry, no manual yet. See the web site for some tips or try --help" },
+  { "keys",  "Gnugol API Key", GNUGOL_SITE, "No license key for gnugol is (or will ever be) required. That said, certain other services do require a license key, and I'd like to be able to search those, so I have made allowances for search engines that require one." },
+  { "keys",  "Google API Key", "http://code.google.com/apis/ajaxsearch/documentation/reference.html", "A key is not required, but desirable." },
+  { "keys",  "Bing API Key", "http://www.bing.com/developers/createapp.aspx", "Get a bing key from this url and put it in a file called ~/.bingkey." },
+  { "keys",  "Wikipedia", GNUGOL_SITE, "No json API key is required from the wikimedia foundation (thankfully). Unfortunately, the wikipedia search engine as written thus far, doesn't work. :(" },
+  { "engines",  "google", NULL, "gnugol has a reasonably complete version of the google api, with support for multiple language input, output, safe search, position, and number of results." },
+  { "engines",  "bing", NULL, "gnugol has a reasonably complete version of the bing api, with support for multiple language input, output pending, as well as safe search. Position, and number of results is supported." },
+  { "engines",  "dummy", NULL, "gnugol has a reasonably complete version of the google api, with support for multiple language input, output, safe search, position, and number of results." },
+  { "engines",  "credits", NULL, "Much of the internal documentation of gnugol is implemented by the \"credits\" engine." },
+  { "engines",  "wikipedia", NULL, "There is a (currently non-working) wikipedia engine" },
+  { "engines",  "more", "http://gnugol.taht.net/bugs.html", "More engines would be AWESOME! Gmane especially!" },
   { "jwz", "jwz", "http://www.jwz.org/blog", "I share jwz's preference for green on black screens. His gruntle columns kept me sane in a darker era of web development, and I always loved the subversive element of the about:jwz parameter of Mozilla in an otherwise bland, corporatized world." },
   { "rms", "rms", "http://www.stallman.org", "If he didn't exist, we'd have had to invent him." },
   { "quotes", "esr", "http://esr.ibiblio.org/", "With enough eyeballs, all bugs are shallow." },
@@ -63,6 +73,8 @@ static const struct cat_map cmap[] = {
  { "source","Gnugol Source availability" },
  { "copyright","Gnugol Copyrights" },
  { "manual", "Gnugol Manual" },
+ { "keys", "Gnugol API Keys" },
+ { "engines", "Gnugol's supported search engines" },
  { "all", "Gnugol Internal Information" },
  { NULL, NULL },
 };
@@ -89,10 +101,10 @@ int GNUGOL_DECLARE_ENGINE(search,credits) (QueryOptions_t *q) {
 //  if(!q->url_encode) {
 //  }
 // also - may have a bug in string handling - short strings have
-// a bad byte at the end of them, see pass "all" to see it.
+// a bad byte at the end of them, pass "all" to see it.
 
 //  printf("Did I get here? keywords= %s\n", q->keywords);
-  
+
   if((strcmp("all",q->keywords) == 0) || q->keywords[0] == '\0') {
     gnugol_header_out(q);
     for(int i = 0; c[i].name != NULL; i++) {
