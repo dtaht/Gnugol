@@ -25,14 +25,14 @@ struct credits {
 static const struct credits c[] = {
   { "credits", "Dave Täht", "http://www.taht.net/", "Inspiration... and perspiration" },
   { "credits", "Craig Guessford", "http://www.aftertheflood.com/", "Gnugol logo and related art" },
-  { "credits", "Sean Conner", "http://boston.conman.org/", "DLLs, UTF-8 improvements" },
+  { "credits", "Sean Conner", "http://boston.conman.org/", "DLLs, UTF-8 improvements, cleanups, bug fixes" },
   { "credits", "Brian Clapper", "http://www.clapper.org/bmc/", "OSX, textile, mdwn support" },
   { "credits", "David Rowe", "http://www.rowetel.com/", "Original scraper/fpipe code, moral support" },
   { "credits", "Nick Mainsbridge", "http://deprogram.net/", "The name, 'gnugol', and the backing music" },
-  { "copyright", "&copy; Sean Conner 2010", "http://boston.conman.org/", "Portions contributed by Sean Conner" },
-  { "copyright", "© Michael D. Taht 2010", "http://www.taht.net/",
+  { "copyright", "&copy; 2010,2011 Sean Conner", "http://boston.conman.org/", "Portions contributed by Sean Conner" },
+  { "copyright", "© 2010,2011 Michael D. Taht", "http://www.taht.net/",
     "The bulk of gnugol is under the AGPLv3. See --about license for more details" },
-  { "license", "Gnugol's Licensing", GNUGOL_SITE, "FIXME: Manifesto to be made here" },
+  { "license", "Gnugol's Licensing", GNUGOL_SITE, "" },
   { "license", "GNU Affero General Public License, Version 3", "http://www.gnu.org/licenses/agpl.html",
 "The GNU Affero General Public License is a free, copyleft license for software and other kinds of works, specifically designed to ensure cooperation with the community in the case of network server software.\n\n"
 "The GNU Affero General Public License is designed specifically to ensure that the modified source code becomes available to the community. It requires the operator of a network server to provide the source code of the modified version running there to the users of that server. Therefore, public use of a modified version, on a publicly accessible server, gives the public access to the source code of the modified version.\n\n (For the complete license, visit the web site)\n\n" },
@@ -58,7 +58,7 @@ static const struct credits c[] = {
   { "quotes", "esr", "http://esr.ibiblio.org/", "With enough eyeballs, all bugs are shallow." },
   { "quotes", "jwz", "http://www.jwz.org/blog/", "Some people, when confronted with a problem, think 'I know, I'll use regular expressions.' Now they have two problems."},
   { "quotes", "mdt", "http://nex-6.taht.net/", "Some people, when confronted with a problem, think 'I know, I'll use IPv6.' Now they have two problems."},
-  { "gnugol","gnugol",GNUGOL_SITE,"BEHOLD. THE WORLD WAS GREEN ON BLACK AND IT WAS GOOD." },
+  { "gnugol","gnugol",GNUGOL_SITE,"BEHOLD: THE WORLD IS GREEN ON BLACK AND WITHOUT IMAGES, AND IT IS GOOD." },
   { NULL,NULL, NULL, NULL },
 };
 
@@ -84,8 +84,7 @@ int GNUGOL_DECLARE_ENGINE(setup,credits) (QueryOptions_t *q __attribute__((unuse
   return 0;
 }
 
-// FIXME: Add keywords of:
-// license, credits, source, config, stats, errors, warnings, all
+// FIXME: Add keywords of: source, config, stats, errors, warnings
 // FIXME: Figure out how to get the build commit, build date, etc
 //        out of git
 // FIXME: Add keyword escapes elsewhere, gnugol:whatever
@@ -96,14 +95,6 @@ int GNUGOL_DECLARE_ENGINE(setup,credits) (QueryOptions_t *q __attribute__((unuse
 int GNUGOL_DECLARE_ENGINE(search,credits) (QueryOptions_t *q) {
   int header_no = -1;
   q->indent = 2;
-
-//  fixme, handle url encoded strings
-//  if(!q->url_encode) {
-//  }
-// also - may have a bug in string handling - short strings have
-// a bad byte at the end of them, pass "all" to see it.
-
-//  printf("Did I get here? keywords= %s\n", q->keywords);
 
   if((strcmp("all",q->keywords) == 0) || q->keywords[0] == '\0') {
     gnugol_header_out(q);
