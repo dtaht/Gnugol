@@ -1,6 +1,6 @@
 #+TITLE:     GNUGOLD FAQ
 #+AUTHOR:    Dave Täht
-#+EMAIL:     d at taht.net
+#+EMAIL:     d + gnugol at taht.net
 #+DATE:      <2010-12-20 Tu>
 #+LANGUAGE:  en
 #+TEXT:      Searching the Web over persistent protocols
@@ -8,12 +8,18 @@
 #+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:org-info.js
 #+LINK_UP: index.html
 #+LINK_HOME:
+#+STYLE:    <link rel="icon" type="image/ico" href="http://gnugol.taht.net/images/favicon.ico">
 #+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
 #+STYLE:    <script type="text/javascript" src="org-info.js"> 
 * Why is it called GNUGOLD?
   The name is a play on several words - Canoodle, google, gnu, and I am in search of "New Gold" while designing a custom protocol for client distributed search...
+* DISCLAIMER
+Gnugold does not currently exist in any form. The original network protocol and client/server idea didn't work out. My efforts are focused on producing a useful [[http://gnugol.taht.net/][gnugol]] client at present.
 * What will it do?
   Act as a proxy query router using udp or sctp to more well connected search sites. This will reduce DNS lookups, AND the 3 way handshake required for TCP/ip to connect. For example, (assuming the DNS cache is "hot") running gnugol on a machine 4ms away from google takes about 50ms for a query to complete. The same gnugol command on a host that is 80ms away takes anywhere between 220 and 240ms to complete. The numbers get worse and worse the farther from California you get. Bridging this divide is what I hope to accomplish with using the gnugold query router.
+
+Sites that are disconnected from the Internet (such as a school system in Nicaragua) could take advantage of a caching feature.
+
 * How does it work? 
 - Simple searches easily fit into a single packet
 - Most responses - when cleared of extra stuff - are less than 16K
@@ -35,4 +41,4 @@ A teacher prepares a lesson plan using internet resources and gnugold. In her (w
 See also: [[file:trust.org][Trust relationships]].
 
 * How can I help? 
-  Download the source code. Build it. Contribute. Run a server in a well connected location. Share it. Spread the program around your workplace.
+  Download the source code. Build it. Contribute. Share it. Spread the program around your workplace.

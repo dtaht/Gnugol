@@ -19,7 +19,11 @@ make && sudo make install
 
 gnugol the keywords from there.
 
-NOTE: gnugol requires that your terminal and emacs session be running in utf-8 or ascii rather than any other character set. You can usually configure your system and keyboard to operate in utf-8 via your graphical environment's settings, and you can tell emacs to operate in it by putting the following in your .emacs file. 
+NOTE: gnugol requires that your terminal and emacs session be running in 
+utf-8 or ASCII rather than any other character set. You can usually 
+configure your system and keyboard to operate in utf-8 via your 
+graphical environment's settings, and you can tell emacs to operate 
+in it by putting the following in your .emacs file. 
 
 (set-language-environment "UTF-8")
 (set-buffer-file-coding-system 'utf-8)

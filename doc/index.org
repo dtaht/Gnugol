@@ -9,12 +9,13 @@
 #+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:org-info.js
 #+LINK_UP:
 #+LINK_HOME: 
+#+STYLE:    <link rel="icon" type="image/ico" href="http://gnugol.taht.net/images/favicon.ico">
 #+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
 #+STYLE:    <script type="text/javascript" src="org-info.js"> 
 #+STARTUP: overview hideblocks
 #+begin_html
 <!-- The logo links to the root of the website -->
-<a href="/"><img src="images/gnugol.png" class="logo-link" /></a>
+<a href="/"><img src="images/gnugol_logo_BrightGreen_art.png" class="logo-link" /></a>
 #+end_html
 * About Gnugol
   Gnugol is a command line web search client, written in C, that can make searching and utilizing the web more efficient.
@@ -23,7 +24,7 @@
 ** Gnugol is smart
    The basics of most searching is keyword based. All search engines return standardized results in the form of the title of a page, a relevant snippet from your search, and a link to the page. (Almost) everything else is fluff. Why not get it in a form you can read in the tool of your choice, whether that be plain text, basic html, org, mdwn, or wiki formats?
 ** Gnugol is small
-   Presently the command line binary weighs in at less than 40k stripped - admittedly with a huge dependence on the curl library and a much smaller one on the jansson library. 
+   Presently the command line binary weighs in at less than 60k stripped - admittedly with a huge dependence on the curl library and a much smaller one on the jansson library. 
 ** Gnugol is simple
    The default output of gnugol is spartan, to say the least. While it can be extensively customized, the motto is "just the results, please", and be damned to everything else.
 ** Gnugol is flexible

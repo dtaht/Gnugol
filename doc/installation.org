@@ -1,29 +1,60 @@
-#+TITLE:     INSTALLATION
+#+TITLE:     GNUGOL INSTALLATION
 #+AUTHOR:    Dave Täht
-#+EMAIL:     d at taht.net
-#+DATE:      <2008-08-25 Mo>
+#+EMAIL:     d + gnugol at taht.net
+#+DATE:      <2011-01-04 Tue>
 #+LANGUAGE:  en
 #+TEXT:      Searching the Web in Plain Text
-#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:t tags:not-in-toc
-#+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
-#+LINK_UP:
-#+LINK_HOME:
-#+STYLE:    <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+#+OPTIONS:   H:2 num:nil todo:nil toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:org-info.js
+#+LINK_UP: 
+#+LINK_HOME: index.html
+#+STYLE:    <link rel="icon" type="image/ico" href="http://gnugol.taht.net/images/favicon.ico">
+#+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
+#+STYLE:    <script type="text/javascript" src="org-info.js"> 
+#+STARTUP: overview hideblocks
+#+begin_html
+<!-- The logo links to the root of the website -->
+<a href="/"><img src="images/gnugol_logo_BrightGreen_art.png" class="logo-link" /></a>
+#+end_html
 
-* Get the software
-* Get the dependencies for gnugol
-  The notable dependencies of gnugol are the curl web interface and jansson json C library.
+* Get the dependencies & build gnugol
+  The curl-dev and jansson-1.3 libraries are required.
 
-  Under debian/ubuntu, you can 
+  (gnugol does not currently compile against the jansson git tree. use 1.3)
 
-  apt-get install curl-dev 
+  Under debian derived OSes, installing the build dependencies for
+curl-dev is sufficient to get what gnugol needs, then you have to
+fetch and build the jansson library. 
 
-  to get all the dependencies you need for that. 
+After that gnugol should build
+without complaint.
+#+BEGIN_SRC sh
+sudo apt-get install curl-dev
+wget http://www.digip.org/jansson/releases/jansson-1.3.tar.bz2
+tar xjf jansson-1.3.tar.bz2
+cd jansson-1.3
+./configure && make && sudo make install && sudo ldconfig
 
-  As of this writing the jansson library is not available as a debian package, so you will have to get it and compile it yourself.
+# for gnugol, in the Gnugol root tree, do a:
+git clone git://github.com/dtaht/Gnugol.git
+cd Gnugol
+make && sudo make install
 
-* Get the dependencies for gnugold :EXPERIMENTAL:
-  The present implementation of gnugold requires libsctp and will probably only work on Linux.
-* Build it
-* Install it
-* Use it!
+gnugol the keywords from there.
+
+# gnugol --help and man gnugol contain more details on how things work.
+
+#+END_SRC
+
+** NOTE: gnugol _requires_ UTF-8
+Your terminal and emacs session must be running in utf-8 or ASCII
+rather than any other character set. You can usually configure your
+system and keyboard to operate in utf-8 via your graphical
+environment's settings, and you can tell emacs to operate in it by
+putting the following in your .emacs file:
+#+BEGIN_SRC lisp
+(set-language-environment "UTF-8")
+(set-buffer-file-coding-system 'utf-8)
+#+END_SRC
+** NOTE: The above git tree is readonly
+PLEASE feel free to fork/patch gnugol and either send me git pull requests via github or git patches via email.

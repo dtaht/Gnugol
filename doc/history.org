@@ -8,25 +8,26 @@
 #+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:org-info.js
 #+LINK_UP: index.html
 #+LINK_HOME: index.html
+#+STYLE:    <link rel="icon" type="image/ico" href="http://gnugol.taht.net/images/favicon.ico">
 #+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
 * Where did the idea come from?
   Dave has had a long experience with search engines, having written one in 1996, and another in 1999. 
 ** Genesis 
    Gnugol began life in 1996 as a shell script that scraped altavista's search results into a format that was compatible with the links text-mode web browser. It went through various incarnations over the years.
 ** Frustration with "truth in advertising"
-   In a meeting with some web advertising executives in 99, I started describing the new IPv13 protocol, which would guarantee that after so many data packets, “ADV” (advertising) packets had to be sent. Everybody in the room bought it, to my dismay, even a few that shouldn't have been fooled. 
+   In a meeting with some web advertising executives in 1999, Dave “lost it”, and started [[http://the-edge.blogspot.com/2003_09_14_archive.html][describing the new IPv13 protocol]], which would guarantee that after so many data packets, “ADV” (advertising) packets had to be sent. 
 
-Soon afterwards he started working on privoxy and other tools like that. 
+Everybody in the room bought it, to his dismay, even a few that shouldn't have been fooled. 
 
+Soon afterwards he started working on [[http://www.privoxy.org/][privoxy]] and other tools like that. 
 ** A trip to Belize
    where he noticed how slow the internet was in remote locations. 
-** Losing an argument with Linus Torvalds 
-   about the sha1/gzip ordering in git. 
 ** ISC.org
-   came from a visit to isc.org and some discussions about the efficiency of dns and udp over ipv6. 
-** Trips to Nicaragua and Australia 
-   Where it was painfully obvious that the internet, especially over lossy 802.11 networks, was often too slow to actually use. Last inputs were the talk, and the name. Mike says "I am a derived work". 
+   Some discussions about the efficiency of dns and udp over ipv6. 
+** Trips to Nicaragua and Australia in 2008
+   Where it was painfully obvious that the Internet, especially over lossy 802.11 networks, was often too slow to actually use. (Now, it turns out that a key problem is actually [[http://gettys.wordpress.com/2011/01/03/aggregate-bufferbloat-802-11-and-3g-networks/][bufferbloat]])
 ** Latency
+(Note this is just some random math as I try to get mathml to work for me)
 
 When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
 $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
@@ -35,42 +36,42 @@ $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
 A zillion different primitive shell scripts, perl based scrapers, meta search engines, etc. To search the most popular search engines at the time, notably, using text based browsing tools like links, lynx, and elinks.
 * Adolescence (march, 2008)
 ** Combating Featuritus
-In the race to add feature after feature after freature, google and other search engines have lost sight of the original appeal of the service. A typical google page is now over 25K long, not counting the image, contains dozens of extra links, and takes 5-10 seconds to download and render over slow, international links. 
+In the race to add feature after feature after freature, google and other search engines have lost sight of the original appeal of their services - getting an answer to a question. 
 
-I've always admired the DNS system, and felt that now that "search" is almost a commodity, that it would be possible to define a binary udp based protocol for search. There are plenty of unused, useless services in /etc/services - having a special port number for search makes sense.
+A typical google page is now over 25K long, not counting the image, contains dozens of extra links, and takes 5-10 seconds to download and render over slow, international links. Not only that but the various search engines are contributing to breaking the Internet, by, for example, increasing the default MSS size to 10 from 2...
+
+Dave had always admired the DNS system, and felt that now that "search" is almost a commodity, that it would be possible to define a binary (udp) based protocol for search. There are plenty of unused, useless services in /etc/services - having a special port number for search makes sense.
 
 Problem with that was that most query-response protocols don't work well through a firewall. 
 
-Enter IPv6. Without NAT, you have end to end networking.  Response problem solved. Billing problem solved, too.
+Enter IPv6. Without NAT, you have end to end networking.  Response problem solved. Billing problem solved, too. Or so he thought. 
 
 ** Gaining speed
-The original version of gnugol used 2!! packets to get a query out and a response. If you went through a 6in4 tunnel, it was 4 packets. (2 very short ones, however)
+The original version of the gnugold network protocol used 2!! packets to get a query out and a response. If you went through a 6in4 tunnel, it was 4 packets. (2 very short ones, however)
 
-This means that by the time you complete a tcp handshake vs the normal google, you've already got a response from this, on a long latency link. 
+This means that by the time you completed a tcp handshake vs the normal google, you've already got a response from gnugold, on a long latency link. 
 
-The earliest prototype came in at *half* the time to transmit a query from australia and get the response that google.com.au did, best case. Due to the unreliable network I was on, it was actually often 5-10 times faster. I began to believe I was onto something.
+The earliest prototype came in at *half* the time to transmit a query from australia and get the response that google.com.au did, best case. Due to the unreliable network I was on, it was actually often 5-10 times faster. 
 
 Additional benefits - vastly reduced data traffic. Control of the formatting can be controlled on the phone or remote servers. 
 
 38 packets vs 4. Not bad. Some additional tweaking was in order.
 
-The second nice thing about end to end networking is that it makes it  possible -assuming a static ip address - to have for-pay search. I'd gladly pay a few bucks a month for faster - and ad-free searching!
-
-Or so I thought.
+The second nice thing about end to end networking is that it makes it easier -assuming a static ip address - to have for-pay search. Dave would gladly pay a few bucks a month for faster - and ad-free searching!
 
 * Death #1
-Unfortunately the UDP based system described above proved unreliable enough in practice for me to discard it (at least temporarily) in favor of a few other network backend ideas. 
+Unfortunately the UDP based network system described above proved unreliable enough in practice for Dave to discard it (at least temporarily) in favor of a few other network backend ideas. 
 * Death #2
 And THEN google obsoleted their soap API in favor of json, rendering the original front-end client useless.
 * Death #3
 Finally that soap API went away...
-* Rebirth #1
-Rewrote the front end to use json as its transport.
-* Rebirth #2
-Cleaned up and re-organized everything and decided to publish the darn thing.
+* Rebirth - October, 2010
+After encountering [[http://nex-6.taht.net/posts/Beating_the_speed_of_light_on_the_web/][Google's latest results page]], Dave blew a gasket, IPv13 was now a reality!!?? 
+
+So he dusted off the client, and rewrote it (with the help of some friends) to drop the network backend entirely in favor of curl, and incorporated the json API. After some positive feedback the new gnugol client seemed useful enough for general use, so he released it on github.
+
+Whether or not he'll pursue the original gnugold network client remains a question of time and motivation.
 * The origin of this name
-  The name came from a 2008, late night discussion/hacking/music session between Michael Taht and Nick Mainsbridge, in his music studio near Sydney, Australia. Mike had been working on a set of concepts designed to push the outer limits of the internet back out to the edges, and was about to give a talk on the subject, so they thrashed it through. 
+  The name came from a 2008, late night discussion/hacking/music session between Michael (Dave) Taht and Nick Mainsbridge, in his music studio near Sydney, Australia. Mike had been working on a set of concepts designed to push the outer limits of the internet back out to the edges, and was about to give a talk on the subject, so they thrashed it through. 
 
   While Mike was playing piano, Nick came rushing in with the name. Mike dropped the piano, spent a week locked up in a hotel room writing up what they'd been talking about, gave the talk... then got some proof of concept code over a weekend a few weeks later. Thus - gnugol was born!
-
-  
