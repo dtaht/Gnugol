@@ -24,7 +24,8 @@ LDFLAGS += -dynamiclib -dynamic ../common/*.o engines.o
 EXT = dylib
 endif
 
-OBJECTS=google.$(EXT) dummy.$(EXT) bing.$(EXT) wikipedia.$(EXT) dns.$(EXT) credits.$(EXT) engines.o # googlev2.so
+OBJECTS=google.$(EXT) dummy.$(EXT) bing.$(EXT) wikipedia.$(EXT) dns.$(EXT) credits.$(EXT) \
+	stackapps.$(EXT) engines.o # googlev2.so
 
 
 STRIP=strip
@@ -39,6 +40,9 @@ googlev2.$(EXT): googlev2.c $(HEADERS) engines.o
 
 bing.$(EXT): bing.c $(HEADERS) engines.o
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) bing.c -o $@ $(LDFLAGS)
+
+stackapps.$(EXT): stackapps.c $(HEADERS) engines.o
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) stackapps.c -o $@ $(LDFLAGS)
 
 wikipedia.$(EXT): wikipedia.c $(HEADERS) engines.o
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) wikipedia.c -o $@ $(LDFLAGS)

@@ -226,6 +226,15 @@
     )
 )
 
+(defun gnugol-search-stackapps(str)
+  "Search stackapps via gnugol."
+  (interactive "sSearch: ")
+  (let (gnugol-default-engine)
+    (setq gnugol-default-engine "stackapps")
+    (gnugol str)
+    )
+)
+
 (defun gnugol-search-google(str)
   "Search google via gnugol."
   (interactive "sSearch: ")
@@ -266,9 +275,16 @@
   (interactive "sSearch Koders: ")
   (gnugol-search-google (concat "site:www.koders.com " str))
   )
+
+(defun gnugol-search-stackapps-google(str)
+  "Search stackoverflow site via gnugol."
+  (interactive "sSearch stackapps: ")
+  (gnugol-search-google (concat "site:stackoverflow.com " str))
+  )
+
 ;; It would be nice to do the above via command completion
 ;; (gnugol-search-site arg, arg), but this isn't right
-;; I need to prepend args
+;; I need to prepend args somehow
 ;; (defun gnugol-search-site(str)
 ;;   "Search any specific site via gnugol."
 ;;   (interactive "site: ")
