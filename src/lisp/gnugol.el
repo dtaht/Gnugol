@@ -2,7 +2,7 @@
 ;; Copyright (C) 2010 Dave Täht
 ;; License:    GNU Public License, version 3
 ;; Author:     Dave Taht
-;; Maintainer: d AT @ taht.net
+;; Maintainer: d + gnugol AT @ taht.net
 ;; Created:    Dec-2008
 ;; Version:    See git tree
 ;; Keywords:   extensions, web, search, google
@@ -105,11 +105,11 @@
 
 ;; FIXME figure out how to search the buffer-modes
 
-(defun gnugol-get-output-mode
-  "Get the gnugol output mode from the current buffer mode."
-  (if gnugol-default-output-mode-sensitive 
-      () 
-    ("org")))
+;;(defun gnugol-get-output-mode
+;;  "Get the gnugol output mode from the current buffer mode."
+;;  (if gnugol-default-output-mode-sensitive 
+;;      () 
+;;    ("org")))
 
 
 (defun gnugol-url-encode (str)
