@@ -148,6 +148,18 @@ static const char *org_format_str[] = {
    NULL,
 };
 
+static const char *org_format_str_long[] = {
+   "%s%s%s%s%s%s", // nothing
+   "%s[[%s]]%s%s%s%s\n", // url only
+   "%s%s[[%s]]%s%s%s\n", // title only
+   "%s[[%s][%s]] %s%s%s\n", // url and title
+   "%s%s%s%s%s%s\n", // snippet only
+   "%s[[%s]]%s\n%s%s%s\n", // snippet and url
+   "%s%s[[%s]]%s%s%s\n", // snippet and title
+   "%s[[%s][%s]]%s\n%s%s\n", // everything
+   NULL,
+};
+
 // FIXME: Haven't addressed anything but everything/nothing
 //    GNUGOL_OUTF(q,"[[%s|%s]] %s  \n",t, u, s);
 
@@ -349,6 +361,136 @@ if(q->format != FORMATTERM) {
     break;
   case FORMATORG:
     GNUGOL_OUTF(q,org_format_str[offset],levels[level],u,striptitle,padstr,stripsnip);
+    break;
+  case FORMATTEXTILE:
+    GNUGOL_OUTF(q,textile_format_str[offset],padstr,striptitle,u,padstr,stripsnip);
+    break;
+  case FORMATMDWN:
+    GNUGOL_OUTF(q,mdwn_format_str[offset],padstr,striptitle,u,padstr,stripsnip);
+    break;
+  case FORMATTERM:
+  case FORMATTEXT:
+    GNUGOL_OUTF(q,text_format_str[offset],u,striptitle,stripsnip);
+    break;
+  case FORMATHTML5:
+  case FORMATHTML:
+  case FORMATELINKS:
+    GNUGOL_OUTF(q,html_format_str[offset],u,striptitle,stripsnip);
+    break;
+  case FORMATINFO:
+  case FORMATCSV:
+  case FORMATMAN:
+  case FORMATXML:
+  case FORMATSQL:
+  case FORMATLISP:
+    GNUGOL_OUTW(q,"format: Output format unsupported\n"); break;
+  default:
+    GNUGOL_OUTF(q,"<a href=\"%s\">%s</a> %s\n", u, t, s);
+  }
+return(0);
+}
+
+int gnugol_result_out_long(QueryOptions_t *q, const char *url, const char *title, const char *description, const char *snippet) {
+  char *t = NULLP(title);
+  char *u = NULLP(url);
+  char *s = NULLP(snippet);
+  char *d = NULLP(description);
+  char *padstr;
+  int offset = 0;
+  int level = q->indent;
+  if(level > 5) level = 5;
+  if(level < 0) level = 2;
+
+  char stripsnip[SNIPPETSIZE];
+  char stripurl[URL_SIZE];
+  char striptitle[URL_SIZE];
+  char stripdesc[URL_SIZE];
+
+  if(!q->titles) t = "";
+  if(!q->snippets) s = "";
+  if(!q->urls) u = "";
+//  if(!q->desc) d = "";
+
+  if(t[0] == '\0' && u[0] == '\0' && s[0] == '\0' && d[0] == '\0') {
+  return(0);
+  }
+
+  if(t[0] == '\0' && u[0] == '\0') {
+  padstr = "\0";
+  } else {
+  padstr = &padding[10-(level + 1)];
+  }
+
+  if(s[0] == '\0') padstr = "\0";
+
+  offset = NULLPINT(u,1) | NULLPINT(t,2) | NULLPINT(s,4);
+  q->returned_results++;
+
+if(q->format != FORMATTERM) {
+  strcpy(stripsnip,s);
+  STRIPHTML(stripsnip);
+} else {
+  strcpy(stripsnip,s);
+  STRIPHTML(stripsnip);
+}
+/*
+// NEW idea
+// TERM output looks at the columns variable
+
+// snippet = 0 - suppress
+// snippet = 1 - do the right thing
+// snippet = X - constrain size to that
+
+// Unfortunately I don't know how to pass the
+// following. Perhaps new a flag -B to break words?
+// snippet = -1 - do the right thing, break words
+// snippet = -X - break words at X
+
+// to say this is currently messy would be an understatement
+
+  int newsize = q->snippets;
+  int size = strlen(s);
+  if(size > 0) {
+  char tempstr[size+1];  // FIXME: I'm not convinced this is enough
+  strcpy(tempstr,s);
+  size=strip_html(size,tempstr);
+  if((q->format == FORMATTERM) && (size > 0)) {
+     if(newsize == 1) {
+     char *termsize = getenv("COLUMNS");
+     if(termsize) size = strtoul(termsize, NULL, 10);
+     } else {
+     size = newsize;
+     }
+   }
+   if(size-(level+1) > 0) {
+   strncpy(stripsnip,s,u8_offset(tempstr,size));
+   } else {
+   stripsnip[0] = '\0';
+   }
+  } else {
+   stripsnip[0] = '\0';
+  }
+}
+ */
+
+  strcpy(striptitle,t);
+  STRIPHTML(striptitle);
+
+  strcpy(stripdesc,d);
+  STRIPHTML(stripdesc);
+
+  switch (q->format) {
+  case FORMATIKI:
+  case FORMATWIKI:
+    GNUGOL_OUTF(q,wiki_format_str[offset],hashes[level],striptitle,u,padstr,stripsnip);
+    break;
+  case FORMATSSML: // FIXME: need to use marks properly
+    {
+     GNUGOL_OUTF(q,"%s <mark name='%d'>%s</mark>.", stripsnip, q->returned_results, u);
+    }
+    break;
+  case FORMATORG:
+    GNUGOL_OUTF(q,org_format_str_long[offset],levels[level],u,striptitle, stripdesc, padstr,stripsnip);
     break;
   case FORMATTEXTILE:
     GNUGOL_OUTF(q,textile_format_str[offset],padstr,striptitle,u,padstr,stripsnip);

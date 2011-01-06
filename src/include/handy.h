@@ -4,6 +4,7 @@ extern int strip_html(int len, char *htmlstr);
 // Might want a different call here for utf-8
 
 #define jsv(a) json_string_value(a)
+#define jsn(a) json_number_value(a)
 
 // Mapping one language to another requires 
 // lots of repetitive code and error checking
@@ -33,5 +34,11 @@ extern int strip_html(int len, char *htmlstr);
 #define GETSTRING(obj,newobj) do { newobj = json_object_get(obj, #newobj); \
     if(!json_is_string(newobj)) {				       \
         fprintf(stderr, "error: " #newobj " is not a string\n"); \
+	json_decref(root); \
+        return 1;    } } while(1==0)
+
+#define GETNUMBER(obj,newobj) do { newobj = json_object_get(obj, #newobj); \
+    if(!json_is_number(newobj)) {				       \
+        fprintf(stderr, "error: " #newobj " is not a number\n"); \
 	json_decref(root); \
         return 1;    } } while(1==0)

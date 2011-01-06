@@ -100,13 +100,13 @@ int GNUGOL_DECLARE_ENGINE(setup,stackapps) (QueryOptions_t *q) {
 
   if (size == 0)
 	  size = snprintf(string,URL_SIZE,
-			  "%s?sort=votes&pagesize=%d&intitle=%s",
+			  "%s?pagesize=%d&intitle=%s",
 			  TEMPLATE,
 			  q->nresults,
 			  q->keywords);
   else
 	  size = snprintf(string,URL_SIZE,
-			  "%s?sort=votes&key=%s&pagesize=%d&intitle=%s",
+			  "%s?key=%s&pagesize=%d&intitle=%s",
 			  TEMPLATE,key,
 			  q->nresults,
 			  q->keywords);
@@ -238,6 +238,9 @@ AND it would be kind of cool to take the comments and have them in the outline
 // score looks useful
 // Answers -> title
 // Answers -> body
+// In thinking about this, maybe doing a google site search
+// AND then following it up with a search for the ids involved
+// Would build up a useful faq-like result
 
 int GNUGOL_DECLARE_ENGINE(search,stackapps) (QueryOptions_t *q) {
     unsigned int i;
@@ -264,27 +267,43 @@ int GNUGOL_DECLARE_ENGINE(search,stackapps) (QueryOptions_t *q) {
     GETARRAY(root,questions);
     gnugol_header_out(q);
 
-// FIXME URL is missing http://stackoverflow.com/
-// 
+//  Maybe use the score or whether the answer is known for the title? 
+//  Or the date?
+//  Or the accepted_answer id, if it exists, rather than referencing
+//  the question
+
     for(i = 0; i < json_array_size(questions); i++)
     {
       json_t *question, *question_answers_url, *title, *body, *answers, *answer;
+      json_t *score, *accepted_answer_id;
       char buffer[1024];
+      char buffer2[1024];
       GETARRAYIDX(questions,question,i);
       GETSTRING(question,question_answers_url);
       GETSTRING(question,title);
-//      GETSTRING(question,body);
+      GETNUMBER(question,score);
+//    GETNUMBER(question,accepted_answer_id);
+//    GETSTRING(question,body); // doesn't exist, although documented
+//    if(strlen(accepted_answer_id) > 0) {
+//    snprintf(buffer,1024,"http://stackoverflow.com%s",jsv(question_answers_url));
+//    }  else {
       snprintf(buffer,1024,"http://stackoverflow.com%s",jsv(question_answers_url));
-      gnugol_result_out(q,buffer,jsv(title),NULL);
+//    }
+
+//    url, url title, description, snippet would be easier to read
+//    but that involves rewriting the formatter
+      snprintf(buffer2,1024,"%d",jsv(score));
+      gnugol_result_out_long(q,buffer,buffer2,jsv(title),NULL);
+//    gnugol_result_out(q,buffer,jsv(title),NULL);
 
 /*    It is actually, really, really annoying to not even
-      have a portion of the answer in the query. 
+      have a portion of the answer in the query.
 
       I'm almost annoyed enough to thread the engine, & issue
       the next set of results for the queries in parallel,
       and then fill in the blanks as per the below. However,
-      that may not be nessessary, perhaps this is the right api 
-      call to "fill in the blanks"
+      that may not be necessary, perhaps this is the right api
+      call to "fill in the blanks".
 
 http://api.stackoverflow.com/1.0/help/method?method=questions/{id}
 
