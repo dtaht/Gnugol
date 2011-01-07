@@ -274,8 +274,8 @@ int search(QueryOptions_t *q) {
 
     for(i = 0; i < json_array_size(questions); i++)
     {
-      json_t *question, *question_answers_url, *title, *body, *answers, *answer;
-      json_t *score, *accepted_answer_id;
+      json_t *question, *question_answers_url, *title;
+      json_t *score;
       char buffer[1024];
       char buffer2[1024];
       GETARRAYIDX(questions,question,i);
