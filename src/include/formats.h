@@ -36,5 +36,5 @@ extern int gnugol_header_out(QueryOptions_t *q);
 extern int gnugol_keywords_out(QueryOptions_t *q);
 extern int gnugol_footer_out(QueryOptions_t *q);
 extern int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet);
-
+extern int gnugol_result_out_long(QueryOptions_t *,const char *,const char *,const char *,const char *);
 #endif
