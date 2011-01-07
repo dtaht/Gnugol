@@ -11,7 +11,7 @@ TESTDIR=../tests/
 CFLAGS += -Wall -Wextra -pedantic
 CFLAGS+=-std=c99
 
-OBJECTS := handy.o utf8.o format.o utf8_urlencode.o
+OBJECTS := handy.o utf8.o format.o utf8_urlencode.o nodelist.o
 
 all: $(PROGS) $(OBJECTS) 
 
@@ -29,3 +29,7 @@ utf8.o: utf8.c $(INC)/utf8.h
 
 format.o: format.c $(INC)/formats.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c format.c
+
+nodelist.o : nodelist.c $(INC)/nodelist.h
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c nodelist.c
+
