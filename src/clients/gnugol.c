@@ -295,8 +295,8 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       default: fprintf(stderr,"%c",opt); usage("Invalid option"); break;
     }
   } while (1);
-  
-  if ((!o->engine) && (!o->about))
+
+  if (ListEmpty(&c_engines))  
   {
     engine = gnugol_engine_load(o->engine_name);
     if (engine == NULL)
