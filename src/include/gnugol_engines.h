@@ -3,6 +3,15 @@
 #define GNUGOL_SHAREDLIBDIR "/var/lib/gnugol"
 #define GNUGOL_DECLARE_ENGINE(type,name) gnugol_engine_##type##_##name
 
+typedef struct ggengine
+{
+  Node         node;
+  const char  *name;
+  int        (*setup)  (QueryOptions_t *);
+  int        (*results)(QueryOptions_t *);
+} *GnuGoldEngine;
+
+
 // FIXME: Return a ptr to an opaque engine func instead of an offset
 // into the engines table
 
