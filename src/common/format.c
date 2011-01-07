@@ -267,17 +267,16 @@ printf("%s%s%s\n",u,s,t);
 // FIXME: ORG: need to escape []
 
 int gnugol_result_out(QueryOptions_t *q, const char *url, const char *title, const char *snippet) {
-  char *t = NULLP(title);
-  char *u = NULLP(url);
-  char *s = NULLP(snippet);
-  char *padstr;
+  const char *t = NULLP(title);
+  const char *u = NULLP(url);
+  const char *s = NULLP(snippet);
+  const char *padstr;
   int offset = 0;
   int level = q->indent;
   if(level > 5) level = 5;
   if(level < 0) level = 2;
 
   char stripsnip[SNIPPETSIZE];
-  char stripurl[URL_SIZE];
   char striptitle[URL_SIZE];
 
   if(!q->titles) t = "";
@@ -391,18 +390,17 @@ return(0);
 }
 
 int gnugol_result_out_long(QueryOptions_t *q, const char *url, const char *title, const char *description, const char *snippet) {
-  char *t = NULLP(title);
-  char *u = NULLP(url);
-  char *s = NULLP(snippet);
-  char *d = NULLP(description);
-  char *padstr;
+  const char *t = NULLP(title);
+  const char *u = NULLP(url);
+  const char *s = NULLP(snippet);
+  const char *d = NULLP(description);
+  const char *padstr;
   int offset = 0;
   int level = q->indent;
   if(level > 5) level = 5;
   if(level < 0) level = 2;
 
   char stripsnip[SNIPPETSIZE];
-  char stripurl[URL_SIZE];
   char striptitle[URL_SIZE];
   char stripdesc[URL_SIZE];
 
