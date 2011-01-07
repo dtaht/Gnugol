@@ -9,4 +9,3 @@
 #+LINK_UP:
 #+LINK_HOME:
 #+STYLE:    <link rel="stylesheet" type="text/css" href="stylesheet.css" />
-* gnugold's [[file:rationale.org][rationale]]

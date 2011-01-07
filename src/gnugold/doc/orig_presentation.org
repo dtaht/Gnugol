@@ -1,0 +1,89 @@
+* Speeding Up Search with Gnugold
+David Täht (updated mildly from a presentation in Australia given march, 2008) 
+* Internet Search is too slow internationally
+** An example of a http GET from google (US)
+   (insert example here)
+** Example of GET from AU -> US
+   
+** How can we speed this up?
+*** Run your own DNS locally
+Not too helpful, google expires DNS entries every 160 seconds
+Helps if your client is on lossy wireless, though
+*** Move the data closer to the user
+Google needs a lot more data centers to cover the globe!
+*** Send less data
+A typical google search returns 25k of data! That doesn't count the advertising images NOR the DNS lookups.
+*** Send less packets
+Google doesn't GZIP results. 
+Google has alternate interfaces that send less data - www.google.com/ie and www.google.com/palm
+*** Still...
+Time for shorter search?
+Global think time = 500ms best case - speed of light limitation
+*** What's the answer?
+** Don't use HTTP for search!
+Queries now have well defined (AND SHORT) HTTP APIs
+*** Move the HTTP request to a server located close to google
+Or on a reliable edge of your network, with squid.
+In my case, my main (corporate server) is in San Francisco - 4ms from google.
+* Example Gnugold Search (from 2008)
+AU <-> USA = 196 ms!
+Local Cache = 8 ms!
+Local Network = 12 ms!
+2 Packets vs 35 = 1/10 the data!
+Ipv6 MTU = 1280 bytes
+Big enough for 9-10 results + snippets and titles, unlike Ipv4
+Big enough to be useful.
+Compression helps a lot
+Choose to return less results to fit into MTU size eliminates need for MTU path discovery
+* SHA1 Hashes
+Search string gets a SHA1 hash
+Highly probable to be unique
+I mean, highly probable
+Fast to calculate, decode
+Small
+Local network query
+* IPv6 issues
+** For udp, you need to Prime the route
+Routers have a tendency to forget the Ipv6 path over time.
+First call to the cgi sends an empty request.
+First call to the command line does the same, every X minutes.
+* Lazy DNS 
+Always send first and second requests to cached server IP
+Timeout in 2 seconds (default)
+do a DNS lookup immediately after the 2nd request.
+Use the 3rd and 4th requests (if a different IP is available) on a new IP, otherwise make a 3rd request and give up if not answered
+Retain last working addresses(s)
+* Active DNS
+This is a new idea I'd not thunk of in 2008 - for common websites that have DNS expiries, just note the expiry time in the proxy and refresh the local DNS cache over that period.
+* Cache results, at least for a little while
+Lookaside keyword cache
+* Can we speed even this up?
+** Preconnect to google on the proxy?
+Likely to annoy google
+** Plugin in the Browser
+cmd line client takes 5ms to start
+0 startup time for a query 
+No need for a local web server.
+** Participate in local search
+Smarter access to results.
+Bigger MTU size on local routes?
+Way lower RTT times.
+* Applications
+** Cell Phones
+** Handhelds
+** OLPC
+** Intelligent Agents
+** Smarter search
+** Better local applications
+* Limitations
+** No personalized search (at present)
+   Privacy advocates might like this, actually
+** Information leakage to local network(s)
+   if you so choose
+*** Yourspace
+    Perhaps a social search network makes sense
+** Needs a bayenesn spam filter.
+* Current state of the gnugold code
+  Now non-existent. See [[file:history.org][history]].  The ugly and ad-hoc network protocol I'd devised, running search of UDP, proved unreliable in practice. Also, the IPv6 requirement was a major limitation. I've since focused my efforts on a usable client interface that uses curl - and since I'm in the US, I don't find searching anywhere near as painful. I do pay attention to the SPDY, sctp, and hip efforts, and hope one day to return to the network side of things.
+* Questions?
+http://www.taht.net/music/uncle_bills_helicopter.mp3
