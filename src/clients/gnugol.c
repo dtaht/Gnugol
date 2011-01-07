@@ -296,9 +296,21 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     }
   } while (1);
   
-  if (!o->engine)
+  if ((!o->engine) && (!o->about))
   {
     engine = gnugol_engine_load(o->engine_name);
+    if (engine == NULL)
+    {
+      fprintf(stderr,"default engine not found!  Panic!\n");
+      exit(EXIT_FAILURE);
+    }
+    
+    ListAddTail(&c_engines,&engine->node);
+  }
+  
+  if (o->about)
+  {
+    engine = gnugol_engine_load("credits");
     if (engine == NULL)
     {
       fprintf(stderr,"default engine not found!  Panic!\n");
