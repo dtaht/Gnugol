@@ -11,6 +11,9 @@ CFLAGS += -g
 CFLAGS += -Wall -Wextra -pedantic -std=c99 -rdynamic
 SFLAGS := $(CFLAGS)
 LDFLAGS += -L/usr/local/lib -ljansson -lcurl
+ENGINES = ../common/engines.o
+STRIP=strip
+TESTDIR=../tests/
 
 ifeq ($(PLATFORM),Linux)
 CFLAGS += -fPIC -shared
@@ -20,44 +23,38 @@ endif
 
 ifeq ($(PLATFORM),Darwin)
 CFLAGS += -fno-common
-LDFLAGS += -dynamiclib -dynamic ../common/*.o engines.o
+LDFLAGS += -dynamiclib -dynamic ../common/*.o
 EXT = dylib
 endif
 
 OBJECTS=google.$(EXT) dummy.$(EXT) bing.$(EXT) wikipedia.$(EXT) dns.$(EXT) credits.$(EXT) \
-	stackapps.$(EXT) engines.o # googlev2.so
+	stackapps.$(EXT) # googlev2.so
 
-
-STRIP=strip
-TESTDIR=../tests/
 all: $(OBJECTS) $(PROGS)
 
-google.$(EXT): googlev1.c $(HEADERS) engines.o
+google.$(EXT): googlev1.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev1.c -o google.$(EXT) $(LDFLAGS)
 
-googlev2.$(EXT): googlev2.c $(HEADERS) engines.o
+googlev2.$(EXT): googlev2.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) googlev2.c -o $@ $(LDFLAGS)
 
-bing.$(EXT): bing.c $(HEADERS) engines.o
+bing.$(EXT): bing.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) bing.c -o $@ $(LDFLAGS)
 
-stackapps.$(EXT): stackapps.c $(HEADERS) engines.o
+stackapps.$(EXT): stackapps.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) stackapps.c -o $@ $(LDFLAGS)
 
-wikipedia.$(EXT): wikipedia.c $(HEADERS) engines.o
+wikipedia.$(EXT): wikipedia.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) wikipedia.c -o $@ $(LDFLAGS)
 
-dummy.$(EXT): dummy.c $(HEADERS) engines.o
+dummy.$(EXT): dummy.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dummy.c -o $@ $(LDFLAGS)
 
-dns.$(EXT) : dns.c $(HEADERS) engines.o
+dns.$(EXT) : dns.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) dns.c -o $@ $(LDFLAGS)
 
-credits.$(EXT) : credits.c $(HEADERS) engines.o
+credits.$(EXT) : credits.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) credits.c -o $@ $(LDFLAGS)
-
-engines.o: engines.c $(HEADERS)
-	$(CC) -DSO_EXT='"$(EXT)"' $(SFLAGS) $(INCLUDES) $(DEBUG) engines.c -c -o $@
 
 install: $(OBJECTS) 
 	@mkdir -p $(SHAREDLIBDIR)	

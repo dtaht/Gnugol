@@ -1,3 +1,4 @@
+PLATFORM:=$(shell uname -s)
 LIBS=-I/usr/local/include -lcgic
 INC=../include
 INCLUDES=-I../include
@@ -6,12 +7,24 @@ PROGS=
 HTMLDIR=/var/www/gnugol
 CGIDIR=/usr/lib/cgi-bin
 BINDIR=$(HOME)/bin
-CC=gcc
 TESTDIR=../tests/
-CFLAGS += -Wall -Wextra -pedantic
+CFLAGS+=-g
+CFLAGS+= -Wall -Wextra -pedantic
 CFLAGS+=-std=c99
 
-OBJECTS := handy.o utf8.o format.o utf8_urlencode.o nodelist.o
+ifeq ($(PLATFORM),Linux)
+CFLAGS += -fPIC -shared
+EXT=so
+CC=gcc
+endif
+
+ifeq ($(PLATFORM),Darwin)
+CFLAGS+= -fno-common
+EXT=dylib
+endif
+
+
+OBJECTS := handy.o utf8.o format.o utf8_urlencode.o nodelist.o engines.o
 
 all: $(PROGS) $(OBJECTS) 
 
@@ -33,3 +46,5 @@ format.o: format.c $(INC)/formats.h
 nodelist.o : nodelist.c $(INC)/nodelist.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) -c nodelist.c
 
+engines.o: engines.c $(HEADERS)
+	$(CC) -DSO_EXT='"$(EXT)"' $(CFLAGS) $(INCLUDES) $(DEBUG) engines.c -c -o $@

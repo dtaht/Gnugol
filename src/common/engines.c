@@ -17,7 +17,6 @@
 #include "query.h"
 #include "formats.h"
 #include "gnugol_engines.h"
-#include "engines.h"
 
 #ifndef __GNUC__
 #  define __attribute__(x)

@@ -4,9 +4,8 @@ PLATFORM=$(shell uname -s)
 LIBS=-ljansson -lcurl -ldl
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
-COMMON=../common/handy.o ../common/utf8.o ../common/format.o ../common/utf8_urlencode.o ../common/nodelist.o
-#ENGINES=../engines/googlev1.o  ../engines/dummy.o ../engines/bing.o ../engines/wikipedia.o ../engines/engines.o # ../engines/googlev2.o
-ENGINES=../engines/engines.o
+COMMON=../common/handy.o ../common/utf8.o ../common/format.o ../common/utf8_urlencode.o ../common/nodelist.o 
+ENGINES=../common/engines.o
 
 INC=../include
 INCLUDES=-I../include -I/usr/local/include
