@@ -29,7 +29,7 @@ static const char *safe_map[] = {
 	 "off", "moderate", "active", NULL
 };
 
-int GNUGOL_DECLARE_ENGINE(setup,stackapps) (QueryOptions_t *q) {
+int setup(QueryOptions_t *q) {
   char   string[URL_SIZE];
   char   key   [256];
   size_t size;
@@ -242,7 +242,7 @@ AND it would be kind of cool to take the comments and have them in the outline
 // AND then following it up with a search for the ids involved
 // Would build up a useful faq-like result
 
-int GNUGOL_DECLARE_ENGINE(search,stackapps) (QueryOptions_t *q) {
+int search(QueryOptions_t *q) {
     unsigned int i;
     char *text;
     json_t *root,*questions;

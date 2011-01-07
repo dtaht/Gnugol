@@ -49,7 +49,7 @@ and <http://www.mediawiki.org/wiki/API:Parsing_wikitext>.
 
 */
 
-int GNUGOL_DECLARE_ENGINE(setup,wikipedia) (QueryOptions_t *q) {
+int setup(QueryOptions_t *q) {
   char string[URL_SIZE];
   int size = 0;
   if(q->nresults > 10) q->nresults = 10; // wikipedia enforces a maximum result of ?
@@ -65,7 +65,7 @@ int GNUGOL_DECLARE_ENGINE(setup,wikipedia) (QueryOptions_t *q) {
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 
-int GNUGOL_DECLARE_ENGINE(search,wikipedia) (QueryOptions_t *q) {
+int search(QueryOptions_t *q) {
     char *text;
     json_t *root,*query, *pages, *page, *result;
     json_error_t error;

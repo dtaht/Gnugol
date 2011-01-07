@@ -49,21 +49,7 @@ static const char *safe_map[] = {
 	 "off", "moderate", "active", NULL
 };
 
-//static const gnugol_charmap_t language_map = {
-//
-//};
-
-#if 0
-static struct {
-  int start;
-  int rsz; // number of results
-  int safe;
-  char language[16];
-  char ip[8*5+1]; // Room for ipv6 requests
-} search_opt;
-#endif
-
-int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
+int setup(QueryOptions_t *q) {
   char   string[URL_SIZE];
   char   key   [256];
   size_t size;
@@ -150,7 +136,7 @@ int GNUGOL_DECLARE_ENGINE(setup,google) (QueryOptions_t *q) {
 // with a couple macros to make the interface to json a 1 to 1 relationship
 // The code is delightfully short this way.
 
-int GNUGOL_DECLARE_ENGINE(search,google) (QueryOptions_t *q) {
+int search(QueryOptions_t *q) {
     unsigned int i;
     char *text;
     json_t *root,*responseData, *results;

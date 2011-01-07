@@ -15,11 +15,6 @@
 #include "formats.h"
 #include "gnugol_engines.h"
 
-int GNUGOL_DECLARE_ENGINE(setup,dummy) (QueryOptions_t *q __attribute__((unused)))
-{
-  return 0;
-}
-
 // turn quotes back into quotes and other utf-8 stuff
 // FIXME: Error outs cause a memory leak from "root"
 // FIXME: do fuller error checking 
@@ -30,7 +25,7 @@ int GNUGOL_DECLARE_ENGINE(setup,dummy) (QueryOptions_t *q __attribute__((unused)
 // at some point
 // More Test cases for bad inputs should go here:
 
-int GNUGOL_DECLARE_ENGINE(search,dummy) (QueryOptions_t *q) {
+int search(QueryOptions_t *q) {
   if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr); 
   if(q->debug) GNUGOL_OUTW(q,"trying keywords: %s", q->keywords); 
   q->indent = 1;

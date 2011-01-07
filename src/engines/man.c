@@ -4,12 +4,12 @@
 #include <errno.h>
 #include "query.h"
 
-int GNUGOL_DECLARE_ENGINE(setup, man) (QueryOptions_t *q)
+int setup(QueryOptions_t *q)
 {
   return EOPNOTSUPP;
 }
 
-int GNUGOL_DECLARE_ENGINE(search,man) (QueryOptions_t *q)
+int search(QueryOptions_t *q)
 {
   return EOPNOTSUPP;
 }

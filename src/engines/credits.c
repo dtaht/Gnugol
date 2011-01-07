@@ -79,11 +79,6 @@ static const struct cat_map cmap[] = {
  { NULL, NULL },
 };
 
-int GNUGOL_DECLARE_ENGINE(setup,credits) (QueryOptions_t *q __attribute__((unused)))
-{
-  return 0;
-}
-
 // FIXME: Add keywords of: source, config, stats, errors, warnings
 // FIXME: Figure out how to get the build commit, build date, etc
 //        out of git
@@ -92,7 +87,7 @@ int GNUGOL_DECLARE_ENGINE(setup,credits) (QueryOptions_t *q __attribute__((unuse
 // FIXME: Create better formatted output, with headers
 // FIXME: allow multiple keywords
 
-int GNUGOL_DECLARE_ENGINE(search,credits) (QueryOptions_t *q) {
+int search(QueryOptions_t *q) {
   int header_no = -1;
   q->indent = 2;
 

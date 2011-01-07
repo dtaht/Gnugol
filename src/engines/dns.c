@@ -5,12 +5,12 @@
 #include "query.h"
 #include "gnugol_engines.h"
 
-int GNUGOL_DECLARE_ENGINE(setup,dns) (QueryOptions_t *q  __attribute__((unused)))
+int setup(QueryOptions_t *q  __attribute__((unused)))
 {
   return EOPNOTSUPP;
 }
 
-int GNUGOL_DECLARE_ENGINE(search,dns) (QueryOptions_t *q  __attribute__((unused)))
+int search(QueryOptions_t *q  __attribute__((unused)))
 {
   return EOPNOTSUPP;
 }

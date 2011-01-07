@@ -39,7 +39,7 @@ JSON data.*/
 	  */
 
 
-int GNUGOL_DECLARE_ENGINE(setup,bing) (QueryOptions_t *q) {
+int setup(QueryOptions_t *q) {
   char   string[URL_SIZE];
   char   key[256];
   char hl[16];
@@ -114,7 +114,7 @@ int GNUGOL_DECLARE_ENGINE(setup,bing) (QueryOptions_t *q) {
 // with a couple macros to make the interface to json a 1 to 1 relationship
 // The code is delightfully short this way.
 
-int GNUGOL_DECLARE_ENGINE(search,bing) (QueryOptions_t *q) {
+int search(QueryOptions_t *q) {
     unsigned int i;
     char *text;
     json_t *root,*Web, *SearchResponse, *Results;
