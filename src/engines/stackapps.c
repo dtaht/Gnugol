@@ -292,7 +292,7 @@ int search(QueryOptions_t *q) {
 
 //    url, url title, description, snippet would be easier to read
 //    but that involves rewriting the formatter
-      snprintf(buffer2,1024,"%d",jsv(score));
+      snprintf(buffer2,1024,"%p",(void *)jsv(score));
       gnugol_result_out_long(q,buffer,buffer2,jsv(title),NULL);
 //    gnugol_result_out(q,buffer,jsv(title),NULL);
 
