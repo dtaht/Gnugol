@@ -11,6 +11,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <getopt.h>
+
+#include "nodelist.h"
 #include "query.h"
 #include "formats.h"
 #include "gnugol_engines.h"
@@ -22,6 +24,8 @@ struct  output_types {
 };
 
 // FIXME: Verify differences between ikiwiki and media wiki format
+
+List c_engines;
 
 static const struct output_types output_type[] = {
   { FORMATHTML5, "html5" },
@@ -206,6 +210,8 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   int querylen = 0;
   int opt = 0;
   char string[MAX_MTU];
+  GnuGolEngine engine;
+  
   string[0] = '\0';
 
   if(argc == 1) usage("");
@@ -228,7 +234,14 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     {
       case 'a': o->about = 1;  break;
       case 'd': o->debug = strtoul(optarg,NULL,10); break;
-      case 'e': o->engine = 1; o->engine_name = optarg; break;
+      case 'e':
+           o->engine = 1;
+           engine = gnugol_engine_load(optarg);
+           if (engine == NULL)
+             fprintf(stderr,"engine %s not supported\n",optarg);
+           else
+             ListAddTail(&c_engines,&engine->node);
+           break;
       case 'F': BOOLOPT(o->footer); break;
       case 'H': o->header = strtoul(optarg,NULL,10); break;
       case 'h':
@@ -282,6 +295,18 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
       default: fprintf(stderr,"%c",opt); usage("Invalid option"); break;
     }
   } while (1);
+  
+  if (!o->engine)
+  {
+    engine = gnugol_engine_load(o->engine_name);
+    if (engine == NULL)
+    {
+      fprintf(stderr,"default engine not found!  Panic!\n");
+      exit(EXIT_FAILURE);
+    }
+    
+    ListAddTail(&c_engines,&engine->node);
+  }
 
   for(i = optind; i < argc; i++) {
 	  if((querylen += (strlen(argv[i])+1) > MAX_MTU - 80)) {
@@ -341,26 +366,52 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
 }
 
 int main(int argc, char **argv) {
-  int result;
+  int            result;
+  QueryOptions_t master;
   QueryOptions_t q;
-  gnugol_init_QueryOptions(&q);
-  gnugol_default_QueryOptions(&q);
-  process_options(argc,argv,&q);
-  result = gnugol_query_engine(&q);
+  GnuGolEngine   engine;
 
-  if(q.returned_results > 0) {
+  ListInit(&c_engines);
+
+  gnugol_init_QueryOptions(&master);
+  gnugol_default_QueryOptions(&master);
+  process_options(argc,argv,&master);
+  
+  assert(!ListEmpty(&c_engines));
+  
+  for(
+        engine = (GnuGolEngine)ListGetHead(&c_engines);
+        NodeValid(&engine->node);
+        engine = (GnuGolEngine)NodeNext(&engine->node)
+      )
+  {
+    q      = master;
+    result = gnugol_engine_query(engine,&q);
+
+    if(q.returned_results > 0) {
       printf("%s",q.out.s);
     }
 
-  if(result < 0 || q.debug > 5) {
-    fprintf(stderr,"Errors: %s\nWarnings:%s\n",q.err.s,q.wrn.s);
+    if(result < 0 || q.debug > 5) {
+      fprintf(stderr,"Errors: %s\nWarnings:%s\n",q.err.s,q.wrn.s);
+    }
+
+    if(q.debug > 10) {
+      fprintf(stderr,"out len = %d\n size = %d, Contents = %s\n",q.out.len, q.out.size, q.out.s);
+      fprintf(stderr,"wrn len = %d\n size = %d, Contents = %s\n",q.wrn.len, q.wrn.size, q.wrn.s);
+      fprintf(stderr,"err len = %d\n size = %d, Contents  = %s\n",q.err.len, q.err.size, q.err.s);
+    }
+    /*gnugol_free_QueryOptions(&q);*/
+  }
+  
+  for(
+       engine = (GnuGolEngine)ListRemTail(&c_engines);
+       NodeValid(&engine->node);
+       engine = (GnuGolEngine)ListRemTail(&c_engines)
+     )
+  {
+    gnugol_engine_unload(engine);
   }
 
-  if(q.debug > 10) {
-    fprintf(stderr,"out len = %d\n size = %d, Contents = %s\n",q.out.len, q.out.size, q.out.s);
-    fprintf(stderr,"wrn len = %d\n size = %d, Contents = %s\n",q.wrn.len, q.wrn.size, q.wrn.s);
-    fprintf(stderr,"err len = %d\n size = %d, Contents  = %s\n",q.err.len, q.err.size, q.err.s);
-  }
-  gnugol_free_QueryOptions(&q);
   return(0);
 }
