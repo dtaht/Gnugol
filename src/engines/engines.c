@@ -1,10 +1,16 @@
 
+#define _BSD_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <dlfcn.h>
 
 #include "nodelist.h"
@@ -12,6 +18,10 @@
 #include "formats.h"
 #include "gnugol_engines.h"
 #include "engines.h"
+
+#ifndef __GNUC__
+#  define __attribute__(x)
+#endif
 
 static int gnugol_default_setup		(QueryOptions_t *);
 static int gnugol_default_search	(QueryOptions_t *);
@@ -43,8 +53,8 @@ GnuGolEngine gnugol_engine_load(const char *name)
     engine->setup = gnugol_default_setup;
   
   engine->search = dlsym(engine->lib,"search");
-  if (engine->results == NULL)
-    engine->results = gnugol_default_search;
+  if (engine->search == NULL)
+    engine->search = gnugol_default_search;
   
   engine->name = strdup(name);
   
@@ -76,7 +86,7 @@ void gnugol_engine_unload(GnuGolEngine engine)
 {
   assert(engine != NULL);
   
-  free(engine->name);
+  free((void *)engine->name);
   dlclose(engine->lib);
   free(engine);
 }
@@ -133,14 +143,14 @@ int gnugol_read_key(
 
 /***********************************************************************/
 
-static int gnugol_default_setup(QueryOptions_t *query)
+static int gnugol_default_setup(QueryOptions_t *query __attribute__((unused)))
 {
   return 0;
 }
 
 /**********************************************************************/
 
-static int gnugol_default_search(QueryOptions_t *query)
+static int gnugol_default_search(QueryOptions_t *query __attribute__((unused)))
 {
   return 0;
 }
