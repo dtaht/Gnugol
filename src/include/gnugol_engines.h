@@ -3,12 +3,18 @@
 
 #include "nodelist.h"
 
-#define DEBUG_SHAREDLIBS 1
+#ifndef DEBUG_SHAREDLIBS
+#  define DEBUG_SHAREDLIBS 0
+#endif
 
-#ifdef DEBUG_SHAREDLIBS
+#if DEBUG_SHAREDLIBS
 #  define GNUGOL_SHAREDLIBDIR "../engines"
 #else
-#  define GNUGOL_SHAREDLIBDIR "/var/lib/gnugol"
+#  ifdef __FreeBSD__
+#    define GNUGOL_SHAREDLIBDIR "/usr/local/lib/gnugol"
+#  else
+#    define GNUGOL_SHAREDLIBDIR "/var/lib/gnugol"
+#  endif
 #endif
 
 typedef struct ggengine

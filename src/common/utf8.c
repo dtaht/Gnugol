@@ -19,7 +19,10 @@
 #include <malloc.h>
 #else
 #include <sys/types.h>
+#ifndef __FreeBSD__
+/* FreeBSD doesn't have alloca.h. alloca() is part of stdlib.h. */
 #include <alloca.h>
+#endif
 #endif
 
 #include "utf8.h"

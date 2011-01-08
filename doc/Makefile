@@ -1,6 +1,13 @@
 # currently we are not post processing these files, so all does nothing
 
+PLATFORM:=$(shell uname -s)
+
+ifeq ($(PLATFORM),FreeBSD)
+DOCDIR=/usr/local/man/man1/
+else
 DOCDIR=/usr/local/share/man/man1/
+endif
+
 HTMLDIR=/var/www/gnugol
 IMAGEDIR=/var/www/gnugol/images
 HTML=*.html

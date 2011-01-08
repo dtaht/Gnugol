@@ -1,7 +1,15 @@
 # GNU Make only, please
 PLATFORM=$(shell uname -s)
 
-LIBS=-ljansson -lcurl -ldl
+COMMON_LIBS=-ljansson -lcurl
+
+ifeq "$(PLATFORM)" "FreeBSD"
+# dlopen(), et al, are in libc on FreeBSD.
+LIBS=-L/usr/local/lib $(COMMON_LIBS)
+else
+LIBS=$(COMMON_LIBS) -ldl
+endif
+
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
 COMMON=../common/handy.o ../common/utf8.o ../common/format.o ../common/utf8_urlencode.o ../common/nodelist.o 

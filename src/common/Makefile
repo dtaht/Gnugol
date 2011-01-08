@@ -12,6 +12,16 @@ CFLAGS+=-g
 CFLAGS+= -Wall -Wextra -pedantic
 CFLAGS+=-std=c99
 
+ifeq ($(PLATFORM),FreeBSD)
+CFLAGS += -fPIC -shared
+EXT=so
+CC=gcc
+INCLUDES+=-I/usr/local/include
+# FreeBSD doesn't have ENODATA. EIO is close enough, since gnugol is simply
+# using this as a return value.
+CFLAGS +=-DENODATA=EIO
+endif
+
 ifeq ($(PLATFORM),Linux)
 CFLAGS += -fPIC -shared
 EXT=so

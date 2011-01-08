@@ -1,0 +1,18 @@
+* INSTALLATION ON FREEBSD
+
+** Required Packages
+
+_gnugol_ relies the on following ports. Make sure they are installed, before
+trying to build _gnugol_.
+
+- The _jansson_ JSON library: =/usr/ports/devel/jansson=
+- The _curl_ library: =/usr/ports/ftp/fpc-libcurl=
+- GNU Make: =/usr/ports/devel/gmake=
+
+** Building
+
+_gnugol_ uses GNU Make, not BSD Make. Build and install as follows:
+
+: $ gmake 
+: $ sudo gmake install
+

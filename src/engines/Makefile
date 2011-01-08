@@ -15,6 +15,13 @@ ENGINES = ../common/engines.o
 STRIP=strip
 TESTDIR=../tests/
 
+ifeq ($(PLATFORM),FreeBSD)
+CFLAGS += -fPIC -shared
+EXT = so
+CC=gcc
+SHAREDLIBDIR=/usr/local/lib/gnugol
+endif
+
 ifeq ($(PLATFORM),Linux)
 CFLAGS += -fPIC -shared
 EXT = so
