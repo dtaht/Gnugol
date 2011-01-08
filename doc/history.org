@@ -29,8 +29,7 @@ Soon afterwards he started working on [[http://www.privoxy.org/][privoxy]] and o
 ** Latency
 (Note this is just some random math as I try to get mathml to work for me)
 
-When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
-$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+ \(l * 3\)
 
 * Early life (1996-2006)
 A zillion different primitive shell scripts, perl based scrapers, meta search engines, etc. To search the most popular search engines at the time, notably, using text based browsing tools like links, lynx, and elinks.
