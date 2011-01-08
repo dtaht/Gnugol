@@ -14,6 +14,7 @@ typedef struct ggengine
   Node         node;
   void        *lib;
   const char  *name;
+  const char  *description;
   int        (*setup) (QueryOptions_t *);
   int        (*search)(QueryOptions_t *);
 } *GnuGolEngine;

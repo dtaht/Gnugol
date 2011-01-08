@@ -5,6 +5,8 @@
 #include "query.h"
 #include "gnugol_engines.h"
 
+const char description[] = "Eventually there will be a module to query DNS";
+
 int setup(QueryOptions_t *q  __attribute__((unused)))
 {
   return EOPNOTSUPP;

@@ -1,12 +1,15 @@
 /* This engine implements contributor credits, licensing and copyright information,
    and other misc configuration parameters internal to gnugol */
 
+#define _POSIX_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <dirent.h>
 #include <jansson.h>
 #include <curl/curl.h>
 #include "query.h"
@@ -15,12 +18,22 @@
 #include "formats.h"
 #include "gnugol_engines.h"
 
+#ifdef __APPLE__
+#  define SO_EXT	"dylib"
+#endif
+
+#ifdef __linux__
+#  define SO_EXT	"so"
+#endif
+
 struct credits {
   const char *catagory;
   const char *name;
   const char *url;
   const char *desc;
 };
+
+const char description[] = "Much of the internal documentation of gnugol is implemented by the \"credits\" engine.";
 
 static const struct credits c[] = {
   { "credits", "Dave Täht", "http://www.taht.net/", "Inspiration... and perspiration" },
@@ -47,12 +60,6 @@ static const struct credits c[] = {
   { "keys",  "Google API Key", "http://code.google.com/apis/ajaxsearch/documentation/reference.html", "A key is not required, but desirable. If you get/have one, put it in ~/.googlekey to use." },
   { "keys",  "Bing API Key", "http://www.bing.com/developers/createapp.aspx", "Get a bing key from this url and put it in a file called ~/.bingkey." },
   { "keys",  "Wikipedia", GNUGOL_SITE, "No json API key is required from the wikimedia foundation (thankfully). Unfortunately, the wikipedia search engine as written thus far, doesn't work. :(" },
-  { "engines",  "google", NULL, "API is nearly feature complete, with support for multiple language input, output, safe search, position, and number of results." },
-  { "engines",  "bing", NULL, "API is pending support for multiple language input, and output, as well as safe search. Position, and number of results is supported." },
-  { "engines",  "dummy", NULL, "The dummy engine is used for generating test/malformed data for each of the output formatters." },
-  { "engines",  "credits", NULL, "Much of the internal documentation of gnugol is implemented by the \"credits\" engine." },
-  { "engines",  "wikipedia", NULL, "There is a (currently non-working) wikipedia engine" },
-  { "engines",  "more", "http://gnugol.taht.net/bugs.html", "More engines would be AWESOME! Citeseer and Gmane especially! See list on the web site for more...." },
   { "jwz", "jwz", "http://www.jwz.org/gruntle/design.html", "I share jwz's preference for green on black screens. His gruntle columns kept me sane in a darker era of web development, and I always loved the subversive element of the about:jwz parameter of Mozilla in an otherwise bland, corporatized world." },
   { "rms", "rms", "http://www.stallman.org", "If he didn't exist, we'd have had to invent him." },
   { "quotes", "esr", "http://esr.ibiblio.org/", "With enough eyeballs, all bugs are shallow." },
@@ -74,10 +81,60 @@ static const struct cat_map cmap[] = {
  { "copyright","Gnugol Copyrights" },
  { "manual", "Gnugol Manual" },
  { "keys", "Gnugol API Keys" },
- { "engines", "Gnugol's supported search engines" },
  { "all", "Gnugol Internal Information" },
  { NULL, NULL },
 };
+
+static int search_engines(QueryOptions_t *q)
+{
+  size_t  extlen;
+  DIR    *dir;
+  
+  dir = opendir(GNUGOL_SHAREDLIBDIR);
+  if (dir == NULL)
+  {
+    /* error */
+    return 0;
+  }
+  
+  extlen = strlen(SO_EXT);
+  
+  while(1)
+  {
+    GnuGolEngine  engine;
+    struct dirent entry;
+    struct dirent *pentry;
+    size_t         len;
+    char           name[BUFSIZ];
+    int            rc;
+    
+    rc = readdir_r(dir,&entry,&pentry);
+    if (rc != 0)
+    {
+      /* error */
+      break;
+    }
+    
+    if (pentry == NULL) break;
+    len = strlen(entry.d_name);
+    if (len <= extlen) continue;
+    if (strcmp(&entry.d_name[len-extlen],SO_EXT) != 0) continue;
+    memcpy(name,entry.d_name,(len - extlen) - 1);
+    name[(len - extlen) - 1] = '\0';
+    engine = gnugol_engine_load(name);
+    gnugol_result_out(q,NULL,engine->name,engine->description);
+    gnugol_engine_unload(engine);
+  }
+  
+  gnugol_result_out(
+  	q,
+  	"http://gnugol.taht.net/bugs.html",
+  	"(more)",
+  	"More engines would be AWESOME! Citeseer and Gmane especially! See list on the web site for more...."
+  );
+  closedir(dir);
+  return 0;
+}
 
 // FIXME: Add keywords of: source, config, stats, errors, warnings
 // FIXME: Figure out how to get the build commit, build date, etc
@@ -92,7 +149,11 @@ int search(QueryOptions_t *q) {
   q->indent = 2;
 
   if((strcmp("all",q->keywords) == 0) || q->keywords[0] == '\0') {
+    q->indent -= 1;
+    gnugol_result_out(q,"","","Gnugol's supported search engines");
+    q->indent += 1;
     gnugol_header_out(q);
+    search_engines(q);
     for(int i = 0; c[i].name != NULL; i++) {
       for(int j = 0; cmap[j].catagory != NULL; j++) {
 	if(strcmp(cmap[j].catagory,c[i].catagory) == 0) {
@@ -109,7 +170,15 @@ int search(QueryOptions_t *q) {
       }
     }
     gnugol_footer_out(q);
-  } else {
+  } 
+  else if (strcmp("engines",q->keywords) == 0)
+  {
+    gnugol_header_out(q);
+    search_engines(q);
+    gnugol_footer_out(q);
+  }
+  else
+  {
     if(q->keywords[0] != '\0') {
     gnugol_header_out(q);
     for(int i = 0; c[i].name != NULL; i++) {

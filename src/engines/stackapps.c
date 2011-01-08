@@ -25,6 +25,8 @@ json API doc at:
 #define LICENSE_URL "http://stackapps.com/apps/register"
 #define TOU ""
 
+const char description[] = "A mostly working engine to query StackOverflow";
+
 static const char *safe_map[] = {
 	 "off", "moderate", "active", NULL
 };

@@ -23,6 +23,8 @@
 #define LICENSE_URL "I don't know if you can even get one anymore."
 #define TOU "http://code.google.com/apis/websearch/terms.html"
 
+const char description[] = "API is nearly feature complete, with support for multiple language input, output, safe search, position, and number of results.";
+
 /* See options at
    http://code.google.com/apis/ajaxsearch/documentation/reference.html#_intro_fonje
    including:
