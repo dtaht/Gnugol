@@ -3,6 +3,8 @@
 
 #include "nodelist.h"
 
+#define DEBUG_SHAREDLIBS 1
+
 #ifdef DEBUG_SHAREDLIBS
 #  define GNUGOL_SHAREDLIBDIR "../engines"
 #else

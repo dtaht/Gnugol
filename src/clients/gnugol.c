@@ -296,7 +296,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     }
   } while (1);
 
-  if (ListEmpty(&c_engines))  
+  if (!o->about && ListEmpty(&c_engines))  
   {
     engine = gnugol_engine_load(o->engine_name);
     if (engine == NULL)
