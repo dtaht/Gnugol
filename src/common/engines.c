@@ -55,6 +55,10 @@ GnuGolEngine gnugol_engine_load(const char *name)
   if (engine->search == NULL)
     engine->search = gnugol_default_search;
   
+  engine->description = (const char *)dlsym(engine->lib,"description");
+  if (engine->description == NULL)
+    engine->description = "There is no description";
+    
   engine->name = strdup(name);
   
   return engine;

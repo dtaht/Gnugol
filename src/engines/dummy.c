@@ -25,6 +25,8 @@
 // at some point
 // More Test cases for bad inputs should go here:
 
+const char description[] = "The dummy engine is used for generating test/malformed data for each of the output formatters.";
+
 int search(QueryOptions_t *q) {
   if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr); 
   if(q->debug) GNUGOL_OUTW(q,"trying keywords: %s", q->keywords); 

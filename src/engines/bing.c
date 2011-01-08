@@ -39,6 +39,8 @@ JSON data.*/
 	  */
 
 
+const char description[] = "API is pending support for multiple language input, and output, as well as safe search. Position, and number of results is supported.";
+
 int setup(QueryOptions_t *q) {
   char   string[URL_SIZE];
   char   key[256];

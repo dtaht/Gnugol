@@ -49,6 +49,8 @@ and <http://www.mediawiki.org/wiki/API:Parsing_wikitext>.
 
 */
 
+const char description[] = "There is a (currently non-working) wikipedia engine";
+
 int setup(QueryOptions_t *q) {
   char string[URL_SIZE];
   int size = 0;
