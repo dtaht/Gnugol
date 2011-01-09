@@ -1,0 +1,7 @@
+* C conventions for Gnugol
+** Gnugol uses the C99 standard whenever possible
+   It's been 12 years, time to adopt it!
+** In client applications especially, use assert.
+* CodingStyle
+
+Pretty various. I'd like to enforce a coding style at some point. 
