@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <assert.h>
 #include "query.h"
 #include "formats.h"
 #include "utf8.h"
@@ -28,47 +29,60 @@ meta_charset_map = {
 
 */
 
+int gnugol_init_QueryOptions(QueryOptions_t *q) 
+{
+  assert(q != NULL);
+  
+  memset(q,0,sizeof(QueryOptions_t));
+  q->err.size =  4 * 1024;
+  q->out.size = 64 * 1024;
+  q->wrn.size =  4 * 1024;
+  
+  q->err.s = malloc(q->err.size);
+  q->out.s = malloc(q->out.size);
+  q->wrn.s = malloc(q->wrn.size);
 
-// FIXME: Be more paranoid
+  return (q->err.s == NULL) || (q->out.s == NULL) || (q->wrn.s == NULL);
+}
 
-int gnugol_init_QueryOptions(QueryOptions_t *q) {
-  if(q != NULL) {
-    memset(q,0,sizeof(QueryOptions_t));
-    if((q->err.s = (char *) malloc(4096)) != NULL) q->err.size = 4096;
-    if((q->out.s = (char *) malloc(1024*64)) != NULL) q->out.size = (1024*64);
-    if((q->wrn.s = (char *) malloc(4096)) != NULL) q->wrn.size = (4096);
-  } else {
-    return(1);
-  }
+int gnugol_reset_QueryOptions(QueryOptions_t *q) 
+{
+  assert(q != NULL);	/* when will this *ever* be false? */
+    
+  buffer_obj_t terr = q->err;
+  buffer_obj_t twrn = q->wrn;
+  buffer_obj_t tout = q->out;
+  memset(q,0,sizeof(QueryOptions_t));
+  q->err = terr;
+  q->wrn = twrn;
+  q->out = tout;
+  q->err.len = q->out.len = q->wrn.len = 0;
+
   return(0);
 }
 
-int gnugol_reset_QueryOptions(QueryOptions_t *q) {
-  if(q != NULL) {
-    buffer_obj_t terr = q->err;
-    buffer_obj_t twrn = q->wrn;
-    buffer_obj_t tout = q->out;
-    memset(q,0,sizeof(QueryOptions_t));
-    q->err = terr;
-    q->wrn = twrn;
-    q->out = tout;
-    q->err.len = q->out.len = q->wrn.len = 0;
- } else {
-    return(1);
-  }
+int gnugol_free_QueryOptions(QueryOptions_t *q) 
+{
+  assert(q != NULL);
+  
+  free(q->err.s);
+  free(q->out.s);
+  free(q->wrn.s);
+
+#ifndef NDEBUG  
+  q->err.s = q->out.s = q->wrn.s = NULL;
+  q->err.size = q->err.len = 0;
+  q->out.size = q->out.len = 0;
+  q->wrn.size = q->wrn.len = 0;
+#endif
+
   return(0);
 }
 
-int gnugol_free_QueryOptions(QueryOptions_t *q) {
-  if(q != NULL) {
-    if(q->err.s != NULL) { free(q->err.s); q->err.len = q->err.size = 0; }
-    if(q->out.s != NULL) { free(q->out.s); q->out.len = q->out.size = 0; }
-    if(q->wrn.s != NULL) { free(q->wrn.s); q->wrn.len = q->wrn.size = 0; }
-  }
-  return(0);
-}
-
-int gnugol_header_out(QueryOptions_t *q) {
+int gnugol_header_out(QueryOptions_t *q) 
+{
+  assert(q != NULL);
+  
     if(q->header) {
       char buffer[SNIPPETSIZE];
       strncpy(buffer,q->keywords,SNIPPETSIZE);
