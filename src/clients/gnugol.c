@@ -14,8 +14,6 @@
 #include <assert.h>
 #include <getopt.h>
 
-#include <syslog.h>
-
 #include "nodelist.h"
 #include "query.h"
 #include "formats.h"
@@ -214,21 +212,13 @@ print_enabled_options(QueryOptions_t *o, FILE *fp) {
 
 int process_options(int argc, char **argv, QueryOptions_t *o) 
 {
-  int option_index = 0;
-  int opt = 0;
+  int          option_index;
+  int          opt;
   GnuGolEngine engine;
 
-#if 1
   option_index = 0;
+  opt          = 0;
   optind       = 1;
-  opterr       = 1;
-  optopt       = 63;
-
-  syslog(LOG_DEBUG,"optind: %d",optind);
-  syslog(LOG_DEBUG,"opterr: %d",opterr);
-  syslog(LOG_DEBUG,"optopt: %d",optopt);
-  syslog(LOG_DEBUG,"optarg: %s",optarg);
-#endif
 
   while(true)
   {
@@ -299,7 +289,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o)
       /* source missing */
 #endif
 
-      default: fprintf(stderr,"%c",opt); usage("Invalid option"); break;
+      default: fprintf(stderr,"%d",opt); usage("Invalid option"); break;
     }
   } 
 
@@ -313,6 +303,8 @@ void finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
   size_t  querylen = 0;
   int     i;
 
+  string[0] = '\0';
+  
   if (!o->about && ListEmpty(&c_engines))  
   {
     engine = gnugol_engine_load(o->engine_name);
@@ -393,10 +385,13 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
 	gnugol_default_language(q);
 }
 
-void process_environ(QueryOptions_t *query)
+void process_environ(char *program,QueryOptions_t *query)
 {
   char   *opt;
   size_t  optlen;
+  
+  assert(program != NULL);
+  assert(query   != NULL);
   
   opt = getenv("GNUGOL_OPTS");
   if (opt == NULL) return;
@@ -409,13 +404,12 @@ void process_environ(QueryOptions_t *query)
   
   memcpy(optcopy,opt,optlen);
   p       = optcopy;
-  argv[0] = "GNUGOL_ENV";
+  argv[0] = program;
   
   for (argc = 1 ; ; )
   {
     argv[argc] = strtok(p," \t\v\r\n");
     if (argv[argc] == NULL) break;
-    syslog(LOG_DEBUG,"option: %s",argv[argc]);
     argc++;
     p = NULL;
   }
@@ -435,15 +429,11 @@ int main(int argc, char **argv) {
   gnugol_init_QueryOptions(&master);
   gnugol_default_QueryOptions(&master);
   
-/*  process_environ(&master);*/
+  process_environ(argv[0],&master);
   words = process_options(argc,argv,&master);
   finish_setup(&master,words,argc,argv);
   
   assert(!ListEmpty(&c_engines));
-  
-  /*-----------------------
-  ; process the query
-  ;------------------------*/
   
   for(
         engine = (GnuGolEngine)ListGetHead(&c_engines);
