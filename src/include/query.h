@@ -74,6 +74,7 @@ struct query_options {
   unsigned int break_words:1;
   int snippets;
   int titles;
+  int desc;
   int indent;
   int debug;
   int nresults;
