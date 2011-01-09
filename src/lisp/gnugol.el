@@ -2,7 +2,7 @@
 ;; Copyright (C) 2010 Dave Täht
 ;; License:    GNU Public License, version 3
 ;; Author:     Dave Taht
-;; Maintainer: d + gnugol AT @ taht.net
+;; Maintainer: d + gnugol AT taht.net
 ;; Created:    Dec-2008
 ;; Version:    See git tree
 ;; Keywords:   extensions, web, search, google
@@ -105,7 +105,7 @@
 
 ;; FIXME figure out how to search the buffer-modes
 
-;;(defun gnugol-get-output-mode
+;; (defun gnugol-get-output-mode
 ;;  "Get the gnugol output mode from the current buffer mode."
 ;;  (if gnugol-default-output-mode-sensitive 
 ;;      () 
@@ -258,18 +258,6 @@
   (gnugol-search-google (concat "site:gnugol.taht.net " str))
   )
 
-(defun gnugol-search-the-edge(str)
-  "Search the-edge via gnugol."
-  (interactive "sSearch the-edge: ")
-  (gnugol-search-google (concat "site:the-edge.blogspot.com " str))
-  )
-
-(defun gnugol-search-nex-6(str)
-  "Search nex-6 site via gnugol."
-  (interactive "sSearch Nex-6: ")
-  (gnugol-search-google (concat "site:nex-6.taht.net " str))
-  )
-
 (defun gnugol-search-koders(str)
   "Search koders.com site via gnugol."
   (interactive "sSearch Koders: ")
@@ -329,3 +317,4 @@
 
 
 (provide 'gnugol)
+

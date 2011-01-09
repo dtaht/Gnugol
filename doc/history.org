@@ -39,7 +39,7 @@ In the race to add feature after feature after freature, google and other search
 
 A typical google page is now over 25K long, not counting the image, contains dozens of extra links, and takes 5-10 seconds to download and render over slow, international links. Not only that but the various search engines are contributing to breaking the Internet, by, for example, increasing the default MSS size to 10 from 2...
 
-Dave had always admired the DNS system, and felt that now that "search" is almost a commodity, that it would be possible to define a binary (udp) based protocol for search. There are plenty of unused, useless services in /etc/services - having a special port number for search makes sense.
+Dave had always admired the DNS system, and felt that now that "search" is almost a commodity, that it would be possible to define a binary (udp) based protocol for search, this time using a flexible header format, and compression and encryption of that. There are plenty of unused, useless services in /etc/services - having a special port number for search makes sense.
 
 Problem with that was that most query-response protocols don't work well through a firewall. 
 
@@ -48,7 +48,7 @@ Enter IPv6. Without NAT, you have end to end networking.  Response problem solve
 ** Gaining speed
 The original version of the gnugold network protocol used 2!! packets to get a query out and a response. If you went through a 6in4 tunnel, it was 4 packets. (2 very short ones, however)
 
-This means that by the time you completed a tcp handshake vs the normal google, you've already got a response from gnugold, on a long latency link. 
+This means that by the time you completed a tcp handshake vs the normal google, you had already got a response from gnugold, on a long latency link. 
 
 The earliest prototype came in at *half* the time to transmit a query from australia and get the response that google.com.au did, best case. Due to the unreliable network I was on, it was actually often 5-10 times faster. 
 
@@ -59,13 +59,13 @@ Additional benefits - vastly reduced data traffic. Control of the formatting can
 The second nice thing about end to end networking is that it makes it easier -assuming a static ip address - to have for-pay search. Dave would gladly pay a few bucks a month for faster - and ad-free searching!
 
 * Death #1
-Unfortunately the UDP based network system described above proved unreliable enough in practice for Dave to discard it (at least temporarily) in favor of a few other network backend ideas. 
+Unfortunately the UDP based network system described above proved unreliable enough in practice for Dave to discard it (at least temporarily) in favor of a few other network backend ideas. (See also: [[http://gettys.wordpress.com/category/bufferbloat/][Bufferbloat]] ) The ad-hoc protocol was also a terrible design, too close to HTTP in origination.
 * Death #2
 And THEN google obsoleted their soap API in favor of json, rendering the original front-end client useless.
 * Death #3
 Finally that soap API went away...
 * Rebirth - October, 2010
-After encountering [[http://nex-6.taht.net/posts/Beating_the_speed_of_light_on_the_web/][Google's latest results page]], Dave blew a gasket, IPv13 was now a reality!!?? 
+After encountering [[http://nex-6.taht.net/posts/Beating_the_speed_of_light_on_the_web/][Google's latest results page]], Dave blew a gasket. [[http://the-edge.blogspot.com/2003/09/paul-vixie-vs-verisign.html][IPv13]] was now a reality!!?? 
 
 So he dusted off the client, and rewrote it (with the help of some friends) to drop the network backend entirely in favor of curl, and incorporated the json API. After some positive feedback the new gnugol client seemed useful enough for general use, so he released it on github.
 
