@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <assert.h>
 #include <getopt.h>
 
@@ -204,33 +205,20 @@ print_enabled_options(QueryOptions_t *o, FILE *fp) {
   return 0;
 }
 
-#define pifverbose(q,string) if(q->verbose) { printf("%s",val); }
 #define BOOLOPT(OPTION) OPTION = (strtoul(optarg,NULL,10) & 1)
-
-int process_options(int argc, char **argv, QueryOptions_t *o) {
-  int option_index = 0;
-  int i = 0;
-  int querylen = 0;
-  int opt = 0;
-  char string[MAX_MTU];
-  GnuGolEngine engine;
-
-
-
-
-  
-  string[0] = '\0';
-
-  if(argc == 1) usage("");
-
 #ifdef HAVE_GNUGOLD
 #  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uvb46mPRST"
 #else
 #  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uv"
 #endif
 
-// useful a -- by itself ends options parsing
+int process_options(int argc, char **argv, QueryOptions_t *o) 
+{
+  int option_index = 0;
+  int opt = 0;
+  GnuGolEngine engine;
 
+#if 1
   option_index = 0;
   optind       = 1;
   opterr       = 1;
@@ -240,11 +228,10 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   syslog(LOG_DEBUG,"opterr: %d",opterr);
   syslog(LOG_DEBUG,"optopt: %d",optopt);
   syslog(LOG_DEBUG,"optarg: %s",optarg);
+#endif
 
-
-
-
-  do {
+  while(true)
+  {
     opt = getopt_long(argc, argv,
 		      QSTRING,
 		      long_options, &option_index);
@@ -314,7 +301,17 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 
       default: fprintf(stderr,"%c",opt); usage("Invalid option"); break;
     }
-  } while (1);
+  } 
+
+  return optind;
+}
+
+void finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
+{
+  GnuGolEngine engine;
+  char    string[MAX_MTU];
+  size_t  querylen = 0;
+  int     i;
 
   if (!o->about && ListEmpty(&c_engines))  
   {
@@ -340,11 +337,10 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     ListAddTail(&c_engines,&engine->node);
   }
 
-#if 0
-  for(i = optind; i < argc; i++) {
+  for(i = idx; i < argc; i++) {
 	  if((querylen += (strlen(argv[i])+1) > MAX_MTU - 80)) {
 		  fprintf(stderr,"Too many words in query, try something smaller\n");
-		  return(1);
+		  exit(EXIT_FAILURE);
 	  }
 	  /* FIXME: Although I did a length check above it could be cleaner here */
 	  if(!o->url_escape) {
@@ -368,9 +364,6 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     o->engine_name = "credits";
     o->header_str = "About: ";
   }
-#endif
-
-  return(optind);
 }
 
 static void gnugol_default_language (QueryOptions_t *q) {
@@ -442,53 +435,10 @@ int main(int argc, char **argv) {
   gnugol_init_QueryOptions(&master);
   gnugol_default_QueryOptions(&master);
   
-  process_environ(&master);
+/*  process_environ(&master);*/
   words = process_options(argc,argv,&master);
+  finish_setup(&master,words,argc,argv);
   
-  /*-----------------------------------------
-  ; process the rest of the command line
-  ;-----------------------------------------*/
-  
-  char    string[MAX_MTU];
-  char   *dest;
-  size_t  querylen = 0;
-  size_t  bytes;
-  int     i;
-  
-  for (dest = string , i = words ; i < argc ; i++)
-  {
-    querylen += strlen(argv[i]) + 1;
-    if (querylen > MAX_MTU - 80)
-    {
-      fprintf(stderr,"Too many words in query, try something smaller\n");
-      return EXIT_FAILURE;
-    }
-    
-    dest += sprintf(dest,"%s ",argv[i]);
-    if ((size_t)(dest - string) > sizeof(string))
-    {
-      fprintf(stderr,"Too many words in query, try something smaller\n");
-      return EXIT_FAILURE;
-    }
-  }
-  
-  if (!master.url_escape)
-  {
-    url_escape_utf8(master.keywords,string);
-    master.url_escape = 1;
-  }
-  else
-    strcpy(master.keywords,string);
-  
-  if (master.debug > 0) print_enabled_options(&master,stderr);
-  if (!(master.urls | master.snippets | master.ads | master.titles))
-    master.urls = 1;
-  if (master.about)
-  {
-    master.engine_name = "credits";
-    master.header_str  = "About: ";
-  }
-      
   assert(!ListEmpty(&c_engines));
   
   /*-----------------------
