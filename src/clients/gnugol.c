@@ -10,7 +10,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <getopt.h>
+
+#include <syslog.h>
 
 #include "nodelist.h"
 #include "query.h"
@@ -211,6 +214,10 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
   int opt = 0;
   char string[MAX_MTU];
   GnuGolEngine engine;
+
+
+
+
   
   string[0] = '\0';
 
@@ -223,6 +230,19 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
 #endif
 
 // useful a -- by itself ends options parsing
+
+  option_index = 0;
+  optind       = 1;
+  opterr       = 1;
+  optopt       = 63;
+
+  syslog(LOG_DEBUG,"optind: %d",optind);
+  syslog(LOG_DEBUG,"opterr: %d",opterr);
+  syslog(LOG_DEBUG,"optopt: %d",optopt);
+  syslog(LOG_DEBUG,"optarg: %s",optarg);
+
+
+
 
   do {
     opt = getopt_long(argc, argv,
@@ -320,6 +340,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     ListAddTail(&c_engines,&engine->node);
   }
 
+#if 0
   for(i = optind; i < argc; i++) {
 	  if((querylen += (strlen(argv[i])+1) > MAX_MTU - 80)) {
 		  fprintf(stderr,"Too many words in query, try something smaller\n");
@@ -347,6 +368,8 @@ int process_options(int argc, char **argv, QueryOptions_t *o) {
     o->engine_name = "credits";
     o->header_str = "About: ";
   }
+#endif
+
   return(optind);
 }
 
@@ -377,8 +400,39 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
 	gnugol_default_language(q);
 }
 
+void process_environ(QueryOptions_t *query)
+{
+  char   *opt;
+  size_t  optlen;
+  
+  opt = getenv("GNUGOL_OPTS");
+  if (opt == NULL) return;
+  optlen = strlen(opt) + 1;
+  
+  char    optcopy[optlen];
+  char   *argv[optlen + 1];
+  size_t  argc;
+  char   *p;
+  
+  memcpy(optcopy,opt,optlen);
+  p       = optcopy;
+  argv[0] = "GNUGOL_ENV";
+  
+  for (argc = 1 ; ; )
+  {
+    argv[argc] = strtok(p," \t\v\r\n");
+    if (argv[argc] == NULL) break;
+    syslog(LOG_DEBUG,"option: %s",argv[argc]);
+    argc++;
+    p = NULL;
+  }
+  
+  process_options(argc,argv,query);
+}
+
 int main(int argc, char **argv) {
   int            result;
+  int            words;
   QueryOptions_t master;
   QueryOptions_t q;
   GnuGolEngine   engine;
@@ -387,9 +441,59 @@ int main(int argc, char **argv) {
 
   gnugol_init_QueryOptions(&master);
   gnugol_default_QueryOptions(&master);
-  process_options(argc,argv,&master);
   
+  process_environ(&master);
+  words = process_options(argc,argv,&master);
+  
+  /*-----------------------------------------
+  ; process the rest of the command line
+  ;-----------------------------------------*/
+  
+  char    string[MAX_MTU];
+  char   *dest;
+  size_t  querylen = 0;
+  size_t  bytes;
+  int     i;
+  
+  for (dest = string , i = words ; i < argc ; i++)
+  {
+    querylen += strlen(argv[i]) + 1;
+    if (querylen > MAX_MTU - 80)
+    {
+      fprintf(stderr,"Too many words in query, try something smaller\n");
+      return EXIT_FAILURE;
+    }
+    
+    dest += sprintf(dest,"%s ",argv[i]);
+    if ((size_t)(dest - string) > sizeof(string))
+    {
+      fprintf(stderr,"Too many words in query, try something smaller\n");
+      return EXIT_FAILURE;
+    }
+  }
+  
+  if (!master.url_escape)
+  {
+    url_escape_utf8(master.keywords,string);
+    master.url_escape = 1;
+  }
+  else
+    strcpy(master.keywords,string);
+  
+  if (master.debug > 0) print_enabled_options(&master,stderr);
+  if (!(master.urls | master.snippets | master.ads | master.titles))
+    master.urls = 1;
+  if (master.about)
+  {
+    master.engine_name = "credits";
+    master.header_str  = "About: ";
+  }
+      
   assert(!ListEmpty(&c_engines));
+  
+  /*-----------------------
+  ; process the query
+  ;------------------------*/
   
   for(
         engine = (GnuGolEngine)ListGetHead(&c_engines);
