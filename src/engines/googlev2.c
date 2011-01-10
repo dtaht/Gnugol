@@ -1,4 +1,4 @@
-/* This engine implements a gnugol -> google web api -> gnugol json translator plugin 
+/* This engine implements a gnugol -> google web api -> gnugol json translator plugin
    using the google web api v2 */
 
 /* DISCLAIMER: I actually read the terms of service on this API, and I wish I didn't.
@@ -7,13 +7,13 @@
 
    It looks impossible to setup gnugol to "do the right thing" using this API.
 
-   IANAL, but I believe that gnugol's usage would be covered under a DMCA exemption, 
-   for purposes of "interoperability" with org, wiki, and speech synthesis. 
+   IANAL, but I believe that gnugol's usage would be covered under a DMCA exemption,
+   for purposes of "interoperability" with org, wiki, and speech synthesis.
 
-   It would be my hope that google would recognise this and grant me an exception 
+   It would be my hope that google would recognise this and grant me an exception
    to this before I release the code in a finished version.
 
-   Regardless, this API is 1/2 the speed of the other google API - and thus I 
+   Regardless, this API is 1/2 the speed of the other google API - and thus I
    don't use it at present. I'm just keeping the code around if one day I figure
    out how to make it useful.
 
@@ -34,7 +34,7 @@
 
 #define TEMPLATE  "https://www.googleapis.com/customsearch/v1?"
 
-/* See options at 
+/* See options at
    http://code.google.com/apis/customsearch/v1/using_rest.html#response
    including:
     size= large | small  (8 vs 4)
@@ -84,12 +84,12 @@ GET https://www.googleapis.com/customsearch/v1?key=INSERT-YOUR-KEY&cx=0175766625
 
 /* WE WOULD NEED A CUSTOM SEARCH ENGINE HERE cx="bla" for this to work at all */
 
-  if(size > 0) { 
-    snprintf(string,URL_SIZE-1,"%skey=%s&prettyprint=false&num=%d&start=%d&q=",TEMPLATE,key,q->nresults,q->position); 
+  if(size > 0) {
+    snprintf(string,URL_SIZE-1,"%skey=%s&prettyprint=false&num=%d&start=%d&q=",TEMPLATE,key,q->nresults,q->position);
   } else {
     snprintf(string,URL_SIZE-1,"%sprettyprint=false&num=%d&start=%d&q=",TEMPLATE, q->nresults,q->position);
   }
-  if(q->debug)       GNUGOL_OUTW(q,"Keywords: %s\n", q->keywords); 
+  if(q->debug)       GNUGOL_OUTW(q,"Keywords: %s\n", q->keywords);
   strcat(string,q->keywords); // FIXME: convert to urlencoding
   return size;
 }
@@ -97,7 +97,7 @@ GET https://www.googleapis.com/customsearch/v1?key=INSERT-YOUR-KEY&cx=0175766625
 // turn quotes back into quotes and other utf-8 stuff
 // FIXME: Error outs cause a memory leak from "root"
 // use thread local storage? or malloc for the buffer
-// FIXME: do fuller error checking 
+// FIXME: do fuller error checking
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 
@@ -111,7 +111,7 @@ GET https://www.googleapis.com/customsearch/v1?key=INSERT-YOUR-KEY&cx=0175766625
    "link": "http://en.wikipedia.org/wiki/Flower",
    "displayLink": "en.wikipedia.org",
    "snippet": "A flower, sometimes known as a bloom or blossom, is the reproductive structure found in flowering plants (plants of the division Magnoliophyta, ...",
-  } 
+  }
 */
 
 int search(QueryOptions_t *q) {
@@ -120,11 +120,11 @@ int search(QueryOptions_t *q) {
     char url[URL_SIZE];
     json_t *root, *items, *handleResponse;
     json_error_t error;
-    if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr); 
+    if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr);
 
     text = jsonrequest(q->querystr);
     if(!text) {
-      GNUGOL_OUTE(q,"url failed to work: %s", q->querystr); 
+      GNUGOL_OUTE(q,"url failed to work: %s", q->querystr);
       return 1;
     }
 
@@ -136,9 +136,9 @@ int search(QueryOptions_t *q) {
         GNUGOL_OUTE(q,"error: on line %d: %s\n", error.line, error.text);
         return 1;
     }
-    
+
     GETOBJ(root,handleResponse);
-    GETARRAY(handleResponse,items);  
+    GETARRAY(handleResponse,items);
     gnugol_header_out(q);
 
     for(i = 0; i < json_array_size(items); i++)

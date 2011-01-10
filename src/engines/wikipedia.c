@@ -63,7 +63,7 @@ int setup(QueryOptions_t *q) {
 }
 
 // turn quotes back into quotes and other utf-8 stuff
-// FIXME: do fuller error checking 
+// FIXME: do fuller error checking
 //        Fuzz inputs!
 // Maybe back off the number of results when we overflow the buffer
 
@@ -71,11 +71,11 @@ int search(QueryOptions_t *q) {
     char *text;
     json_t *root,*query, *pages, *page, *result;
     json_error_t error;
-    if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr); 
+    if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr);
 
     text = jsonrequest(q->querystr);
     if(!text) {
-      GNUGOL_OUTE(q,"url failed to work: %s", q->querystr); 
+      GNUGOL_OUTE(q,"url failed to work: %s", q->querystr);
       return 1;
     }
 
@@ -87,7 +87,7 @@ int search(QueryOptions_t *q) {
         GNUGOL_OUTE(q,"error: on line %d: %s\n", error.line, error.text);
         return 1;
     }
-    
+
     GETOBJ(root,query);
     GETOBJ(query,pages);
     GETSTRING(page,query);  // the next object is GETSTR?

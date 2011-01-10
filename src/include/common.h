@@ -3,6 +3,6 @@
 #ifdef DEBUG
 #define log(a,b) printf(a,b)
 #else
-#define log(a,b) 
+#define log(a,b)
 #endif
 #endif

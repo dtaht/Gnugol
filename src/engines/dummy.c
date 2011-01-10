@@ -1,4 +1,4 @@
-/* This engine implements dummy layer - useful for debugging the 
+/* This engine implements dummy layer - useful for debugging the
    formatting engine */
 
 #include <stdio.h>
@@ -17,19 +17,19 @@
 
 // turn quotes back into quotes and other utf-8 stuff
 // FIXME: Error outs cause a memory leak from "root"
-// FIXME: do fuller error checking 
+// FIXME: do fuller error checking
 
 // Some Fuzzed inputs
 // Maybe back off the number of results when we overflow the buffer
-// Arguably this should obey other gnugol options (nresults, position) 
+// Arguably this should obey other gnugol options (nresults, position)
 // at some point
 // More Test cases for bad inputs should go here:
 
 const char description[] = "The dummy engine is used for generating test/malformed data for each of the output formatters.";
 
 int search(QueryOptions_t *q) {
-  if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr); 
-  if(q->debug) GNUGOL_OUTW(q,"trying keywords: %s", q->keywords); 
+  if(q->debug) GNUGOL_OUTW(q,"trying url: %s", q->querystr);
+  if(q->debug) GNUGOL_OUTW(q,"trying keywords: %s", q->keywords);
   q->indent = 1;
   gnugol_header_out(q);
   gnugol_result_out(q,GNUGOL_SITE "bugs.html", "Gnugol Engine Tests", "Some tests of the formatter");
@@ -52,7 +52,7 @@ int search(QueryOptions_t *q) {
   q->indent -= 1; gnugol_result_out(q,GNUGOL_SITE "bugs.html", "Bad HTML", "");
   q->indent += 1; GNUGOL_OUTW(q,"Tests: Bad HTML\n");
   gnugol_result_out(q,GNUGOL_SITE "bugs.html", "Unimplemented", "No tests for bad HTML implemented yet");
-  
+
   q->indent -= 1; gnugol_result_out(q,GNUGOL_SITE "bugs.html", "Empty String", "");
   q->indent += 1; GNUGOL_OUTW(q,"Tests: Empty string\n");
   gnugol_result_out(q,"","There was no url in this test", "Empty url");

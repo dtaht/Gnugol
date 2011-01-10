@@ -241,51 +241,49 @@ AND it would be kind of cool to take the comments and have them in the outline
 // Answers -> title
 // Answers -> body
 // In thinking about this, maybe doing a google site search
-// AND then following it up with a search for the ids involved
+// And then following it up with a search for the ids involved
 // Would build up a useful faq-like result
 
 int search(QueryOptions_t *q) {
-    unsigned int i;
-    char *text;
-    json_t *root,*questions;
-    json_error_t error;
-    if(q->debug) GNUGOL_OUTW(q,"%s: trying url: %s\n", q->engine_name, q->querystr);
-
-    text = jsonrequest(q->querystr);
-    if(!text) {
+  unsigned int i;
+  char *text;
+  json_t *root,*questions;
+  json_error_t error;
+  if(q->debug) GNUGOL_OUTW(q,"%s: trying url: %s\n", q->engine_name, q->querystr);
+  text = jsonrequest(q->querystr);
+  if(!text)
+    {
       GNUGOL_OUTE(q,"url failed to work: %s", q->querystr);
       return -1;
     }
-
     root = json_loads(text, &error);
     free(text);
-
     if(!root)
-    {
+      {
         GNUGOL_OUTE(q,"error: on line %d: %s\n", error.line, error.text);
         return -1;
-    }
+      }
 
     GETARRAY(root,questions);
     gnugol_header_out(q);
 
-//  Maybe use the score or whether the answer is known for the title? 
+//  Maybe use the score or whether the answer is known for the title?
 //  Or the date?
 //  Or the accepted_answer id, if it exists, rather than referencing
 //  the question
 
     for(i = 0; i < json_array_size(questions); i++)
-    {
-      json_t *question, *question_answers_url, *title;
-      json_t *score;
-      char buffer[1024];
-      char buffer2[1024];
-      GETARRAYIDX(questions,question,i);
-      GETSTRING(question,question_answers_url);
-      GETSTRING(question,title);
-      GETNUMBER(question,score);
-//    GETNUMBER(question,accepted_answer_id);
-//    GETSTRING(question,body); // doesn't exist, although documented
+      {
+	json_t *question, *question_answers_url, *title;
+	json_t *score;
+	char buffer[1024];
+	char buffer2[1024];
+	GETARRAYIDX(questions,question,i);
+	GETSTRING(question,question_answers_url);
+	GETSTRING(question,title);
+	GETNUMBER(question,score);
+	//    GETNUMBER(question,accepted_answer_id);
+	//    GETSTRING(question,body); // doesn't exist, although documented
 //    if(strlen(accepted_answer_id) > 0) {
 //    snprintf(buffer,1024,"http://stackoverflow.com%s",jsv(question_answers_url));
 //    }  else {

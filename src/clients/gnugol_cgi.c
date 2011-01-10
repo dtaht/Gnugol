@@ -17,12 +17,12 @@ void Cookies();
 
 /* It will be simpler to just generate a cookie based on the set options */
 
-int Query(QueryOptions *q) { 
+int Query(QueryOptions *q) {
   int i;
   int n = query_main(q,"::1");
   // int n = query_main(q,"2001:4f8:3:36:2e0:81ff:fe23:90d3");
-  int output = 
-    q->options.urls >> 3 | q->options.snippets >> 2 | 
+  int output =
+    q->options.urls >> 3 | q->options.snippets >> 2 |
     q->options.titles >> 1; // | q->options.ads ;
   //  fprintf(cgiOut,"shift = %d\n",output);
 
@@ -92,7 +92,7 @@ int titlepage(QueryData *q, char *title) {
     fprintf(cgiOut,"<img src=/gnugol/images/gnugol.png><br><hr>");
   } else {
     fprintf(cgiOut, "<body>");
-  } 
+  }
 }
 
 int EmptySubmit(QueryData *q) {
@@ -100,7 +100,7 @@ int EmptySubmit(QueryData *q) {
   ShowForm(q);
   // FIXME - check to see if we've primed the cache recently
   // q->options.prime=1;
-  // int n = query_main(q,"::1"); 
+  // int n = query_main(q,"::1");
 }
 
 void HandleSubmit(QueryData *q)
@@ -110,7 +110,7 @@ void HandleSubmit(QueryData *q)
   strcpy(query,q->keywords);
   //  cgiFormStringNoNewlines("q", query, 1024);
   cgiHtmlEscape(query);
-  cgiFormString("q", query, sizeof(query));	
+  cgiFormString("q", query, sizeof(query));
   titlepage(q,query);
   q->options.urls = q->options.snippets = 1;
   q->options.nresults = 3;
@@ -236,20 +236,20 @@ void Cookies()
 		arrayStep++;
 	}
 	fprintf(cgiOut, "</table>\n");
-	cgiFormString("cname", cname, sizeof(cname));	
-	cgiFormString("cvalue", cvalue, sizeof(cvalue));	
+	cgiFormString("cname", cname, sizeof(cname));
+	cgiFormString("cvalue", cvalue, sizeof(cvalue));
 	if (strlen(cname)) {
 		fprintf(cgiOut, "New Cookie Set On This Call:<p>\n");
-		fprintf(cgiOut, "Name: ");	
+		fprintf(cgiOut, "Name: ");
 		cgiHtmlEscape(cname);
-		fprintf(cgiOut, "Value: ");	
+		fprintf(cgiOut, "Value: ");
 		cgiHtmlEscape(cvalue);
 		fprintf(cgiOut, "<p>\n");
-		fprintf(cgiOut, "If your browser accepts cookies (many do not), this new cookie should appear in the above list the next time the form is submitted.<p>\n"); 
+		fprintf(cgiOut, "If your browser accepts cookies (many do not), this new cookie should appear in the above list the next time the form is submitted.<p>\n");
 	}
 	cgiStringArrayFree(array);
 }
-	
+
 void ShowForm(QueryData *q)
 {
   char keywords[1080];
@@ -257,7 +257,7 @@ void ShowForm(QueryData *q)
   fprintf(cgiOut, "action=\"");
   cgiValueEscape(cgiScriptName);
   fprintf(cgiOut, "\"><p>");
-  if(cgiFormString("q", keywords, sizeof(keywords)));	
+  if(cgiFormString("q", keywords, sizeof(keywords)));
 
   if(keywords[0] != '\0') {
     strcpy(q->keywords,keywords);
@@ -277,12 +277,12 @@ void CookieSet()
 	char cname[1024];
 	char cvalue[1024];
 	/* Must set cookies BEFORE calling cgiHeaderContentType */
-	cgiFormString("cname", cname, sizeof(cname));	
-	cgiFormString("cvalue", cvalue, sizeof(cvalue));	
+	cgiFormString("cname", cname, sizeof(cname));
+	cgiFormString("cvalue", cvalue, sizeof(cvalue));
 	if (strlen(cname)) {
 		/* Cookie lives for one day (or until browser chooses
 			to get rid of it, which may be immediately),
-			and applies only to this script on this site. */	
+			and applies only to this script on this site. */
 		cgiHeaderCookieSetString(cname, cvalue,
 			86400, cgiScriptName, SERVER_NAME);
 	}
@@ -290,8 +290,8 @@ void CookieSet()
 
 void LoadEnvironment()
 {
-	if (cgiReadEnvironment(SAVED_ENVIRONMENT) != 
-		cgiEnvironmentSuccess) 
+	if (cgiReadEnvironment(SAVED_ENVIRONMENT) !=
+		cgiEnvironmentSuccess)
 	{
 		cgiHeaderContentType("text/html");
 		fprintf(cgiOut, "<head>Error</head>\n");
@@ -306,8 +306,8 @@ void LoadEnvironment()
 
 void SaveEnvironment()
 {
-	if (cgiWriteEnvironment(SAVED_ENVIRONMENT) != 
-		cgiEnvironmentSuccess) 
+	if (cgiWriteEnvironment(SAVED_ENVIRONMENT) !=
+		cgiEnvironmentSuccess)
 	{
 		fprintf(cgiOut, "<p>cgiWriteEnvironment failed. Most "
 			"likely %s is not a valid path or is not "
@@ -319,7 +319,7 @@ void SaveEnvironment()
 			"scenario: "
 			"<form method=POST action=\"");
 		cgiValueEscape(cgiScriptName);
-		fprintf(cgiOut, "\">" 
+		fprintf(cgiOut, "\">"
 			"<input type=\"submit\" "
 			"value=\"Load Environment\" "
 			"name=\"loadenvironment\"></form><p>\n");

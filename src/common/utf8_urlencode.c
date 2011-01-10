@@ -138,7 +138,7 @@ else if (ch <= 0x07FF) { // non-ASCII <= 0x7FF
 		}
 */
 	}
-	
+
 	buf[j] = '\0';
 
 	if(to == NULL) {
@@ -193,7 +193,7 @@ else if (ch <= 0x07FF) { // non-ASCII <= 0x7FF
 		}
 */
 	}
-	
+
 	buf[j] = '\0';
 
 	if(to == NULL) {

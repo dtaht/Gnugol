@@ -46,7 +46,7 @@ Node *(ListRemHead)(List *const pl)
 
   pn = ListGetHead(pl);
   assert(pn != NULL);
-  if (NodeValid(pn)) 
+  if (NodeValid(pn))
     NodeRemove(pn);
   return(pn);
 }

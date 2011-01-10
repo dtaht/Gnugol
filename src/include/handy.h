@@ -6,7 +6,7 @@ extern int strip_html(int len, char *htmlstr);
 #define jsv(a) json_string_value(a)
 #define jsn(a) json_number_value(a)
 
-// Mapping one language to another requires 
+// Mapping one language to another requires
 // lots of repetitive code and error checking
 // Macros may be ugly, but they do (in this case)
 // ensure that all errors are captured.

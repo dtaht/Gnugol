@@ -1,5 +1,5 @@
 /*
-   This file implements a gnugol -> bing api -> gnugol json translator plugin 
+   This file implements a gnugol -> bing api -> gnugol json translator plugin
  */
 
 #include <stdio.h>

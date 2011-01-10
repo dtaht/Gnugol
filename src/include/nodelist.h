@@ -58,7 +58,7 @@ static inline void ListAddHead(List *const pl,Node *const pn)
 {
   assert(pl != NULL);
   assert(pn != NULL);
-  
+
   NodeInsert((Node *)&pl->lh_Head,pn);
 }
 

@@ -9,9 +9,9 @@
 
 // FIXME, this needed to be more free format
 // See snippet
-// And we need to init the 
+// And we need to init the
 
-/* 
+/*
 int parse_section(QueryData *q,char *proto) {
     pstart = strstr(s, "LNK\n");
     if (pstart == NULL) {
@@ -150,15 +150,15 @@ int answer_parse(QueryData *q) {
 int main() {
     int  nlinks, i;
     QueryData q;
-    
+
     strcpy(q.answer,"LNK\nhttp://www.teklibre.com\nhttp://www.lwn.net\nhttp://www.slashdot.org\nhttp://a.very.busted.url\ngnugol://test+query\nEND\nSNP\nTeklibre is about to become the biggest albatross around David's head\nLwn Rocks\nSlashdot Rules\nThis is a very busted url\nOne day we'll embed search right in the browser\nEND\n");
     nlinks = answer_parse(&q);
     if (nlinks == -1) {
 	printf("Error!\n");
 	exit(1);
     }
-	  
-    for(i=0; i<nlinks; i++) 
+
+    for(i=0; i<nlinks; i++)
       printf("[%d] [%s] [%s]\n", i, q.links[i], q.snippets[i]); // SYNTAX HELL
 
     return 0;

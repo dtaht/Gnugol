@@ -1,5 +1,5 @@
-/* This code is Copyright (C) 2008 by Michael David Taht 
-   and released under the terms of the GNU AFFERO PUBLIC_LICENSE, version 3 
+/* This code is Copyright (C) 2008 by Michael David Taht
+   and released under the terms of the GNU AFFERO PUBLIC_LICENSE, version 3
    for details of this license see the COPYRIGHT file */
 
 /* fastcgi client for gnugol */
@@ -38,7 +38,7 @@ static struct output_types output_type[] = {
 
 #define penabled(a) if(o->a) fprintf(fp,"" # a " ");
 
-int 
+int
 print_enabled_options(QueryOptions_t *o, FILE *fp) {
   if(o->verbose) fprintf(fp,"Search Keywords: %s\n",o->keywords);
   fprintf(fp,"Results Requested: %d\n", o->nresults);
@@ -99,8 +99,8 @@ main(int argc, char **argv) {
 
     strcpy(q.keywords,"test%ipv6");
 
-    if(!(q.urls | q.snippets | q.ads | q.titles)) { 
-      q.urls = 1; // Always default to fetching urls 
+    if(!(q.urls | q.snippets | q.ads | q.titles)) {
+      q.urls = 1; // Always default to fetching urls
     }
 
   if(q.dummy) {
@@ -111,9 +111,9 @@ main(int argc, char **argv) {
     } else {
       fprintf(stderr,"Error %s",q.err.s);
     }
-    
+
   } else {
-  
+
   if(engine_bing(&q) == 0) {
       printf("Content-type: text/html\r\n"
 	     "\r\n"
@@ -122,11 +122,11 @@ main(int argc, char **argv) {
     fprintf(stderr,"%s\n",q.err.s);
   }
   }
-  
+
   if(q.debug)
     fprintf(stderr,"len = %d\n size = %d, Result = %s\n",q.out.len, q.out.size, q.out.s);
   }
   gnugol_free_QueryOptions(&q);
-  return(0); 
+  return(0);
 }
 

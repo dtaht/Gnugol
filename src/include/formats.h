@@ -9,7 +9,7 @@
 #ifndef PATH_MAX
 #define PATH_MAX (1024)
 #endif
-#define SNIPPETSIZE (2048) 
+#define SNIPPETSIZE (2048)
 #define OUTPUTSIZE (64*1024)
 
 #define STRIPHTML(a) strip_html(SNIPPETSIZE,a)
