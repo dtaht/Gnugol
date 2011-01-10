@@ -1,5 +1,5 @@
-/* This code is Copyright (C) 2008 by Michael David Taht 
-   and released under the terms of the GNU AFFERO PUBLIC_LICENSE, version 3 
+/* This code is Copyright (C) 2008 by Michael David Taht
+   and released under the terms of the GNU AFFERO PUBLIC_LICENSE, version 3
    for details of this license see the COPYRIGHT file */
 
 /* Command line client for gnugol */
@@ -70,7 +70,7 @@ int usage (char *err) {
 	 "-F --footer    0|1 disable/enable output footer\n"
 	 "-i --indent    X   result indentation level\n"
 	 "-S --safe    0|1|2 [off|moderate|active] result filtering\n"
-	 "-d --debug     X   debug output level\n"
+	 "-D --debug     X   debug output level\n"
 	 "-U --escaped       input is already url escaped\n"
 	 "-l --language-in   [en|es|fr|nl or other 2 char locale]\n"
 	 "-L --language-out  [en|es|fr|nl or other 2 char locale]\n"
@@ -92,6 +92,7 @@ int usage (char *err) {
 
 #ifdef WHENIHAVETIMETOADDTHESEOFFICIALLY
 	 "-A --ads 0|1\n"
+	 "-d --desc      0|1 disable/enable descriptions\n"
 	 "-c --cache     serve only results from cache(s)\n"
 	 "-f --force     force a new query, even if cached\n"
 	 "-I --input     [filename] input from a file\n"
@@ -101,7 +102,6 @@ int usage (char *err) {
 
 #ifdef WHATABOUTTHESE
 	 "-C --config\n"
-	 "-D --defaults\n"
 	 "-g --plugin\n"
 	 "   --source\n"
 #endif
@@ -112,7 +112,7 @@ int usage (char *err) {
 
 static const struct option long_options[] = {
   { "about"		, no_argument		, NULL , 'a' } ,
-  { "debug"		, required_argument	, NULL , 'd' } ,
+  { "debug"		, required_argument	, NULL , 'D' } ,
   { "engine"		, required_argument	, NULL , 'e' } ,
   { "footer"		, required_argument	, NULL , 'F' } ,
   { "header"		, required_argument	, NULL , 'H' } ,
@@ -127,6 +127,7 @@ static const struct option long_options[] = {
   { "safe"		, required_argument    	, NULL , 'S' } ,
   { "titles"		, required_argument	, NULL , 't' } ,
   { "urls"		, required_argument	, NULL , 'u' } ,
+  { "desc"		, required_argument	, NULL , 'd' } ,
   { "escaped"      	, no_argument		, NULL , 'U' } ,
   { "verbose"		, no_argument		, NULL , 'v' } ,
 
@@ -154,7 +155,6 @@ static const struct option long_options[] = {
 #ifdef WHATABOUTTHESE
   { "word-break"	, no_argument		, NULL , 'B' } ,
   { "config"		, no_argument		, NULL , 'C' } ,
-  { "defaults"		, no_argument		, NULL , 'D' } ,
   { "plugin"		, no_argument		, NULL , 'g' } ,
   { "source"		, no_argument		, NULL ,  0  } ,
 #endif
@@ -205,12 +205,12 @@ print_enabled_options(QueryOptions_t *o, FILE *fp) {
 
 #define BOOLOPT(OPTION) OPTION = (strtoul(optarg,NULL,10) & 1)
 #ifdef HAVE_GNUGOLD
-#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uvb46mPRST"
+#  define QSTRING "ad:D:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uvb46mPRST"
 #else
-#  define QSTRING "ad:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uv"
+#  define QSTRING "ad:D:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uv"
 #endif
 
-int process_options(int argc, char **argv, QueryOptions_t *o) 
+int process_options(int argc, char **argv, QueryOptions_t *o)
 {
   int          option_index;
   int          opt;
@@ -230,7 +230,8 @@ int process_options(int argc, char **argv, QueryOptions_t *o)
     switch (opt)
     {
       case 'a': o->about = 1;  break;
-      case 'd': o->debug = strtoul(optarg,NULL,10); break;
+      case 'd': o->desc = strtoul(optarg,NULL,10); break;
+      case 'D': o->debug = strtoul(optarg,NULL,10); break;
       case 'e':
            o->engine = 1;
            engine = gnugol_engine_load(optarg);
@@ -291,7 +292,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o)
 
       default: fprintf(stderr,"%d",opt); usage("Invalid option"); break;
     }
-  } 
+  }
 
   return optind;
 }
@@ -304,8 +305,8 @@ void finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
   int     i;
 
   string[0] = '\0';
-  
-  if (!o->about && ListEmpty(&c_engines))  
+
+  if (!o->about && ListEmpty(&c_engines))
   {
     engine = gnugol_engine_load(o->engine_name);
     if (engine == NULL)
@@ -313,10 +314,10 @@ void finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
       fprintf(stderr,"default engine not found!  Panic!\n");
       exit(EXIT_FAILURE);
     }
-    
+
     ListAddTail(&c_engines,&engine->node);
   }
-  
+
   if (o->about)
   {
     engine = gnugol_engine_load("credits");
@@ -325,7 +326,7 @@ void finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
       fprintf(stderr,"default engine not found!  Panic!\n");
       exit(EXIT_FAILURE);
     }
-    
+
     ListAddTail(&c_engines,&engine->node);
   }
 
@@ -389,23 +390,23 @@ void process_environ(char *program,QueryOptions_t *query)
 {
   char   *opt;
   size_t  optlen;
-  
+
   assert(program != NULL);
   assert(query   != NULL);
-  
+
   opt = getenv("GNUGOL_OPTS");
   if (opt == NULL) return;
   optlen = strlen(opt) + 1;
-  
+
   char    optcopy[optlen];
   char   *argv[optlen + 1];
   size_t  argc;
   char   *p;
-  
+
   memcpy(optcopy,opt,optlen);
   p       = optcopy;
   argv[0] = program;
-  
+
   for (argc = 1 ; ; )
   {
     argv[argc] = strtok(p," \t\v\r\n");
@@ -413,7 +414,7 @@ void process_environ(char *program,QueryOptions_t *query)
     argc++;
     p = NULL;
   }
-  
+
   process_options(argc,argv,query);
 }
 
@@ -428,13 +429,13 @@ int main(int argc, char **argv) {
 
   gnugol_init_QueryOptions(&master);
   gnugol_default_QueryOptions(&master);
-  
+
   process_environ(argv[0],&master);
   words = process_options(argc,argv,&master);
   finish_setup(&master,words,argc,argv);
-  
+
   assert(!ListEmpty(&c_engines));
-  
+
   for(
         engine = (GnuGolEngine)ListGetHead(&c_engines);
         NodeValid(&engine->node);
@@ -459,7 +460,7 @@ int main(int argc, char **argv) {
     }
     /*gnugol_free_QueryOptions(&q);*/
   }
-  
+
   for(
        engine = (GnuGolEngine)ListRemTail(&c_engines);
        NodeValid(&engine->node);
