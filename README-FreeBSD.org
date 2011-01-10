@@ -1,4 +1,4 @@
-* INSTALLATION ON FREEBSD
+gimake* INSTALLATION ON FREEBSD
 
 ** Required Packages
 

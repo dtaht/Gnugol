@@ -8,12 +8,12 @@
 #endif
 
 #if DEBUG_SHAREDLIBS
-#  define GNUGOL_SHAREDLIBDIR "../engines"
+#  define GNUGOL_SHAREDLIBDIR "../engines/"
 #else
 #  ifdef __FreeBSD__
-#    define GNUGOL_SHAREDLIBDIR "/usr/local/lib/gnugol"
+#    define GNUGOL_SHAREDLIBDIR "/usr/local/lib/gnugol/"
 #  else
-#    define GNUGOL_SHAREDLIBDIR "/var/lib/gnugol"
+#    define GNUGOL_SHAREDLIBDIR "/var/lib/gnugol/"
 #  endif
 #endif
 

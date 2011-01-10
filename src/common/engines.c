@@ -31,14 +31,14 @@ GnuGolEngine gnugol_engine_load(const char *name)
 {
   GnuGolEngine engine;
   char          libname[FILENAME_MAX];
-  
+
   assert(name != NULL);
-  
+
   engine = malloc(sizeof(struct ggengine));
   if (engine == NULL)
     return NULL;
-  
-  snprintf(libname,sizeof(libname),GNUGOL_SHAREDLIBDIR "/%s." SO_EXT,name);
+
+  snprintf(libname,sizeof(libname),GNUGOL_SHAREDLIBDIR "%s." SO_EXT,name);
   engine->lib = dlopen(libname,RTLD_LAZY | RTLD_GLOBAL);
 
   if (engine->lib == NULL)
@@ -46,21 +46,21 @@ GnuGolEngine gnugol_engine_load(const char *name)
     free(engine);
     return NULL;
   }
-  
+
   engine->setup = dlsym(engine->lib,"setup");
   if (engine->setup == NULL)
     engine->setup = gnugol_default_setup;
-  
+
   engine->search = dlsym(engine->lib,"search");
   if (engine->search == NULL)
     engine->search = gnugol_default_search;
-  
+
   engine->description = (const char *)dlsym(engine->lib,"description");
   if (engine->description == NULL)
     engine->description = "There is no description";
-    
+
   engine->name = strdup(name);
-  
+
   return engine;
 }
 
@@ -69,17 +69,17 @@ GnuGolEngine gnugol_engine_load(const char *name)
 int gnugol_engine_query(GnuGolEngine engine,QueryOptions_t *query)
 {
   int rc;
-  
+
   assert(engine != NULL);
   assert(query  != NULL);
-  
+
   rc = (*engine->setup)(query);
   if (rc < 0)
   {
     GNUGOL_OUTW(query,"%s: Went boom on setup\n",engine->name);
     return rc;
   }
-  
+
   return (*engine->search)(query);
 }
 
@@ -88,7 +88,7 @@ int gnugol_engine_query(GnuGolEngine engine,QueryOptions_t *query)
 void gnugol_engine_unload(GnuGolEngine engine)
 {
   assert(engine != NULL);
-  
+
   free((void *)engine->name);
   dlclose(engine->lib);
   free(engine);

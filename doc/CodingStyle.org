@@ -1,7 +1,68 @@
-* C conventions for Gnugol
-** Gnugol uses the C99 standard whenever possible
-   It's been 12 years, time to adopt it!
+* Gnugol C conventions
+** Gnugol uses the C99 standard whenever logical
 ** In client applications especially, use assert.
-* CodingStyle
+** Use a thread pooling model
+   The gnugol threadpool contains a small number of threads that
+   defaults to 2xnumber of cores Task routing is used to queue things
+   to the thread pool.
 
-Pretty various. I'd like to enforce a coding style at some point. 
+   This model scales very well. It tends to keep the threads (and
+   cores) busy, without causing a lot of thread contention. It also
+   tends to force the program into a design model where threaded work
+   is broken up into easily-queued work items, rather than large,
+   monolithic entities that have to be made thread-safe.
+*** NOTE: open problem here is the latency of queries over the internet. 
+    I loathe the one thread per open socket model of early
+    java. However, non-blocking I/O is not particularly easy to get
+    right on the first try, or the second. Or, third.
+    Elsewhere, the thread pool makes complete sense.
+
+** noun_verb functions and objects
+   The majority of libraries that gnugol interfaces with currently use noun_verb naming schemes for their functions. For consistency, if not clarity, it is best to use similar naming schemes
+
+
+  Ah well ... it's ... um ... based a lot of aesthetics and a preference for
+vertical alignment.  Braces on their own line (it's a more vertical style as
+well---I absolutely loathe K&R style; always have), indents at two spaces,
+one variable per declaration (again, it's that vertical style) and formatted
+in a columnar style:
+
+	FILE      *fpin;
+	FILE      *fpout;
+	char       buffer[BUFSIZ];
+	struct tm  now;
+**
+char  *a;
+int    b;
+
+* CodingStyle
+** Commit messages
+*** First line must be PG-13 and alphanumeric only
+    Sometimes only a good curse word adequately captures the essence
+    of a commit. For profanity to retain its magical power, however,
+    its uses must be reserved to those rare cases where it is truly
+    warranted.  Do not use foul language as the first line. Try to
+    remember that commits are forever and public.
+*** 72 columns max with tab unless unavoidable
+*** Be polite 
+    Feel free to call yourself an idiot, but nobody else. 
+*** Blunt language is preferred
+    Use "Wrong" rather than "that turns out not to be the case". There is no reason to use businessspeak.
+*** Snark and humor is always appreciated
+    Feel free to use them in documentation, comments, etc. This project would not be as fun if it wasn't somewhat subversive in nature.
+*** TODO bug tracker
+    Some day I'd like to have a distributed bug tracker. Bugs everywhere?
+** Trailing whitespace
+   Try to omit trailing whitespace. Patch reviewers will appreciate you.
+** No tabs
+   Tabs are treated differently by different editors. Use spaces to indent code.
+** 80 column lines
+** Adhere to the existing coding style
+*** DO
+*** DON'T
+* UNRESOLVED
+** The glib library 
++ Well debugged, widely used library (firefox, others) that brings 
+- Bloated, complex and possibly hard to stay 
+** glib-json vs jansson
+

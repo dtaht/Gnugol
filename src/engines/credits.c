@@ -89,16 +89,16 @@ static int search_engines(QueryOptions_t *q)
 {
   size_t  extlen;
   DIR    *dir;
-  
+
   dir = opendir(GNUGOL_SHAREDLIBDIR);
   if (dir == NULL)
   {
     /* error */
     return 0;
   }
-  
+
   extlen = strlen(SO_EXT);
-  
+
   while(1)
   {
     GnuGolEngine  engine;
@@ -107,25 +107,28 @@ static int search_engines(QueryOptions_t *q)
     size_t         len;
     char           name[BUFSIZ];
     int            rc;
-    
+
     rc = readdir_r(dir,&entry,&pentry);
     if (rc != 0)
     {
       /* error */
       break;
     }
-    
+
     if (pentry == NULL) break;
     len = strlen(entry.d_name);
     if (len <= extlen) continue;
     if (strcmp(&entry.d_name[len-extlen],SO_EXT) != 0) continue;
     memcpy(name,entry.d_name,(len - extlen) - 1);
     name[(len - extlen) - 1] = '\0';
-    engine = gnugol_engine_load(name);
+
+    if((engine = gnugol_engine_load(name)) != NULL)
+    {
     gnugol_result_out(q,NULL,engine->name,engine->description);
     gnugol_engine_unload(engine);
+    }
   }
-  
+
   gnugol_result_out(
   	q,
   	"http://gnugol.taht.net/bugs.html",
@@ -170,7 +173,7 @@ int search(QueryOptions_t *q) {
       }
     }
     gnugol_footer_out(q);
-  } 
+  }
   else if (strcmp("engines",q->keywords) == 0)
   {
     gnugol_header_out(q);
