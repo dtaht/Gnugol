@@ -10,11 +10,11 @@
 #+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
 #+STYLE:    <script type="text/javascript" src="/MathJax/MathJax.js"></script>
 #+MATHJAX: align:"left" mathml:nil path:"/MathJax/"
-* Why is it called GNUGOL?
+* Why is it called Gnugol?
   The name is a play on several words - Canoodle, google, gnu, all of which, combined, make for a "New Goal". The "G" is pronounced.
   See Also: [[file:history.org][history]].
 * How does it work? 
 * How much does it cost? 
-  Gnugol is free and released under the GNU AFFERO public license.
+  Gnugol is free software and released under the AGPLv3 (the GNU AFFERO public license).
 * How can I help? 
   Download the source code. Build it. [[https://github.com/dtaht/Gnugol][Contribute]]. Share it. Spread the program around your workplace.

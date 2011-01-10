@@ -28,3 +28,14 @@
    Gnugol lets you "drive" the browser from the command line, a program, or your text editor.
 ** Speed
    The less data you transfer and render, the faster your searching experience.
+** Components
+*** Search Engines
+*** Filters
+**** Classifiers
+**** Anti-spam
+**** Authenticity
+**** Originality
+**** Currency
+*** Formatters
+*** Pipelines
+*** Routers

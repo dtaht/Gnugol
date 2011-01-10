@@ -84,7 +84,7 @@ int foo (int arg)
 
 #+end_src
 *** Emacs helpers
-   The included [[file:../src/lisp/gnugol-style.el][gnugol-style.el]] file contains the defaults used for ccmode herein.
+   The included [[file:../src/lisp/gnugol-style.el][gnugol-style.el]] file contains the defaults used for ccmode herein. You can reduce your whitespace [[https://github.com/glasserc/ethan-wspace][with this]], and reduce excessive legal verbosity [[ftp://ftp.splode.com/pub/users/friedman/emacs-lisp/kill-a-lawyer.el][with kill-a-lawyer.el]].
 *** vi helpers
     set softtabstop=2 
     set shiftwidth=2 
@@ -98,8 +98,10 @@ int foo (int arg)
    Try to omit trailing whitespace before a commit. Patch reviewers will appreciate you.
 ** No tabs
    Tabs are treated differently by different editors. Use spaces to indent code.
-** 80 column lines
+** Use 80 column lines
    [[http://www.emacswiki.org/emacs/EightyColumnRule][80 column lines]] are easier to review, patch, and modify.
+** Use the AGPLv3
+   It annoys the powers-that-be and offers some protection and potential redress against misuse.  However, don't do copyright assignment - this preserves your own rights to re-use code you wrote under any license you choose.
 * UNRESOLVED
 ** The glib library 
 + Well debugged, widely used library (firefox, others) that brings 
