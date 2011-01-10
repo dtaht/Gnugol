@@ -1,3 +1,17 @@
+#+TITLE:     GNUGOL Coding Conventions
+#+AUTHOR:    Dave Täht
+#+EMAIL:     d + gnugol at taht.net
+#+DATE:      <2010-12-21 Tue>
+#+LANGUAGE:  en
+#+TEXT:      A guideline for contributions to the gnugol project
+#+OPTIONS:   H:2 num:nil todo:nil toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:nil skip:nil d:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:org-info.js
+#+LINK_UP:
+#+LINK_HOME: 
+#+STYLE:    <link rel="icon" type="image/ico" href="http://gnugol.taht.net/images/favicon.ico">
+#+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
+#+STYLE:    <script type="text/javascript" src="org-info.js"> 
+#+STARTUP: overview hideblocks
 * Gnugol C conventions
 ** Gnugol uses the C99 standard whenever logical
 ** In client applications especially, use assert.
@@ -16,28 +30,17 @@
     java. However, non-blocking I/O is not particularly easy to get
     right on the first try, or the second. Or, third.
     Elsewhere, the thread pool makes complete sense.
-
 ** noun_verb functions and objects
-   The majority of libraries that gnugol interfaces with currently use noun_verb naming schemes for their functions. For consistency, if not clarity, it is best to use similar naming schemes
-
-
-  Ah well ... it's ... um ... based a lot of aesthetics and a preference for
-vertical alignment.  Braces on their own line (it's a more vertical style as
-well---I absolutely loathe K&R style; always have), indents at two spaces,
-one variable per declaration (again, it's that vertical style) and formatted
-in a columnar style:
-
-	FILE      *fpin;
-	FILE      *fpout;
-	char       buffer[BUFSIZ];
-	struct tm  now;
-**
-char  *a;
-int    b;
-
+   The majority of libraries that gnugol interfaces with currently use noun_verb naming schemes for their functions. For consistency, if not clarity, it is best to use similar naming schemes.
+** Use thread-safe libraries
+** Be UTF-8 aware
+   Gnugol uses utf-8 internally.
+** Don't use "bool"
+   The world is full of C applications that use integers for boolean values. This is wasteful.
+   (However, many exceptions to this rule exist, particularly for contended variables)
 * CodingStyle
 ** Commit messages
-*** First line must be PG-13 and alphanumeric only
+*** First line: PG-13 and alphanumeric only
     Sometimes only a good curse word adequately captures the essence
     of a commit. For profanity to retain its magical power, however,
     its uses must be reserved to those rare cases where it is truly
@@ -47,19 +50,56 @@ int    b;
 *** Be polite 
     Feel free to call yourself an idiot, but nobody else. 
 *** Blunt language is preferred
-    Use "Wrong" rather than "that turns out not to be the case". There is no reason to use businessspeak.
+    Use "Wrong" rather than "that turns out not to be the case". There is no reason to use business-speak.
 *** Snark and humor is always appreciated
     Feel free to use them in documentation, comments, etc. This project would not be as fun if it wasn't somewhat subversive in nature.
 *** TODO bug tracker
     Some day I'd like to have a distributed bug tracker. Bugs everywhere?
-** Trailing whitespace
-   Try to omit trailing whitespace. Patch reviewers will appreciate you.
+** For new code, use compressed BSD (Allman) Style
+Braces on their own line, indents at two spaces, one variable per declaration and formatted in a columnar style.
+*** Example
+#+begin_src c
+int foo (int arg)
+{
+  void    *p;
+  int      boom = 0;
+  struct t test;
+  for( int i = 0; i < 10; i++ )
+  {
+    if((p = somefunction(arg)) == NULL)
+    {
+      boom++;
+    } 
+      else 
+    {
+      boom += ((*test).func(p));
+    }
+  }
+  if(boom) 
+  {
+    printf(stderr,"We went boom %d\n times", boom);
+  }
+  return(boom);
+}
+
+#+end_src
+*** Emacs helpers
+   The included [[file:../src/lisp/gnugol-style.el][gnugol-style.el]] file contains the defaults used for ccmode herein.
+*** vi helpers
+    set softtabstop=2 
+    set shiftwidth=2 
+    set tabstop=2
+    set expandtab 
+*** Joe helpers
+** Elsewhere, adhere to the existing coding style
+*** DO
+*** DON'T
+** Omit Trailing white-space
+   Try to omit trailing whitespace before a commit. Patch reviewers will appreciate you.
 ** No tabs
    Tabs are treated differently by different editors. Use spaces to indent code.
 ** 80 column lines
-** Adhere to the existing coding style
-*** DO
-*** DON'T
+   [[http://www.emacswiki.org/emacs/EightyColumnRule][80 column lines]] are easier to review, patch, and modify.
 * UNRESOLVED
 ** The glib library 
 + Well debugged, widely used library (firefox, others) that brings 

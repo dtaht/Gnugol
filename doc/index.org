@@ -81,10 +81,12 @@ One of these days I'll get around to something more elaborate.
 ** [[file:concepts.org][Concepts]]
 ** [[file:faq.org][FAQ]]
 ** [[file:history.org][History]]
-** [[file:gnugol.odp][2008 Openoffice presentation on gnugol and gnugold]]
+* For Developers
+** [[file:CodingStyle.org][CodingStyle]]
+** [[file:gnugold.org][Gnugold query router design]]
+** [[file:orig_presentation.org][2008 Presentation on gnugol and gnugold]]
 ** [[file:bugs.org][Bugs]]
-** [[file:gnugold.org][Gnugold query router]]
-* Tests
+** Tests
 ** [[file:search.html][Test CGI search]] (non-functional at present)
 * Where to get it?
 Gnugol is being maintained in a repository on [[https://github.com/dtaht/Gnugol][github]]. 
