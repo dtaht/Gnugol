@@ -1,0 +1,17 @@
+"c":"The goal here is to come up with a query format that 1) can be compressed, 2) encrypted, 3) fit into a packet",
+"q":["keyword","keyword","keyword"],
+"o":"GNUGOL BOOLEAN OPTIONS",
+"S":[ "site","specific","options"],
+"e":["engine"],
+"s":"SHA-256 hash",
+"n":10,
+"p":0,
+"t":1,
+"s":1,
+"d":1,
+"u":1,
+"a":0,
+"V":"Version"
+"v":"verbose"
+
+

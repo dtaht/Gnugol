@@ -1,0 +1,8 @@
+"c":"The goal in the header is to get the query to it's destination(s)"
+"d":"destination",
+"s":"source",
+"H":hopcount,
+"T":Timeout,
+"O":origination time,
+"H":Hash,
+
