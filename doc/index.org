@@ -1,7 +1,7 @@
 #+TITLE:     GNUGOL
 #+AUTHOR:    Dave Täht
 #+EMAIL:     d + gnugol at taht.net
-#+DATE:      <2011-01-10 Mon>
+#+DATE:      <2011-01-06 Thu>
 #+LANGUAGE:  en
 #+TEXT:      A command line text only web search client
 #+DESCRIPTION: GNUGOL - an org-mode compatible search client
