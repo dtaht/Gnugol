@@ -295,25 +295,9 @@ size_t substitute_utf8(char *string,size_t lenstr,char *entity)
   assert(string  != NULL);
   assert(entity  != NULL);
   assert(*entity == '&');
+
   if (lenstr < 5)	/* not enough space for worst case scenario */
     return 0;
-
-  /*-------------------------------------------------------------------------
-  ; The above table is sorted using the C collate sequence (US-ASCII) so we
-  ; need to make sure our locale is set so a subsequent search will return
-  ; the appropriate value.  But since I don't want to make any assumptions
-  ; as to the locale elsewhere in the code, we have the current locale, set
-  ; it, then restore it upon return.
-  ;-------------------------------------------------------------------------*/
-
-  char *collate = setlocale(LC_COLLATE,NULL);
-  if (collate == NULL)
-    collate = "";
-
-  char savecollate[strlen(collate) + 1];
-  memcpy(savecollate,collate,strlen(collate) + 1);
-
-  setlocale(LC_COLLATE,"C");
 
   const struct entitymap *e;
   size_t                  len;
@@ -348,7 +332,6 @@ size_t substitute_utf8(char *string,size_t lenstr,char *entity)
   memcpy(string,buf,size);
   string[size] = '\0';
 
-  setlocale(LC_COLLATE,savecollate);
   return size;
 }
 

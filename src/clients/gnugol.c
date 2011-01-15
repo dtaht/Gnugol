@@ -24,6 +24,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <locale.h>
 #include <assert.h>
 #include <getopt.h>
 
@@ -437,6 +438,13 @@ int main(int argc, char **argv) {
   QueryOptions_t master;
   QueryOptions_t q;
   GnuGolEngine   engine;
+  
+  /*------------------------------------------------------------------------
+  ; sorted data in this program is collated in the C locale.  Set that here
+  ; to make sure the program returns sane data when calling bsearch().
+  ;-----------------------------------------------------------------------*/
+  
+  setlocale(LC_COLLATE,"C");
 
   ListInit(&c_engines);
 
