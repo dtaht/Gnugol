@@ -27,6 +27,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/
 #include <jansson.h>
 #include <ctype.h>
 #include <curl/curl.h>
+#include <iconv.h>
 #include "query.h"
 #include "utf8.h"
 #include "handy.h"

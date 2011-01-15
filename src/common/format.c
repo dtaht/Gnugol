@@ -22,6 +22,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
+#include <iconv.h>
 #include "query.h"
 #include "formats.h"
 #include "utf8.h"

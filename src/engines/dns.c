@@ -18,6 +18,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/
 
 #include <stddef.h>
 #include <errno.h>
+#include <iconv.h>
 #include "query.h"
 #include "gnugol_engines.h"
 

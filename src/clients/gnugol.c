@@ -24,9 +24,11 @@ along with this program.  If not, see http://www.gnu.org/licenses/
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <errno.h>
 #include <locale.h>
 #include <assert.h>
 #include <getopt.h>
+#include <iconv.h>
 
 #include "nodelist.h"
 #include "query.h"
@@ -75,6 +77,7 @@ int usage (char *err) {
   printf(
 	 "-e --engine        [bing|google|dummy]\n"
 	 "-o --output        [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
+	 "-C --charset cs    character set used locally\n"
 	 "-n --nresults      number of results to fetch\n"
 	 "-p --position      start of results to fetch\n"
 	 "-s --snippets  0|1 disable/enable snippets\n"
@@ -126,6 +129,7 @@ int usage (char *err) {
 
 static const struct option long_options[] = {
   { "about"		, no_argument		, NULL , 'a' } ,
+  { "charset"		, required_argument	, NULL , 'C' } ,
   { "debug"		, required_argument	, NULL , 'D' } ,
   { "engine"		, required_argument	, NULL , 'e' } ,
   { "footer"		, required_argument	, NULL , 'F' } ,
@@ -219,9 +223,9 @@ print_enabled_options(QueryOptions_t *o, FILE *fp) {
 
 #define BOOLOPT(OPTION) OPTION = (strtoul(optarg,NULL,10) & 1)
 #ifdef HAVE_GNUGOLD
-#  define QSTRING "ad:D:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uvb46mPRST"
+#  define QSTRING "aC:d:D:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uvb46mPRST"
 #else
-#  define QSTRING "ad:D:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uv"
+#  define QSTRING "aC:d:D:e:F:H:hi:l:L:n:o:p:s:S:t:u:Uv"
 #endif
 
 int process_options(int argc, char **argv, QueryOptions_t *o)
@@ -244,6 +248,7 @@ int process_options(int argc, char **argv, QueryOptions_t *o)
     switch (opt)
     {
       case 'a': o->about = 1;  break;
+      case 'C': o->charset = optarg; break;
       case 'd': o->desc = strtoul(optarg,NULL,10); break;
       case 'D': o->debug = strtoul(optarg,NULL,10); break;
       case 'e':
@@ -311,13 +316,25 @@ int process_options(int argc, char **argv, QueryOptions_t *o)
   return optind;
 }
 
-void finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
+int finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
 {
   GnuGolEngine engine;
   char    string[MAX_MTU];
   size_t  querylen = 0;
   int     i;
 
+
+  if (o->charset != NULL)
+  {
+    o->icin = iconv_open("UTF-8",o->charset);
+    if (o->icin == (iconv_t)-1)
+      return errno;
+      
+    o->icout = iconv_open(o->charset,"UTF-8");
+    if (o->icout == (iconv_t)-1)
+      return errno;
+  }
+  
   string[0] = '\0';
 
   if (!o->about && ListEmpty(&c_engines))
@@ -326,7 +343,7 @@ void finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
     if (engine == NULL)
     {
       fprintf(stderr,"default engine not found!  Panic!\n");
-      exit(EXIT_FAILURE);
+      return ENOENT;
     }
 
     ListAddTail(&c_engines,&engine->node);
@@ -338,25 +355,57 @@ void finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
     if (engine == NULL)
     {
       fprintf(stderr,"default engine not found!  Panic!\n");
-      exit(EXIT_FAILURE);
+      return ENOENT;
     }
 
     ListAddTail(&c_engines,&engine->node);
   }
 
-  for(i = idx; i < argc; i++) {
-	  if((querylen += (strlen(argv[i])+1) > MAX_MTU - 80)) {
-		  fprintf(stderr,"Too many words in query, try something smaller\n");
-		  exit(EXIT_FAILURE);
-	  }
-	  /* FIXME: Although I did a length check above it could be cleaner here */
-	  if(!o->url_escape) {
-		  strcat(string,argv[i]);
-		  if(i+1 < argc) strcat(string," ");
-	  } else {
-		  strcat(string,argv[i]);
-		  if(i+1 < argc) strcat(string,"+");
-	  }
+  for(i = idx; i < argc; i++) 
+  {
+    size_t  arginlen;
+    size_t  argoutlen;
+
+    arginlen  = strlen(argv[i]);
+    argoutlen = arginlen * 4;
+    
+    char   tmpbuf[argoutlen + 1];	/* guess at a good size */
+    char   *tin  = argv[i];
+    char   *tout = tmpbuf;
+    char   *word;
+    size_t  convlen;
+    
+    if (o->charset != NULL)
+    {
+      convlen = iconv(o->icin,&tin,&arginlen,&tout,&argoutlen);
+      if (convlen == (size_t)-1)
+        return errno;
+      
+      assert(tout != tmpbuf);
+      *tout = '\0';
+      word  = tmpbuf;
+    }
+    else
+      word = argv[i];
+
+    if((querylen += (strlen(word)+1) > MAX_MTU - 80)) 
+    {
+      fprintf(stderr,"Too many words in query, try something smaller\n");
+      return EINVAL;
+    }
+    
+    /* FIXME: Although I did a length check above it could be cleaner here */
+  
+  if(!o->url_escape) 
+    {
+      strcat(string,word);
+      if(i+1 < argc) strcat(string," ");
+    } 
+    else 
+    {
+       strcat(string,word);
+      if(i+1 < argc) strcat(string,"+");
+    }
   }
 
   if(!o->url_escape) {
@@ -371,6 +420,7 @@ void finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
     o->engine_name = "credits";
     o->header_str = "About: ";
   }
+  return 0;
 }
 
 static void gnugol_default_language (QueryOptions_t *q) {
@@ -453,7 +503,9 @@ int main(int argc, char **argv) {
 
   process_environ(argv[0],&master);
   words = process_options(argc,argv,&master);
-  finish_setup(&master,words,argc,argv);
+
+  if (finish_setup(&master,words,argc,argv) != 0)
+    return EXIT_FAILURE;
 
   assert(!ListEmpty(&c_engines));
 
@@ -466,8 +518,27 @@ int main(int argc, char **argv) {
     q      = master;
     result = gnugol_engine_query(engine,&q);
 
-    if(q.returned_results > 0) {
-      printf("%s",q.out.s);
+    if(q.returned_results > 0)
+    {
+      if (q.charset)
+      {
+        char    outbuffer[(q.out.len * 4) + 1];
+        size_t  convlen;
+        char   *tin  = q.out.s;
+        size_t  sin  = q.out.len;
+        char   *tout = outbuffer;
+        size_t  sout = sizeof(outbuffer);
+        
+        convlen = iconv(q.icout,&tin,&sin,&tout,&sout);
+        if (convlen == (size_t)-1)
+          return EXIT_FAILURE;
+        
+        assert(tout != outbuffer);
+        *tout = '\0';
+        printf("%s",outbuffer);
+      }
+      else
+        printf("%s",q.out.s);
     }
 
     if(result < 0 || q.debug > 5) {

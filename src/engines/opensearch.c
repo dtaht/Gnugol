@@ -2,6 +2,7 @@
 
 #include <stddef.h>
 #include <errno.h>
+#include <iconv.h>
 #include "query.h"
 
 int setup(QueryOptions_t *q)

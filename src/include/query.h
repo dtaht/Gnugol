@@ -91,6 +91,9 @@ struct query_options {
   char *plugin_file;
   char *server;
   char *client;
+  char *charset;
+  iconv_t icin;
+  iconv_t icout;
   buffer_obj_t out;
   buffer_obj_t err;
   buffer_obj_t wrn;

@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <dlfcn.h>
+#include <iconv.h>
 
 #include "nodelist.h"
 #include "query.h"
