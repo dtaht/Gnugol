@@ -4,6 +4,16 @@
 #include <ctype.h>
 #include "utf8_urlencode.h"
 
+/* 
+
+I really didn't want to introduce a dependency on curl here.
+
+#include <curl/curl.h>
+
+char *curl_easy_escape( CURL * curl , char * url , int length ); 
+
+*/
+
 /**
  * Provides a C function to encode any string into a URL-safe
  * form.
