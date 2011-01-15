@@ -1,4 +1,4 @@
-/* 
+/*
 Copyright (C) 2011 Michael D. Täht
 Copyright (C) 2011 Sean Conner
 

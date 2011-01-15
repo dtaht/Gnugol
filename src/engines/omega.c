@@ -1,4 +1,4 @@
-/* 
+/*
 Copyright (C) 2011 Michael D. Täht
 
 This program is free software: you can redistribute it and/or modify it under

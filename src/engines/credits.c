@@ -1,4 +1,4 @@
-/* 
+/*
 Copyright (C) 2011 Michael D. Täht
 
 This program is free software: you can redistribute it and/or modify it under
@@ -14,7 +14,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-/* This engine implements contributor credits, licensing and 
+/* This engine implements contributor credits, licensing and
    copyright, and other misc configuration parameters internal to gnugol */
 
 #define _POSIX_SOURCE

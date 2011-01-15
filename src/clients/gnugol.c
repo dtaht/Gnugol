@@ -1,4 +1,4 @@
-/* 
+/*
 Copyright (C) 2011 Michael D. Täht
 Copyright (C) 2011 Sean Conner
 
@@ -329,12 +329,12 @@ int finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
     o->icin = iconv_open("UTF-8",o->charset);
     if (o->icin == (iconv_t)-1)
       return errno;
-      
+
     o->icout = iconv_open(o->charset,"UTF-8");
     if (o->icout == (iconv_t)-1)
       return errno;
   }
-  
+
   string[0] = '\0';
 
   if (!o->about && ListEmpty(&c_engines))
@@ -361,26 +361,26 @@ int finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
     ListAddTail(&c_engines,&engine->node);
   }
 
-  for(i = idx; i < argc; i++) 
+  for(i = idx; i < argc; i++)
   {
     size_t  arginlen;
     size_t  argoutlen;
 
     arginlen  = strlen(argv[i]);
     argoutlen = arginlen * 4;
-    
+
     char   tmpbuf[argoutlen + 1];	/* guess at a good size */
     char   *tin  = argv[i];
     char   *tout = tmpbuf;
     char   *word;
     size_t  convlen;
-    
+
     if (o->charset != NULL)
     {
       convlen = iconv(o->icin,&tin,&arginlen,&tout,&argoutlen);
       if (convlen == (size_t)-1)
         return errno;
-      
+
       assert(tout != tmpbuf);
       *tout = '\0';
       word  = tmpbuf;
@@ -388,20 +388,20 @@ int finish_setup(QueryOptions_t *o,int idx,int argc,char **argv)
     else
       word = argv[i];
 
-    if((querylen += (strlen(word)+1) > MAX_MTU - 80)) 
+    if((querylen += (strlen(word)+1) > MAX_MTU - 80))
     {
       fprintf(stderr,"Too many words in query, try something smaller\n");
       return EINVAL;
     }
-    
+
     /* FIXME: Although I did a length check above it could be cleaner here */
-  
-  if(!o->url_escape) 
+
+  if(!o->url_escape)
     {
       strcat(string,word);
       if(i+1 < argc) strcat(string," ");
-    } 
-    else 
+    }
+    else
     {
        strcat(string,word);
       if(i+1 < argc) strcat(string,"+");
@@ -488,12 +488,12 @@ int main(int argc, char **argv) {
   QueryOptions_t master;
   QueryOptions_t q;
   GnuGolEngine   engine;
-  
+
   /*------------------------------------------------------------------------
   ; sorted data in this program is collated in the C locale.  Set that here
   ; to make sure the program returns sane data when calling bsearch().
   ;-----------------------------------------------------------------------*/
-  
+
   setlocale(LC_COLLATE,"C");
 
   ListInit(&c_engines);
@@ -528,11 +528,11 @@ int main(int argc, char **argv) {
         size_t  sin  = q.out.len;
         char   *tout = outbuffer;
         size_t  sout = sizeof(outbuffer);
-        
+
         convlen = iconv(q.icout,&tin,&sin,&tout,&sout);
         if (convlen == (size_t)-1)
           return EXIT_FAILURE;
-        
+
         assert(tout != outbuffer);
         *tout = '\0';
         printf("%s",outbuffer);
