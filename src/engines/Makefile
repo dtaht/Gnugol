@@ -63,8 +63,8 @@ dns.$(EXT) : dns.c $(HEADERS) $(ENGINES)
 credits.$(EXT) : credits.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) credits.c -o $@ $(LDFLAGS)
 
-install: $(OBJECTS) 
-	@mkdir -p $(SHAREDLIBDIR)	
+install: $(OBJECTS)
+	@mkdir -p $(SHAREDLIBDIR)
 	cp *.$(EXT) $(SHAREDLIBDIR)
 clean:
 	rm -f $(OBJECTS) $(PROGS) *~

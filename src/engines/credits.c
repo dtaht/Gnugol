@@ -60,7 +60,7 @@ static const struct credits c[] = {
   { "credits", "David Rowe", "http://www.rowetel.com/", "Original scraper/fpipe code, moral support" },
   { "credits", "Nick Mainsbridge", "http://deprogram.net/", "The name, 'gnugol', and the backing music" },
   { "copyright", "&copy; 2010,2011 Sean Conner", "http://boston.conman.org/", "Portions contributed by Sean Conner" },
-  { "copyright", "© 2010,2011 Michael D. Taht", "http://www.taht.net/",
+  { "copyright", "© 2010,2011 Michael D. Täht", "http://www.taht.net/",
     "The bulk of gnugol is under the AGPLv3. See --about license for more details" },
   { "license", "Gnugol's Licensing", GNUGOL_SITE, "" },
   { "license", "GNU Affero General Public License, Version 3", "http://www.gnu.org/licenses/agpl.html",
