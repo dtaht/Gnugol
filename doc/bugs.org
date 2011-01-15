@@ -11,6 +11,10 @@
 #+STYLE:    <link rel="stylesheet" type="text/css" href="worg.css" />
 #+STYLE:    <script type="text/javascript" src="org-info.js"> 
 * Gnugol Bugs
+** i18n is still ... wonky
+   The problems so far:
+   1. If the charset doesn't support a glyph defined in UTF-8, no output is generated.  If outputting HTML (or an HTML derivative) the answer is easy:  just output an HTML entity.  What about non-HTML (derived) formats though?
+   2. If a query does contain non-US-ASCII characters, the google search fails (duplicated in pre-iconv codebase)
 ** DONE Command line parameters
    CLOSED: [2010-12-20 Mon 16:38]
    :LOGBOOK:
