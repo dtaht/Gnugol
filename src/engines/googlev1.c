@@ -80,7 +80,7 @@ int setup(QueryOptions_t *q) {
   if(q->debug > 9) GNUGOL_OUTW(q,"Entering Setup\n");
 
   size = sizeof(key);
-  if (gnugol_read_key(key,&size,".googlekey") != 0)
+  if (gnugol_read_key(key,&size,"googlekey") != 0)
   {
     GNUGOL_OUTE(q,"A license key to search google is recommended. "
 		  "You can get one from: %s",LICENSE_URL);

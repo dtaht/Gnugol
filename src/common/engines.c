@@ -19,6 +19,10 @@
 #include "formats.h"
 #include "gnugol_engines.h"
 
+#ifndef SYSCONFDIR
+#define SYSCONFDIR "/etc/gnugol"
+#endif
+
 #ifndef __GNUC__
 #  define __attribute__(x)
 #endif
@@ -118,11 +122,15 @@ int gnugol_read_key(
   if (home == NULL)
     home = "";
 
-  snprintf(path,sizeof(path),"%s/%s",home,keyfile);
+  snprintf(path,sizeof(path),"%s/.%s",home,keyfile);
   fd = open(path,O_RDONLY);
-  if (fd == -1)
+  if (fd == -1) 
+  {
+  snprintf(path,sizeof(path),"%s/%s",SYSCONFDIR,keyfile);
+  fd = open(path,O_RDONLY);
+  if (fd == -1) 
     return errno;
-
+  }
   size = read(fd,key,*pksize);
   err  = errno;
   close(fd);

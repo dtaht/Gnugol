@@ -67,7 +67,7 @@ int setup(QueryOptions_t *q) {
   char   uukeywords[MAX_MTU];
 
   size = sizeof(key);
-  if (gnugol_read_key(key,&size,".bingkey") != 0)
+  if (gnugol_read_key(key,&size,"bingkey") != 0)
   {
     GNUGOL_OUTE(q,"For bing, you need a license key from: %s\n",LICENSE_URL);
     return(-1);
