@@ -10,6 +10,11 @@ else
 LIBS=$(COMMON_LIBS) -ldl
 endif
 
+ifeq "$(PLATFORM)" "Darwin"
+# Need libiconv
+LIBS+=-liconv
+endif
+
 CGILIB=-L/usr/local/lib -lcgic
 HEADERS=../include/*.h
 COMMON=../common/handy.o ../common/utf8.o ../common/format.o ../common/utf8_urlencode.o ../common/nodelist.o 
