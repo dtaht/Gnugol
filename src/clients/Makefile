@@ -4,8 +4,8 @@ PLATFORM=$(shell uname -s)
 COMMON_LIBS=-ljansson -lcurl
 
 ifeq "$(PLATFORM)" "FreeBSD"
-# dlopen(), et al, are in libc on FreeBSD.
-LIBS=-L/usr/local/lib $(COMMON_LIBS)
+# dlopen(), et al, are in libc on FreeBSD. -liconv is required, as well.
+LIBS=-L/usr/local/lib $(COMMON_LIBS) -liconv
 else
 LIBS=$(COMMON_LIBS) -ldl
 endif
