@@ -2,6 +2,8 @@
   The curl-dev and jansson-1.3 libraries are required.
   (gnugol does not currently compile against the jansson git tree. use 1.3)
 
+Does not yet work with libjansson-2.x.
+
   Under debian derived OSes, installing the build dependencies for curl-dev
 is sufficient to get most of what gnugol needs, then you have to fetch
 and build jansson, then gnugol should build without complaint.
