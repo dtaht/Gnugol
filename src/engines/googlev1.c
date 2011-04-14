@@ -168,7 +168,12 @@ int search(QueryOptions_t *q) {
       return -1;
     }
 
+#ifdef HAVE_NEWJANSSON
+    root = json_loads(text, 0, &error);
+#else
     root = json_loads(text, &error);
+#endif
+
     free(text);
 
     if(!root)

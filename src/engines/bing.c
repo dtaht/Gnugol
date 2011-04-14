@@ -149,7 +149,11 @@ int search(QueryOptions_t *q) {
 
     if(q->debug) GNUGOL_OUTW(q,"%s: get url request succeeded: %s\n", q->engine_name, q->querystr);
 
+#ifdef HAVE_NEWJANSSON
+    root = json_loads(text, 0, &error);
+#else
     root = json_loads(text, &error);
+#endif
     free(text);
 
     if(!root)

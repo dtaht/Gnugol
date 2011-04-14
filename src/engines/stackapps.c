@@ -273,7 +273,11 @@ int search(QueryOptions_t *q) {
       GNUGOL_OUTE(q,"url failed to work: %s", q->querystr);
       return -1;
     }
+#ifdef HAVE_NEWJANSSON
+    root = json_loads(text, 0, &error);
+#else
     root = json_loads(text, &error);
+#endif
     free(text);
     if(!root)
       {

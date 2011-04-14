@@ -3,6 +3,12 @@
 
 #include "nodelist.h"
 
+#ifdef JANSSON_VERSION_HEX
+#if JANSSON_VERSION_HEX >= 020000
+#define HAVE_NEWJANSSON JANSSON_VERSION_HEX
+#endif
+#endif
+
 #ifndef DEBUG_SHAREDLIBS
 #  define DEBUG_SHAREDLIBS 0
 #endif
