@@ -59,6 +59,7 @@ gnugol_fcgi.cgi: gnugol_fcgi.c $(HEADERS) $(COMMON) $(PLUGINS)
 #	$(CC) gnugold.o -o gnugold ${LIBS}
 
 install: $(PROGS)
+	@mkdir -p $(DESTDIR)$(BINDIR)
 	cp gnugol $(DESTDIR)$(BINDIR)
 #	cp gnugol.cgi $(DESTDIR)$(CGIDIR)
 

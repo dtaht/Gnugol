@@ -17,13 +17,13 @@ all:
 
 install: 
 	mkdir -p $(DESTDIR)$(HTMLDIR) $(DESTDIR)$(IMAGEDIR)
-	mkdir -p $(DOCDIR)
+	mkdir -p $(DESTDIR)$(DOCDIR)
 	cp $(HTML) $(DESTDIR)$(HTMLDIR)
 	cp $(IMAGES) $(DESTDIR)$(IMAGEDIR)
 	cp gnugol.1 /tmp
 	@rm -f /tmp/gnugol.1.gz
 	gzip /tmp/gnugol.1 
-	cp /tmp/gnugol.1.gz $(DOCDIR)gnugol.1.gz
+	cp /tmp/gnugol.1.gz $(DESTDIR)$(DOCDIR)gnugol.1.gz
 	rm -f /tmp/gnugol.1.gz
 
 install-stripped: install

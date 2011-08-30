@@ -64,7 +64,7 @@ credits.$(EXT) : credits.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) credits.c -o $@ $(LDFLAGS)
 
 install: $(OBJECTS)
-	@mkdir -p $(SHAREDLIBDIR)
-	cp *.$(EXT) $(SHAREDLIBDIR)
+	@mkdir -p $(DESTDIR)$(SHAREDLIBDIR)
+	cp *.$(EXT) $(DESTDIR)$(SHAREDLIBDIR)
 clean:
 	rm -f $(OBJECTS) $(PROGS) *~
