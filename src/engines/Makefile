@@ -34,7 +34,7 @@ LDFLAGS += -dynamiclib -dynamic ../common/*.o
 EXT = dylib
 endif
 
-OBJECTS=google.$(EXT) dummy.$(EXT) bing.$(EXT) wikipedia.$(EXT) dns.$(EXT) credits.$(EXT) \
+OBJECTS=google.$(EXT) dummy.$(EXT) bing.$(EXT) duck.$(EXT) wikipedia.$(EXT) dns.$(EXT) credits.$(EXT) \
 	stackapps.$(EXT) # googlev2.so
 
 all: $(OBJECTS) $(PROGS)
@@ -47,6 +47,9 @@ googlev2.$(EXT): googlev2.c $(HEADERS) $(ENGINES)
 
 bing.$(EXT): bing.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) bing.c -o $@ $(LDFLAGS)
+
+duck.$(EXT): duck.c $(HEADERS) $(ENGINES)
+	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) duck.c -o $@ $(LDFLAGS)
 
 stackapps.$(EXT): stackapps.c $(HEADERS) $(ENGINES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(DEBUG) stackapps.c -o $@ $(LDFLAGS)

@@ -30,6 +30,7 @@
 (defcustom gnugol-default-engine nil
   "Default search engine backend for gnugol. Presently supported are:
   google: Full support (license key recommended)
+  duck: (duckduckgo)
   bing: (with a license key)
   dummy: (useful for testing)
   credits: various options like about, licenses etc."
@@ -222,6 +223,15 @@
   (interactive "sSearch: ")
   (let (gnugol-default-engine)
     (setq gnugol-default-engine "bing")
+    (gnugol str)
+    )
+)
+
+(defun gnugol-search-duck(str)
+  "Search duckduckgo via gnugol."
+  (interactive "sSearch: ")
+  (let (gnugol-default-engine)
+    (setq gnugol-default-engine "duck")
     (gnugol str)
     )
 )
