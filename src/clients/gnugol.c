@@ -75,7 +75,7 @@ int usage (char *err) {
   if(err) fprintf(stderr,"%s\n",err);
   printf("gnugol [options] keywords to search for\n");
   printf(
-	 "-e --engine        [bing|google|dummy]\n"
+	 "-e --engine        [bing|duck|dummy]\n"
 	 "-o --output        [html|json|org|mdwn|wiki|text|term|ssml|textile|raw]\n"
 	 "-C --charset cs    character set used locally\n"
 	 "-n --nresults      number of results to fetch\n"
@@ -441,7 +441,7 @@ static void gnugol_default_QueryOptions(QueryOptions_t *q) {
 	q->urls = 1;
 	q->snippets = 1;
 	q->titles = 1;
-	q->engine_name = "google";
+	q->engine_name = "duck";
 	q->header = 1;
 	q->footer = 1;
 	q->format = FORMATDEFAULT; // ORG
