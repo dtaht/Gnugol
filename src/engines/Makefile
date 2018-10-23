@@ -35,7 +35,7 @@ EXT = dylib
 endif
 
 OBJECTS=google.$(EXT) dummy.$(EXT) bing.$(EXT) duck.$(EXT) wikipedia.$(EXT) dns.$(EXT) credits.$(EXT) \
-	stackapps.$(EXT) # googlev2.so
+	stackapps.$(EXT) googlev2.$(EXT)
 
 all: $(OBJECTS) $(PROGS)
 
